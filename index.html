@@ -134,7 +134,7 @@ aside.side{grid-column:2;grid-row:2/4;border-left:1px solid var(--line);backgrou
 .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;border:1px solid currentColor;white-space:nowrap}
 .pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
-.st-working{color:var(--ok)} .st-idle{color:var(--muted)} .st-blocked,.st-slow{color:var(--warn)} .st-nopower{color:var(--bad)} .st-off{color:var(--muted)}
+.st-working{color:var(--ok)} .st-idle{color:var(--muted)} .st-blocked,.st-slow{color:var(--warn)} .st-nopower,.st-nogas,.st-nocat{color:var(--bad)} .st-off{color:var(--muted)}
 .tag{display:inline-block;font-size:10.5px;border:1px dashed var(--muted);color:var(--muted);border-radius:3px;padding:0 5px;margin-left:6px;vertical-align:middle;font-family:var(--f-body);font-weight:400}
 .switch{display:inline-flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;user-select:none}
 .switch input{appearance:none;width:30px;height:17px;border-radius:99px;background:var(--line);position:relative;margin:0;cursor:pointer;flex:none}
@@ -272,7 +272,7 @@ dialog textarea{width:100%;height:200px;font-family:var(--f-mono);font-size:11px
       <div class="search"><input id="q" type="search" placeholder="설비 찾기 (예: 반응기)" aria-label="설비 검색"></div>
     </div>
     <div class="strip" id="plist" role="tabpanel" aria-label="설비 목록"></div>
-    <div class="keys"><kbd>R</kbd> 회전 · <kbd>Esc</kbd> 취소 · <kbd>Del</kbd> 철거 · <kbd>Shift</kbd>+드래그 범위 선택 · <kbd>Ctrl</kbd>+<kbd>C</kbd>/<kbd>V</kbd> 복사·붙여넣기 · 벨트·파이프는 드래그해서 깔기 (같은 종류끼리 교차하면 브리지, 벨트와 파이프는 겹쳐 지나감) · <span title="Hypergryph·Gryphline과 관계없는 팬 제작 도구입니다">비공식 팬 제작</span></div>
+    <div class="keys"><kbd>E</kbd> 컨베이어 벨트 · <kbd>Q</kbd> 파이프 · <kbd>R</kbd> 회전 · <kbd>Esc</kbd> 취소 · <kbd>Del</kbd> 철거 · <kbd>Shift</kbd>+드래그 범위 선택 · <kbd>Ctrl</kbd>+<kbd>C</kbd>/<kbd>V</kbd> 복사·붙여넣기 · 벨트·파이프는 드래그해서 깔기 (같은 종류끼리 교차하면 브리지, 벨트와 파이프는 겹쳐 지나감) · 분류기·합류기·컨트롤 포트는 벨트(파이프용은 파이프) 위에 놓으면 그 자리에 끼워짐 · <span title="Hypergryph·Gryphline과 관계없는 팬 제작 도구입니다">비공식 팬 제작</span></div>
   </section>
 
   <aside class="side">
@@ -336,6 +336,11 @@ I('wood', '원목', 'Wood', 'wood', 'plant');
 for (const [id, ko, en, mat] of [['buckflower', '메밀꽃', 'Buckflower', 'buck'], ['citrome', '시트롬', 'Citrome', 'cit'], ['sandleaf', '샌드리프', 'Sandleaf', 'sand'], ['aketine', '아케톤', 'Aketine', 'ake'], ['jincao', '금초', 'Jincao', 'jin'], ['yazhen', '야침', 'Yazhen', 'yaz']]) {
   I(id, ko, en, mat, 'plant'); I(id + '_seed', ko + ' 씨앗', en + ' Seed', mat, 'seed');
 }
+// crops added in 1.4 (seed-picking only; they are grown on planting plots)
+for (const [id, ko, en, mat] of [['reed_rye', '회보리', 'Reed Rye', 'sand'], ['tartpepper', '쓴맛 나는 고추', 'Tartpepper', 'pyr'], ['redjade_ginseng', '홍옥 인삼', 'Redjade Ginseng', 'het'], ['amber_rice', '금석벼', 'Amber Rice', 'jin']]) {
+  I(id, ko, en, mat, 'plant'); I(id + '_seed', ko + ' 씨앗', en + ' Seeds', mat, 'seed');
+}
+I('burdo_muck', '버든비스트의 배설물', 'Burdo-Muck', 'sew', 'plant');
 // refined
 I('origocrust', '오리고 크러스트', 'Origocrust', 'ori', 'refined');
 I('amethyst_fiber', '자수정 섬유', 'Amethyst Fiber', 'ame', 'refined');
@@ -347,6 +352,7 @@ I('packed_origocrust', '정련된 오리고 크러스트', 'Packed Origocrust', 
 I('cryston_fiber', '크리스톤 섬유', 'Cryston Fiber', 'cry', 'refined');
 I('steel', '강철 조각', 'Steel', 'steel', 'refined');
 I('xiranite', '식양', 'Xiranite', 'xir', 'refined');
+I('bumper_rich', '팽지박', 'Bumper-Rich', 'yaz', 'refined'); // fertilizer made in the Forge of the Sky
 I('heavy_xiranite', '중식양', 'Heavy Xiranite', 'xir', 'refined');
 I('xircon', '시르콘', 'Xircon', 'xir', 'refined');
 I('hetonite', '혁동', 'Hetonite', 'het', 'refined');
@@ -413,7 +419,8 @@ I('sc_wuling_battery', '중용량 무릉 배터리', 'SC Wuling Battery', 'xir',
 
 // ---------- recipes (Endfield Talos Wiki recipe data) ----------
 const RECIPES = [];
-const R = (m, t, inp, out) => RECIPES.push({ m, t, in: inp, out });
+// opts.gas: the recipe only runs inside an active Gas Dispersing Unit area of that gas
+const R = (m, t, inp, out, opts) => RECIPES.push(Object.assign({ m, t, in: inp, out }, opts || {}));
 // Refining Unit
 R('refine', 2, { originium_ore: 1 }, { origocrust: 1 });
 R('refine', 2, { amethyst_ore: 1 }, { amethyst_fiber: 1 });
@@ -473,6 +480,7 @@ R('mould', 2, { cuprium: 2, inergen: 1 }, { cuprium_canister: 1 });
 // Seed-Picking Unit
 for (const p of ['buckflower', 'citrome', 'sandleaf', 'aketine']) R('seed', 2, { [p]: 1 }, { [p + '_seed']: 2 });
 for (const p of ['jincao', 'yazhen']) R('seed', 2, { [p]: 1 }, { [p + '_seed']: 1 });
+for (const p of ['reed_rye', 'tartpepper', 'redjade_ginseng', 'amber_rice']) R('seed', 2, { [p]: 1 }, { [p + '_seed']: 2 });
 // Planting Unit
 for (const p of ['buckflower', 'citrome', 'sandleaf', 'aketine']) R('plant', 2, { [p + '_seed']: 1 }, { [p]: 1 });
 for (const p of ['jincao', 'yazhen']) R('plant', 2, { [p + '_seed']: 1, clean_water: 1 }, { [p]: 2 });
@@ -523,14 +531,17 @@ for (const m of ['reactor', 'xreactor']) {
   R(m, 2, { hetonite_solution: 2, ferrium_powder: 1 }, { hetonite: 1, sewage: 1 });
 }
 // Forge of the Sky
-R('forge', 2, { carbon: 1, clean_water: 1 }, { xiranite: 1 });
+R('forge', 2, { carbon: 1, clean_water: 1 }, { xiranite: 1 }, { gas: 'inergen' });
 R('forge', 2, { stabilized_carbon: 2, clean_water: 1 }, { xiranite: 1 });
 R('forge', 10, { xiranite: 10, xircon_effluent: 5 }, { heavy_xiranite: 1 });
+R('forge', 2, { burdo_muck: 1, liquid_xiranite: 1 }, { bumper_rich: 1 });
 // Purification Unit
 R('purify', 2, { inert_xircon_effluent: 4 }, { xircon_effluent: 1, clean_water: 1 });
 R('purify', 2, { cuprium_solution: 4 }, { hetonite_solution: 1, precipitation_acid: 1 });
-R('purify', 2, { xiragen: 2, separator_core: 1 }, { heavy_xiragen: 1 });
-R('purify', 2, { cuprium_gas: 2, separator_core: 1 }, { hetonite_gas: 2 });
+R('purify', 2, { xiragen: 2, separator_core: 2 }, { heavy_xiragen: 1 });
+R('purify', 2, { xiragen: 2, separator_core: 1 }, { heavy_xiragen: 1 }, { gas: 'inergen' });
+R('purify', 2, { cuprium_gas: 2, separator_core: 2 }, { hetonite_gas: 2 });
+R('purify', 2, { cuprium_gas: 2, separator_core: 1 }, { hetonite_gas: 2 }, { gas: 'inergen' });
 // Separating Unit (empties filled containers)
 for (const [k] of METALS) for (const [f] of FLUIDS) R('separate', 2, { [k + '_bottle__' + f]: 1 }, { [k + '_bottle']: 1, [f]: 1 });
 for (const [g] of GASES) R('separate', 2, { ['cuprium_canister__' + g]: 1 }, { cuprium_canister: 1, [g]: 1 });
@@ -548,7 +559,7 @@ R('sgtrans', 2, { cuprium: 2 }, { cuprium_gas: 1 }); R('sgtrans', 2, { cuprium_g
 R('sgtrans', 2, { hetonite: 1 }, { hetonite_gas: 2 }); R('sgtrans', 2, { hetonite_gas: 2 }, { hetonite: 1 });
 R('sgtrans', 2, { pyrrolite: 1 }, { pyrrolite_gas: 1 }); R('sgtrans', 2, { pyrrolite_gas: 1 }, { pyrrolite: 1 });
 // Gas Reactor Globe
-R('globe', 2, { hetonite_gas: 2, xiragen: 1 }, { pyrrolite_gas: 1 });
+R('globe', 2, { hetonite_gas: 2, xiragen: 1 }, { pyrrolite_gas: 1 }, { gas: 'acridgen' });
 
 const FUEL = {
   originium_ore: { p: 50, t: 8 }, lc_battery: { p: 220, t: 40 }, sc_battery: { p: 420, t: 40 }, hc_battery: { p: 1100, t: 40 },
@@ -587,7 +598,7 @@ const TYPES = {
   separate:  { ko: '분해기', en: 'Separating Unit', short: '분해기', w: 6, h: 4, power: 20, kind: 'machine', group: 'prod2' , gas: true },
   fgtrans:   { ko: '액체·기체 전환기', en: 'Fluid-Gas Transmuting Unit', short: '액체·기체 전환기', w: 5, h: 5, power: 50, kind: 'machine', group: 'prod2', gas: true },
   sgtrans:   { ko: '고체·기체 전환기', en: 'Solid-Gas Transmuting Unit', short: '고체·기체 전환기', w: 5, h: 5, power: 50, kind: 'machine', group: 'prod2', gas: true },
-  gasdisp:   { ko: '기체 분산기', en: 'Gas Dispersing Unit', short: '기체 분산기', w: 3, h: 3, power: 20, kind: 'sink', group: 'prod2', gas: true, spread: 13 },
+  gasdisp:   { ko: '기체 분산기', en: 'Gas Dispersing Unit', short: '기체 분산기', w: 3, h: 3, power: 0, kind: 'sink', group: 'prod2', gas: true, spread: 13, accepts: ['inergen', 'aquagen', 'acridgen', 'xiragen'], apart: 10 },
   globe:     { ko: '기체 반응로', en: 'Gas Reactor Globe', short: '기체 반응로', w: 5, h: 5, power: 50, kind: 'machine', group: 'prod2', gas: true },
   // 물류 장치
   belt:      { ko: '컨베이어 벨트', en: 'Transport Belt', short: '벨트', w: 1, h: 1, power: 0, kind: 'belt', carrier: 'solid', group: 'logi' },
@@ -638,20 +649,22 @@ const PORTS = {
            { id: 'liquid', ko: '액체·기체', in: bIn(rng(6)).concat(pIn([1], 'f')), out: bOut(rng(6), 4) }],
   purify: [{ id: 'liquid', ko: '액체', in: pIn([1, 3], 'l'), out: pOut([1, 3], 5, 'l') },
            { id: 'gas', ko: '기체', in: bIn(rng(5)).concat(pIn([2], 'g')), out: pOut([1, 3], 5, 'g') }],
-  sgtrans:[{ id: 's2g', ko: '고체 → 기체', in: bIn([1, 3]), out: pOut([1, 3], 5, 'g') },
-           { id: 'g2s', ko: '기체 → 고체', in: pIn([1, 3], 'g'), out: bOut([1, 3], 5) }],
+  sgtrans:[{ id: 's2g', ko: '고체 → 기체', in: bIn([1, 3]).concat([[2, 0, 2, 'c']]), out: pOut([1, 3], 5, 'g') },
+           { id: 'g2s', ko: '기체 → 고체', in: pIn([1, 3], 'g').concat([[2, 0, 2, 'c']]), out: bOut([1, 3], 5) }],
   wtreat:   { in: pIn([1], 'l'), out: [] },
   separate: { in: bIn(rng(6)), out: bOut(rng(6), 4).concat(pOut([1], 6, 'f')) },
   reactor:  { in: bIn([1, 3]).concat(pIn([1, 3], 'f')), out: bOut([1, 3], 5).concat(pOut([3, 1], 5, 'f', true)) },
   xreactor: { in: bIn([1, 2, 3, 4]).concat(pIn([1, 3], 'f')), out: bOut([1, 2, 3, 4], 5).concat(pOut([3, 1], 6, 'f', true)) },
   forge:    { in: bIn(rng(5)).concat(pIn([2], 'l')), out: bOut(rng(5), 5) },
-  fgtrans:  { in: pIn([1, 3], 'f'), out: pOut([1, 3], 5, 'f') },
+  fgtrans:  { in: pIn([1, 3], 'f').concat([[2, 0, 2, 'c']]), out: pOut([1, 3], 5, 'f') },
   globe:    { in: pIn([1, 3], 'g'), out: pOut([1, 3], 5, 'g') },
   gasdisp:  { in: pIn([1], 'g'), out: [] },
   tank:     { in: pIn([1], 'l'), out: pOut([1], 3, 'l') },
   gastank:  { in: pIn([1], 'g'), out: pOut([1], 3, 'g') },
   thermal:  { in: bIn([0, 1]), out: [] },
 };
+// transmuters burn a catalyst fed through the pipe inlet in the middle of the top edge: 1 every 10 s of work
+TYPES.fgtrans.catalyst = 'liquid_xiranite'; TYPES.sgtrans.catalyst = 'xiragen';
 for (const k in PORTS) {
   const v = PORTS[k], t = TYPES[k];
   if (Array.isArray(v)) { t.modes = v.map(m => ({ id: m.id, ko: m.ko, local: { in: m.in, out: m.out } })); t.local = t.modes[0].local; }
@@ -677,7 +690,7 @@ for (const m in RECIPES_BY_M) {
     FSLOT[m] = FSLOT[m] || {}; Object.keys(r.out).filter(k => ITEMS[k].fluid).forEach((k, i) => { if (FSLOT[m][k] == null) FSLOT[m][k] = i; });
   }
 }
-const RAW = new Set(['originium_ore', 'amethyst_ore', 'ferrium_ore', 'cuprium_ore', 'wood', 'buckflower', 'citrome', 'sandleaf', 'aketine', 'jincao', 'yazhen', 'clean_water', 'precipitation_acid', 'inergen', 'xiragen']);
+const RAW = new Set(['burdo_muck', 'reed_rye', 'tartpepper', 'redjade_ginseng', 'amber_rice', 'originium_ore', 'amethyst_ore', 'ferrium_ore', 'cuprium_ore', 'wood', 'buckflower', 'citrome', 'sandleaf', 'aketine', 'jincao', 'yazhen', 'clean_water', 'precipitation_acid', 'inergen', 'xiragen']);
 
 function dims(type, f) { const t = TYPES[type]; return (f === 1 || f === 3) ? [t.h, t.w] : [t.w, t.h]; }
 function edgeCells(e, f) {
@@ -719,9 +732,15 @@ function portCells(e, which) {
 function kindFits(kind, item) {
   if (!kind || item == null) return true;
   const it = ITEMS[item]; if (!it) return false;
+  if (kind === 'c') return false; // catalyst inlet: see catalystPort()
   if (kind === 's') return !it.fluid;
   if (!it.fluid) return false;
   return kind === 'f' || (kind === 'g') === (it.cat === 'gas');
+}
+// the catalyst inlet of a transmuter at this cell/direction, if the item is that machine's catalyst
+function catalystPort(e, cx, cy, d, item) {
+  const cat = TYPES[e.type].catalyst; if (!cat || item !== cat) return false;
+  return portCells(e, 'in').some(c => c[0] === cx && c[1] === cy && c[2] === d && c[3] === 'c');
 }
 function isPort(e, cx, cy, which, d, item) { return portCells(e, which).some(c => c[0] === cx && c[1] === cy && (d == null || c[2] === d) && kindFits(c[3], item)); }
 function rectDist(a, b) {
@@ -852,6 +871,7 @@ class World {
     }
     const t = TYPES[type];
     if (t.kind === 'bus' && !this.busTouch(x, y, w, h, ignore, extraRects)) return { ok: false, why: '핵심 장치나 다른 기초 장치에 맞닿게 놓아야 합니다' };
+    if (t.apart) for (const o of this.ents.values()) if (o.type === type && !(ignore && (ignore === o.id || (ignore.has && ignore.has(o.id)))) && rectDist({ x, y, w, h }, o) <= t.apart) return { ok: false, why: `다른 ${t.ko}와 ${t.apart}칸 넘게 떨어뜨려야 합니다` };
     if ((t.kind === 'loader' || t.kind === 'unloader') && !this.busBacked(x, y, w, h, f, extraRects)) return { ok: false, why: '긴 쪽(3칸)이 핵심 장치나 기초 장치에 닿아야 합니다. 짧은 쪽(1칸)으로는 붙일 수 없습니다' };
     if (t.kind === 'miner') {
       const o = this.tileUnder(x, y, w, h, o => o <= 4);
@@ -982,6 +1002,7 @@ class World {
     if (k === 'belt' || k === 'converger') return e.f !== opp(d);
     if (k === 'splitter' || k === 'control') return e.f === d;
     if (k === 'bridge') return true;
+    if (k === 'machine' && catalystPort(e, nx, ny, d, item)) return true;
     if (k === 'machine') return isPort(e, nx, ny, 'in', d, item) && !!IN_CAP[e.type][item] && (e.pin == null || !!RECIPES_BY_M[e.type][e.pin].in[item]);
     if (k === 'miner') return isPort(e, nx, ny, 'in', d, item) && item === TYPES[e.type].needs;
     if (k === 'pac') return isPort(e, nx, ny, 'in', d, item);
@@ -989,7 +1010,7 @@ class World {
     if (k === 'stash') return !fl;
     if (k === 'thermal') return !!FUEL[item];
     if (k === 'tank') return fl && ITEMS[item].cat === TYPES[e.type].holds && isPort(e, nx, ny, 'in', d, item);
-    if (k === 'sink') return ITEMS[item].cat === 'gas' && isPort(e, nx, ny, 'in', d, item);
+    if (k === 'sink') return TYPES[e.type].accepts.includes(item) && isPort(e, nx, ny, 'in', d, item);
     if (k === 'conduit') return fl && TYPES[e.type].dirn === 'in' && isPort(e, nx, ny, 'in', d, item);
     return false;
   }
@@ -1024,6 +1045,7 @@ class World {
         e.slots[a] = { item, d, prog: 0, stall: false }; e.lastIn[a] = this.time; return true;
       }
       case 'machine': {
+        if (catalystPort(e, cx, cy, d, item)) { if ((e.cat || 0) >= 5) return false; e.cat = (e.cat || 0) + 1; return true; }
         if (!isPort(e, cx, cy, 'in', d, item)) return false;
         if (e.pin != null && !RECIPES_BY_M[e.type][e.pin].in[item]) return false;
         const cap = IN_CAP[e.type][item];
@@ -1043,9 +1065,9 @@ class World {
         e.fuel[item] = (e.fuel[item] || 0) + 1; return true;
       }
       case 'sink': {
-        if (ITEMS[item].cat !== 'gas' || !isPort(e, cx, cy, 'in', d, item)) return false;
+        if (!t.accepts.includes(item) || !isPort(e, cx, cy, 'in', d, item)) return false;
         let n = 0; for (const k in e.buf) n += e.buf[k];
-        if (n >= 4) return false;
+        if (n >= 5) return false;
         e.buf[item] = (e.buf[item] || 0) + 1; return true;
       }
       case 'conduit':
@@ -1148,9 +1170,15 @@ class World {
   stepMachine(e, dt, ratio) {
     const rs = RECIPES_BY_M[e.type];
     if (e.off) { e.status = 'off'; return; }
+    const cat = TYPES[e.type].catalyst;
+    // transmuters: keep 10 s of catalyst burning while working; stall without it
+    const fuel = () => { if (!cat) return true; if ((e.catT || 0) > 0) return true; if ((e.cat || 0) > 0) { e.cat--; e.catT = 10; return true; } return false; };
     if (!e.powered) e.status = 'nopower';
     else {
-      if (e.cur) {
+      let stalled = false;
+      if (e.cur && !fuel()) { e.status = 'nocat'; stalled = true; }
+      else if (e.cur) {
+        if (cat) e.catT -= dt * ratio;
         e.t += dt * ratio;
         if (e.t >= e.cur.t) {
           for (const k in e.cur.out) { e.outBuf[k] = (e.outBuf[k] || 0) + e.cur.out[k]; this.noteMade(k, e.cur.out[k]); }
@@ -1158,7 +1186,7 @@ class World {
         }
       }
       if (!e.cur) {
-        let blocked = false, started = false;
+        let blocked = false, started = false, noGas = false, env = null;
         // pinned recipe (like the in-game machine modes), otherwise the most specific recipe whose inputs are all present
         const n = rs.length, cands = [];
         for (let i = 0; i < n; i++) {
@@ -1170,14 +1198,16 @@ class World {
         }
         cands.sort((a, b) => Object.keys(b[1].in).length - Object.keys(a[1].in).length);
         for (const [idx, r] of cands) {
+          if (r.gas) { env = env || this.gasEnvAt(e); if (!env.has(r.gas)) { noGas = true; continue; } }
+          if (cat && !fuel()) { e.status = 'nocat'; blocked = null; break; }
           let room = true;
           for (const k in r.out) if ((e.outBuf[k] || 0) + r.out[k] > OUT_CAP[e.type][k]) { room = false; break; }
           if (!room) { blocked = true; continue; }
           for (const k in r.in) e.inBuf[k] -= r.in[k];
           e.cur = r; e.t = 0; started = true; e.irr = (idx + 1) % n; break;
         }
-        e.status = started ? (ratio < 1 ? 'slow' : 'working') : (blocked ? 'blocked' : 'idle');
-      } else e.status = ratio < 1 ? 'slow' : 'working';
+        if (blocked !== null) e.status = started ? (ratio < 1 ? 'slow' : 'working') : blocked ? 'blocked' : noGas ? 'nogas' : 'idle';
+      } else if (!stalled) e.status = ratio < 1 ? 'slow' : 'working';
     }
     this.emit(e, portCells(e, 'out'), () => Object.keys(e.outBuf).filter(k => e.outBuf[k] > 0), k => { e.outBuf[k]--; });
   }
@@ -1226,13 +1256,26 @@ class World {
     else { const r = t.power ? ratio : 1; e.t += dt * r; e.status = r < 1 ? 'slow' : 'working'; if (e.t >= t.rate) { e.t = 0; e.buf++; e.made++; this.noteMade(t.makes, 1); } }
     this.emit(e, portCells(e, 'out'), () => (e.buf > 0 ? [t.makes] : []), () => { e.buf--; });
   }
-  stepSink(e, dt, ratio) { // Gas Dispersing Unit: releases a steady stream of gas into its surroundings
-    if (e.off) { e.status = 'off'; return; }
-    if (!e.powered) { e.status = 'nopower'; return; }
-    const k = Object.keys(e.buf).find(x => e.buf[x] > 0);
-    if (!k) { e.status = 'idle'; e.t = 0; return; }
-    e.status = ratio < 1 ? 'slow' : 'working'; e.t += dt * ratio;
-    if (e.t >= 10) { e.t = 0; e.buf[k]--; e.used++; e.lastGas = k; }
+  // Gas Dispersing Unit (no power): each unit of gas keeps a 13×13 gas environment around it for 10 s
+  stepSink(e, dt) {
+    if (e.off) { e.status = 'off'; e.t = 0; e.env = null; return; }
+    if (e.t <= 0) {
+      const k = Object.keys(e.buf).find(x => e.buf[x] > 0);
+      if (k) { e.buf[k]--; e.used++; e.lastGas = k; e.env = k; e.t = 10; }
+      else e.env = null;
+    }
+    if (e.t > 0) e.t = Math.max(0, e.t - dt);
+    e.status = e.env ? 'working' : 'idle';
+  }
+  // gases whose environment covers the centre of entity e
+  gasEnvAt(e) {
+    const out = new Set(), cx = e.x + e.w / 2, cy = e.y + e.h / 2;
+    for (const d of this.ents.values()) {
+      if (!d.env) continue;
+      const r = TYPES[d.type].spread / 2, mx = d.x + d.w / 2, my = d.y + d.h / 2;
+      if (Math.abs(cx - mx) <= r && Math.abs(cy - my) <= r) out.add(d.env);
+    }
+    return out;
   }
   stepConduit(e) { // inlet hands items to the outlet on the same channel; outlet pushes them into its pipe
     if (TYPES[e.type].dirn === 'in') {
@@ -1320,6 +1363,22 @@ class World {
     this.dirtyPower = true; return { ok: true };
   }
 
+  // ----- dropping a splitter / converger / control port onto a belt (or the pipe versions onto a pipe) -----
+  // the device takes the belt's place and its direction, so it joins the line without rotating by hand
+  replaceable(type, x, y) {
+    const t = TYPES[type]; if (!t || !['splitter', 'converger', 'control'].includes(t.kind)) return null;
+    const b = this.at(x, y, layerOf(type));
+    return b && TYPES[b.type].kind === 'belt' && TYPES[b.type].carrier === t.carrier ? b : null;
+  }
+  replaceCarrier(type, x, y) {
+    const b = this.replaceable(type, x, y); if (!b) return null;
+    const f = b.f, item = b.item, prog = b.prog, inDir = b.inDir;
+    this.remove(b.id);
+    const e = this.place(type, x, y, f);
+    if (!e) { const back = this.place(b.type, x, y, f); if (back) { back.item = item; back.prog = prog; back.inDir = inDir; } return null; }
+    if (item) { e.item = item; e.prog = prog || 0; e.inDir = inDir == null ? f : inDir; e.lastIn = this.time; }
+    return e;
+  }
   // ----- machine modes (Wuling variants with extra pipe ports) -----
   // can mode m of this machine type receive and send everything recipe r needs?
   modeFits(type, m, r) {
@@ -1542,7 +1601,7 @@ const PRESETS = {
   },
   xiranite: {
     ko: '식양 생산 (무릉)',
-    note: '포트 5에서 메밀꽃을 벨트로 보내 정련로에서 카본으로 만들고, 천화로에서 청정수와 합쳐 식양을 만듭니다. PAC는 벨트 포트만 있으므로 청정수는 "나오는 재료"를 청정수로 설정한 암관 출구에서 파이프로 천화로 왼쪽 파이프 입구에 넣습니다. 완성된 식양은 PAC 아래쪽 입력 포트로 돌아옵니다.',
+    note: '포트 5에서 메밀꽃을 벨트로 보내 정련로에서 카본으로 만들고, 천화로에서 청정수와 합쳐 식양을 만듭니다. 이 레시피는 이너젠 기체 환경 안에서만 돌아가므로, 이너젠을 공급하는 암관 출구에 기체 분산기를 붙여 천화로를 13×13 범위 안에 둡니다. PAC는 벨트 포트만 있으므로 청정수는 "나오는 재료"를 청정수로 설정한 암관 출구에서 파이프로 천화로 왼쪽 파이프 입구에 넣습니다. 완성된 식양은 PAC 아래쪽 입력 포트로 돌아옵니다.',
     build(w) {
       w.pac.ports = [null, null, null, null, 'buckflower', null];
       beltPath(w, [[35, 8], [35, 9]], 2);
@@ -1550,6 +1609,9 @@ const PRESETS = {
       beltPath(w, [[36, 13], [36, 14]], 2);
       w.place('forge', 35, 15, 2);
       const src = w.place('coutlet', 29, 16, 1); w.setSource(src, 'clean_water');
+      // carbon → xiranite only runs inside an inergen area: a Gas Dispersing Unit fed straight from an inergen outlet
+      w.place('gasdisp', 30, 13, 2);
+      const iner = w.place('coutlet', 27, 13, 1); w.setSource(iner, 'inergen');
       beltPath(w, [[32, 17], [34, 17]], 1, 'pipe');
       beltPath(w, [[37, 20], [37, 21], [33, 21], [33, 13]], 0);
     },
@@ -2002,6 +2064,7 @@ function render(){
   ctx.strokeStyle = C['cv-mach-ink']; ctx.globalAlpha=.35; ctx.lineWidth = 1.5/z; ctx.strokeRect(0,0,world.W*S,world.H*S); ctx.globalAlpha=1;
   drawTiles(x0,y0,x1,y1);
   drawOuterBus();
+  for (const d of world.ents.values()) if (d.env && TYPES[d.type].spread){ const r = (TYPES[d.type].spread - d.w)/2; ctx.fillStyle = MAT[ITEMS[d.env].mat] || C.power; ctx.globalAlpha = .1; ctx.fillRect((d.x-r)*S, (d.y-r)*S, (d.w+2*r)*S, (d.h+2*r)*S); ctx.globalAlpha = 1; }
   const bt = ui.tool.startsWith('build:') ? ui.tool.slice(6) : null;
   const selType = ui.sel && world.ents.get(ui.sel) ? world.ents.get(ui.sel).type : null;
   if ((bt && (TYPES[bt].power || ['pylon','relay','thermal'].includes(K(bt)))) || ['pylon','relay','pac','thermal'].includes(selType)) drawRanges();
@@ -2154,6 +2217,7 @@ function portMarks(e, which, color, filled){
       ctx.fillStyle = C['cv-pipe']; ctx.beginPath(); ctx.roundRect(x-5, y-5, 10, 10, 2.5); ctx.fill();
       ctx.fillStyle = C['cv-pipe-core']; poly(ctx, x, y, 3, 3, Math.atan2(DY[d], DX[d])); ctx.fill();
       if (kind === 'g'){ ctx.strokeStyle = C['cv-pipe-core']; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(x, y, 6.5, 0, 7); ctx.stroke(); }
+      if (kind === 'c'){ ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(x + 4, y - 4, 2.6, 0, 7); ctx.fill(); }
       continue;
     }
     ctx.fillStyle = color; ctx.strokeStyle = color; ctx.lineWidth = 1.3;
@@ -2164,7 +2228,7 @@ function portMarks(e, which, color, filled){
 }
 // "벨트 입구 3 · 벨트 출구 3 · 파이프 입구 1 (액체)" for the inspector
 function portSummary(e){
-  const kn = { f:'액체·기체', l:'액체', g:'기체' }, parts = [];
+  const kn = { f:'액체·기체', l:'액체', g:'기체', c:'촉매' }, parts = [];
   for (const [w, nm] of [['in','입구'],['out','출구']]){
     const cs = AIC.portCells(e, w), b = cs.filter(c => !c[3] || c[3]==='s').length, p = cs.filter(c => c[3] && c[3]!=='s');
     if (b) parts.push(`벨트 ${nm} ${b}`);
@@ -2172,7 +2236,7 @@ function portSummary(e){
   }
   return parts.join(' · ') || '없음';
 }
-const STCOL = () => ({ working:C.ok, slow:C.warn, idle:C.muted, blocked:C.warn, nopower:C.bad, off:C.muted });
+const STCOL = () => ({ working:C.ok, slow:C.warn, idle:C.muted, blocked:C.warn, nopower:C.bad, off:C.muted, nogas:C.bad, nocat:C.bad });
 function label(txt, x, y, size, weight, color, align){
   ctx.fillStyle = color || C['cv-mach-ink']; ctx.font = `${weight||600} ${size}px ${C.fBody}`; ctx.textAlign = align || 'left'; ctx.textBaseline = 'top'; ctx.fillText(txt, x, y);
 }
@@ -2323,7 +2387,8 @@ function drawGhost(){
     return;
   }
   const g = ghostInfo(); if (!g || (ui.drag && ui.drag.kind==='line')) return;
-  const chk = world.canPlace(g.type, g.x, g.y, g.f);
+  const rep = world.replaceable(g.type, g.x, g.y); if (rep) g.f = rep.f; // shown in the belt's direction
+  const chk = rep ? { ok: true } : world.canPlace(g.type, g.x, g.y, g.f);
   ctx.globalAlpha = .5; ctx.fillStyle = chk.ok ? C.ok : C.bad; ctx.fillRect(g.x*S, g.y*S, g.w*S, g.h*S); ctx.globalAlpha = 1;
   ctx.strokeStyle = chk.ok ? C.ok : C.bad; ctx.lineWidth = 2/z; ctx.strokeRect(g.x*S, g.y*S, g.w*S, g.h*S);
   const t = TYPES[g.type];
@@ -2434,6 +2499,8 @@ function putLine(x, y, f, d, moveDir){
 }
 function placeGhost(){
   const g = ghostInfo(); if (!g) return;
+  // a splitter / converger / control port dropped on a belt (pipe devices on a pipe) replaces it in line
+  if (world.replaceable(g.type, g.x, g.y)){ const r = world.replaceCarrier(g.type, g.x, g.y); if (r){ markTouched(); return; } }
   const chk = world.canPlace(g.type, g.x, g.y, g.f);
   if (!chk.ok){ flash(chk.why); return; }
   const e = world.place(g.type, g.x, g.y, g.f);
@@ -2504,13 +2571,15 @@ document.addEventListener('keydown', ev => {
   if (mod && k==='c'){ copySel(); ev.preventDefault(); return; }
   if (mod && k==='v'){ if (ui.clip) startPaste(ui.clip); ev.preventDefault(); return; }
   if (k==='r'){ rotateAction(); ev.preventDefault(); }
-  else if (k==='escape' || k==='q'){ setTool('select'); ui.sel = null; ui.multi.clear(); renderInspector(true); renderSelbar(); }
+  else if (k==='escape'){ setTool('select'); ui.sel = null; ui.multi.clear(); renderInspector(true); renderSelbar(); }
   else if (k==='delete' || k==='backspace'){ if (ui.multi.size || ui.sel) deleteSel(); }
   else if (k===' '){ togglePlay(); ev.preventDefault(); }
-  else if (k==='b') setTool('build:belt');
-  else if (k==='p') setTool('build:pipe');
+  else if (k==='e' || k==='b') selectBuild('belt');
+  else if (k==='q' || k==='p') selectBuild('pipe');
   else if (['1','2','3','4'].includes(k)) setSpeed([1,2,4,8][+k-1]);
 });
+// pick a build tool from the keyboard and show its category in the facility bar
+function selectBuild(type){ if (ui.cat !== TYPES[type].group || ui.q){ ui.cat = TYPES[type].group; ui.q = ''; $('#q').value = ''; renderPalette(); } setTool('build:' + type); flash(`${TYPES[type].ko} 선택 · 드래그해서 깔기`); }
 function rotateAction(){
   if (ui.tool==='paste' && ui.paste){ ui.paste = AIC.bpRotate(ui.paste); renderSelbar(); return; }
   if (ui.tool.startsWith('build:')){ ui.rot = (ui.rot + 1) & 3; return; }
@@ -2612,11 +2681,12 @@ $('#dlgLoad').onclick = async () => {
 };
 
 // ---------- inspector ----------
-const STLABEL = { working:'가동 중', slow:'전력 부족으로 감속', idle:'재료 대기', blocked:'출력 막힘', nopower:'전력 범위 밖', off:'꺼짐' };
+const STLABEL = { working:'가동 중', slow:'전력 부족으로 감속', idle:'재료 대기', blocked:'출력 막힘', nopower:'전력 범위 밖', off:'꺼짐', nogas:'기체 환경 필요', nocat:'촉매 부족' };
 function recipeRow(r, on){
   const ins = Object.entries(r.in).map(([k,n]) => icS(k, n)).join(' + ');
   const outs = Object.entries(r.out).map(([k,n]) => icS(k, n)).join(' + ') || '<span class="dim">폐기</span>';
-  return `<div class="rec${on?' on':''}" title="${esc(Object.keys(r.out).map(k => ITEMS[k].ko).join(', '))}">${ins} <span class="ar">→</span> ${outs} <span class="t">${r.t}s</span></div>`;
+  const gasTag = r.gas ? ` <span class="t" title="이 기체 환경(기체 분산기 범위) 안에서만 작동">${esc(ITEMS[r.gas].ko)} 환경</span>` : '';
+  return `<div class="rec${on?' on':''}" title="${esc(Object.keys(r.out).map(k => ITEMS[k].ko).join(', '))}">${ins} <span class="ar">→</span> ${outs} <span class="t">${r.t}s</span>${gasTag}</div>`;
 }
 function bufList(buf, cap){
   const ks = Object.keys(buf||{}).filter(k => buf[k] > 0);
@@ -2662,7 +2732,7 @@ function renderInspector(force){
     h += `<div class="prog"><i id="iprog"></i></div><dl class="kv" id="ikv"></dl>
       <div class="sub">입력 버퍼 <span>(설비 안에 든 재료)</span></div><div class="bufs" id="iin"></div>
       <div class="sub">출력 버퍼 <span>(내보낼 생산품)</span></div><div class="bufs" id="iout"></div>
-      <div class="sub">레시피</div><div class="ports">${t.modes ? `<label for="imode">포트 모드</label><select id="imode">${t.modes.map((m, i) => `<option value="${i}"${(e.mode||0)===i?' selected':''}>${esc(m.ko)}</option>`).join('')}</select>` : ''}<label for="ipin">레시피</label><select id="ipin"><option value="">자동 · 들어온 재료로 선택</option>${RECIPES_BY_M[e.type].map((r, i) => `<option value="${i}"${e.pin===i?' selected':''}>${t.modes && !world.modeFits(e.type, e.mode||0, r) ? '↻ ' : ''}${esc(Object.keys(r.out).map(x => ITEMS[x].ko).join(' + ') || '폐기')} ← ${esc(Object.entries(r.in).map(([x,n]) => ITEMS[x].ko + ' ' + n).join(', '))}</option>`).join('')}</select></div><p class="note">포트: ${portSummary(e)}${t.modes ? ' · 레시피를 고르면 맞는 포트 모드로 바뀝니다 (↻ 표시)' : ''}</p>
+      <div class="sub">레시피</div><div class="ports">${t.modes ? `<label for="imode">포트 모드</label><select id="imode">${t.modes.map((m, i) => `<option value="${i}"${(e.mode||0)===i?' selected':''}>${esc(m.ko)}</option>`).join('')}</select>` : ''}<label for="ipin">레시피</label><select id="ipin"><option value="">자동 · 들어온 재료로 선택</option>${RECIPES_BY_M[e.type].map((r, i) => `<option value="${i}"${e.pin===i?' selected':''}>${t.modes && !world.modeFits(e.type, e.mode||0, r) ? '↻ ' : ''}${esc(Object.keys(r.out).map(x => ITEMS[x].ko).join(' + ') || '폐기')} ← ${esc(Object.entries(r.in).map(([x,n]) => ITEMS[x].ko + ' ' + n).join(', '))}${r.gas ? ' [' + esc(ITEMS[r.gas].ko) + ' 환경]' : ''}</option>`).join('')}</select></div><p class="note">포트: ${portSummary(e)}${t.modes ? ' · 레시피를 고르면 맞는 포트 모드로 바뀝니다 (↻ 표시)' : ''}${t.catalyst ? ` · 위쪽 가운데 파이프 입구로 촉매(${esc(ITEMS[t.catalyst].ko)})를 넣어야 작동하며, 가동 10초마다 1씩 씁니다` : ''}${RECIPES_BY_M[e.type].some(r => r.gas) ? ' · "환경" 표시 레시피는 해당 기체를 쓰는 기체 분산기 범위(13×13) 안에서만 작동합니다' : ''}</p>
       <p class="note" style="margin-top:4px">레시피를 고정하면 그 재료만 받습니다. 같은 재료로 여러 가지를 만드는 설비(예: 성형기의 적동 병 / 적동 내압 캔)에서 쓰세요.</p>
       <div class="rlist" id="irec" style="margin-top:6px"></div>`;
   } else if (k==='pac'){
@@ -2694,7 +2764,7 @@ function renderInspector(force){
   } else if (k==='tank'){
     h += `<p>${t.holds==='gas' ? '기체' : '액체'} 한 종류를 최대 500까지 담아 두었다가 앞쪽 파이프로 내보냅니다.</p><dl class="kv" id="ikv"></dl>`;
   } else if (k==='sink'){
-    h += `<p>들어온 기체를 주변으로 계속 방출해 주변 기체 환경을 바꿉니다. 분산 범위는 설비를 가운데에 둔 13×13칸입니다 (설비는 3×3). 안정적으로 유지하려면 분당 6 단위가 필요합니다. 생산품은 없습니다.</p><div class="sub">안에 든 기체</div><div class="bufs" id="iin"></div><dl class="kv" id="ikv"></dl>`;
+    h += `<p>이너젠·아쿠아젠·아크리드젠·식양 기체만 받습니다. 기체 1 단위로 설비를 가운데에 둔 13×13칸에 그 기체 환경이 10초 동안 생기고, 끊기지 않으려면 분당 6 단위가 필요합니다 (안에 최대 5 보관). 전력이 필요 없고, 다른 기체 분산기와는 10칸 넘게 떨어뜨려야 합니다. 천화로(카본 → 식양), 정제기 기체 모드(분리 코어 1개 레시피), 기체 반응로(작동 기체) 레시피가 이 환경을 씁니다.</p><div class="sub">안에 든 기체</div><div class="bufs" id="iin"></div><dl class="kv" id="ikv"></dl>`;
   } else if (k==='conduit'){
     h += `<p>${t.dirn==='in' ? '뒤쪽 파이프로 들어온 액체·기체를 같은 채널의 출구로 땅속으로 보냅니다.' : '같은 채널의 입구에서 온 액체·기체를 앞쪽 파이프로 내보냅니다.'} 입구와 출구는 1:1로 짝지어지고 양 끝에 500씩 담깁니다. 게임에서는 최단 거리 300m 안이어야 합니다.${t.multi ? ' 다중 암관은 파이프 2줄을 한꺼번에 받아 보냅니다.' : ''}</p>
       <div class="ports">${t.dirn==='out' ? `<label for="isrc">나오는 재료</label><select id="isrc"><option value="">— 없음 (입구와 짝) —</option>${fluidOptions(e.src)}</select>` : ''}${e.src ? '' : `<label for="ich">채널</label><select id="ich">${world.channelChoices(e).map(n => `<option value="${n}"${e.ch===n?' selected':''}>${n}</option>`).join('')}</select>`}</div>
@@ -2733,7 +2803,11 @@ function updateInspectorDynamic(e){
   const it = x => x ? `${icS(x)} ${esc(ITEMS[x].ko)}` : '—';
   if (k==='machine'){
     const pr = document.getElementById('iprog'); if (pr) pr.style.width = (e.cur ? Math.min(100, e.t/e.cur.t*100) : 0) + '%';
-    if (kv) kv.innerHTML = `<dt>작업 중</dt><dd>${e.cur ? esc(Object.keys(e.cur.out).map(x => ITEMS[x].ko).join(', ')) + ` · ${Math.max(0, e.cur.t - e.t).toFixed(1)}초 남음` : '—'}</dd><dt>완료</dt><dd>${e.made}회</dd>`;
+    const needGas = RECIPES_BY_M[e.type].some(r => r.gas), env = needGas ? [...world.gasEnvAt(e)] : [];
+    const cat = TYPES[e.type].catalyst;
+    if (kv) kv.innerHTML = `<dt>작업 중</dt><dd>${e.cur ? esc(Object.keys(e.cur.out).map(x => ITEMS[x].ko).join(', ')) + ` · ${Math.max(0, e.cur.t - e.t).toFixed(1)}초 남음` : '—'}</dd><dt>완료</dt><dd>${e.made}회</dd>`
+      + (needGas ? `<dt>기체 환경</dt><dd>${env.length ? env.map(g => esc(ITEMS[g].ko)).join(', ') : '<span style="color:var(--bad)">없음</span>'}</dd>` : '')
+      + (cat ? `<dt>촉매</dt><dd>${esc(ITEMS[cat].ko)} ${e.cat||0} / 5 · 남은 시간 ${Math.max(0, e.catT||0).toFixed(0)}초</dd>` : '');
     const sig = JSON.stringify([e.inBuf, e.outBuf, e.cur && RECIPES.indexOf(e.cur)]);
     if (sig !== lastDyn){
       lastDyn = sig;
@@ -2767,7 +2841,7 @@ function updateInspectorDynamic(e){
     kv.innerHTML = `<dt>내용물</dt><dd>${it(e.fl)}</dd><dt>양</dt><dd>${e.amt} / 500</dd>`;
   } else if (k==='sink'){
     const b = document.getElementById('iin'); if (b) b.innerHTML = bufList(e.buf);
-    kv.innerHTML = `<dt>방출한 양</dt><dd>${e.used}</dd>`;
+    kv.innerHTML = `<dt>환경</dt><dd>${e.env ? esc(ITEMS[e.env].ko) + ' · ' + e.t.toFixed(1) + '초 남음' : '없음'}</dd><dt>쓴 양</dt><dd>${e.used}</dd>`;
   } else if (k==='conduit'){
     const pair = world.conduitPair(e), dist = pair ? AIC.rectDist(e, pair) * AIC.M_PER_CELL : 0;
     if (e.src) kv.innerHTML = `<dt>공급</dt><dd>${it(e.src)} · 무한</dd><dt>내보낸 양</dt><dd>${e.moved}</dd>`;
@@ -2807,7 +2881,7 @@ function toolHelp(type){
     case 'busport': return '창고 입출력 라인의 시작점입니다. 혼자 놓을 수 있고, 기초 장치는 여기에 맞닿게 이어 붙입니다. 벨트는 직접 연결되지 않고 창고 입력·출력 포트를 거쳐야 합니다.';
     case 'bus': return '핵심 장치나 다른 기초 장치에 맞닿게만 놓을 수 있습니다. 벨트는 직접 연결되지 않으니 창고 입력·출력 포트를 붙이고 그 가운데 칸에 벨트를 잇습니다.';
     case 'tank': return t.holds==='gas' ? '기체를 최대 500까지 담아 두는 가스통입니다.' : '액체를 최대 500까지 담아 두는 탱크입니다.';
-    case 'sink': return '3×3. 기체를 받아 설비 둘레 13×13칸에 방출합니다. 생산품은 없습니다.';
+    case 'sink': return '3×3, 전력 불필요. 이너젠·아쿠아젠·아크리드젠·식양 기체 1 단위로 13×13칸에 10초 동안 기체 환경을 만듭니다. 다른 분산기와 10칸 넘게 떨어뜨려야 합니다.';
     case 'conduit': return t.multi ? (t.dirn==='in' ? '3×5. 긴 쪽(5칸)의 두 칸으로 파이프 2줄을 받아 같은 채널의 다중 암관 출구로 보냅니다.' : '3×5. 같은 채널의 다중 암관 입구에서 온 액체·기체를 긴 쪽(5칸)의 두 칸으로 파이프 2줄로 내보냅니다.') : t.dirn==='in' ? '3×3. 뒤쪽 가운데 칸으로 파이프를 받아 액체·기체를 땅속으로 보냅니다. 같은 채널의 암관 출구와 짝을 이룹니다.' : '3×3. 같은 채널의 암관 입구에서 온 액체·기체를 앞쪽 가운데 칸으로 내보냅니다.';
     case 'machine': return '뒤쪽 면(빈 삼각형)이 입력, 앞쪽 면(채운 삼각형)이 출력입니다. 고체는 벨트로, 액체·기체는 파이프로 넣고 뺍니다.' + (t.limitNote ? ' ' + t.limitNote : '');
     case 'miner': return (t.ores.map(o => ITEMS[o].ko).join('·')) + ' 광맥 위에 설치합니다.' + (t.needs ? ' 뒤쪽 가운데로 청정수를 넣어야 돌아갑니다.' : '');
