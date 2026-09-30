@@ -195,6 +195,13 @@ details summary{cursor:pointer;font-family:var(--f-display);font-size:12px;font-
 .tree .n{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .tree .m,.mchip{font-family:var(--f-mono);font-size:11px;background:var(--panel-2);border:1px solid var(--line);border-radius:3px;padding:0 5px}
 .mchip{display:inline-block;margin:0 4px 4px 0;padding:1px 6px}
+button.mchip{cursor:pointer;color:inherit} button.mchip:hover{border-color:var(--bad)}
+.slots{display:grid;gap:4px;margin:6px 0 8px}
+.slot{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:6px;align-items:center;font-size:12px;min-height:26px}
+.slot .sn{font-family:var(--f-mono);color:var(--muted);text-align:right}
+.slot select{border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:3px 5px;font-size:12px;min-width:0}
+.slot .sc{font-family:var(--f-mono);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sfill input{width:64px}
 .tree .r{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
 .tot{margin-top:12px;padding-top:8px;border-top:1px solid var(--line);font-size:12px}
 
@@ -272,7 +279,7 @@ dialog textarea{width:100%;height:200px;font-family:var(--f-mono);font-size:11px
       <div class="search"><input id="q" type="search" placeholder="설비 찾기 (예: 반응기)" aria-label="설비 검색"></div>
     </div>
     <div class="strip" id="plist" role="tabpanel" aria-label="설비 목록"></div>
-    <div class="keys"><kbd>E</kbd> 컨베이어 벨트 · <kbd>Q</kbd> 파이프 · <kbd>R</kbd> 회전 · <kbd>Esc</kbd> 취소 · <kbd>Del</kbd> 철거 · <kbd>Shift</kbd>+드래그 범위 선택 · <kbd>Ctrl</kbd>+<kbd>C</kbd>/<kbd>V</kbd> 복사·붙여넣기 · 벨트·파이프는 드래그해서 깔기 (같은 종류끼리 교차하면 브리지, 벨트와 파이프는 겹쳐 지나감) · 분류기·합류기·컨트롤 포트는 벨트(파이프용은 파이프) 위에 놓으면 그 자리에 끼워짐 · <span title="Hypergryph·Gryphline과 관계없는 팬 제작 도구입니다">비공식 팬 제작</span></div>
+    <div class="keys"><kbd>E</kbd> 컨베이어 벨트 · <kbd>Q</kbd> 파이프 · <kbd>R</kbd> 회전 · <kbd>M</kbd> 이동 (설비를 끌어도 됨) · <kbd>Esc</kbd> 취소 · <kbd>Del</kbd> 철거 · 범위 드래그 = 선택 · <kbd>Shift</kbd>+드래그 = 선택에서 빼기 · <kbd>Ctrl</kbd>+드래그 = 더하기 · <kbd>Ctrl</kbd>+<kbd>C</kbd>/<kbd>V</kbd> 복사·붙여넣기 · 벨트·파이프는 드래그해서 깔기 (같은 종류끼리 교차하면 브리지, 벨트와 파이프는 겹쳐 지나감) · 분류기·합류기·컨트롤 포트는 벨트(파이프용은 파이프) 위에 놓으면 그 자리에 끼워짐 · <span title="Hypergryph·Gryphline과 관계없는 팬 제작 도구입니다">비공식 팬 제작</span></div>
   </section>
 
   <aside class="side">
@@ -396,8 +403,8 @@ const KO_NAMES = {
   precipitation_acid: '산성 침적물', separator_core: '분리 필터', dense_originium_powder: '고밀도 오리지늄 가루',
   liquid_xiranite: '액화 식양', liquid_heavy_xiranite: '액화 중식양', xircon: '양정', xircon_effluent: '양정 폐액', inert_xircon_effluent: '불활성 양정 폐액',
   hetonite: '혁동 조각', pyrrolite: '작동 조각', industrial_explosive: '공업 폭발물',
-  buck_capsule_c: '메밀꽃 치유 캡슐', buck_capsule_b: '메밀꽃 치유 캡슐(중)', buck_capsule_a: '메밀꽃 치유 캡슐(대)',
-  canned_citrome_c: '시트론 통조림', canned_citrome_b: '시트론 통조림(중)', canned_citrome_a: '시트론 통조림(대)',
+  buck_capsule_c: '메밀꽃 치유 캡슐(소)', buck_capsule_b: '메밀꽃 치유 캡슐(중)', buck_capsule_a: '메밀꽃 치유 캡슐(대)',
+  canned_citrome_c: '시트론 통조림(소)', canned_citrome_b: '시트론 통조림(중)', canned_citrome_a: '시트론 통조림(대)',
   yazhen_syringe_c: '야침 주사약', yazhen_syringe_a: '고급 야침 주사약', jincao_tea: '고급 금초 청량음료',
 };
 const applyKoNames = () => { for (const k in KO_NAMES) if (ITEMS[k]) ITEMS[k].ko = KO_NAMES[k]; };
@@ -765,7 +772,7 @@ const isFluid = item => !!(ITEMS[item] && ITEMS[item].fluid);
 // Belts and pipes run at different heights: a belt and a pipe can share a cell. Buildings take both layers.
 const CARRIER_KINDS = new Set(['belt', 'splitter', 'converger', 'bridge', 'control']);
 function layerOf(type) { const t = TYPES[type]; if (!CARRIER_KINDS.has(t.kind)) return 'both'; return t.carrier === 'fluid' ? 'pipe' : 'belt'; }
-const TOGGLABLE = new Set(['machine', 'miner', 'pump', 'thermal', 'unloader', 'loader', 'control', 'pac', 'sink', 'conduit']);
+const TOGGLABLE = new Set(['machine', 'miner', 'pump', 'thermal', 'unloader', 'loader', 'control', 'pac', 'sink', 'conduit', 'stash']);
 
 // ---------- world ----------
 class World {
@@ -915,7 +922,7 @@ class World {
       case 'tank': e.fl = null; e.amt = 0; e.lastOut = {}; break;
       case 'sink': e.buf = {}; e.t = 0; e.used = 0; e.status = 'idle'; e.lastGas = null; break;
       case 'conduit': e.q = []; e.ch = this.autoChannel(type); e.src = null; e.lastOut = {}; e.lastMove = -99; e.moved = 0; break;
-      case 'stash': e.got = 0; break;
+      case 'stash': e.got = 0; e.slots = Array.from({ length: 6 }, () => ({ item: null, n: 0 })); e.lastOut = {}; break;
     }
     if (extra) Object.assign(e, extra);
     this.ents.set(e.id, e);
@@ -962,7 +969,8 @@ class World {
       pac.powered = true;
       // inside the protocol space every pylon and relay joins the grid whatever the distance;
       // the drawn link goes to the nearest node already on the grid, so the lines form a tidy tree
-      const sources = [pac], on = [pac], left = nodes.slice();
+      // the PAC is the root of the grid but powers nothing around it: only pylons supply facilities
+      const sources = [], on = [pac], left = nodes.slice();
       while (left.length) {
         let bi = 0, bj = null, bd = 1e9;
         for (let i = 0; i < left.length; i++) for (const o of on) { const d = rectDist(left[i], o); if (d < bd) { bd = d; bi = i; bj = o; } }
@@ -1020,7 +1028,7 @@ class World {
     if (k === 'miner') return isPort(e, nx, ny, 'in', d, item) && item === TYPES[e.type].needs;
     if (k === 'pac') return isPort(e, nx, ny, 'in', d, item);
     if (k === 'loader') return isPort(e, nx, ny, 'in', d, item);
-    if (k === 'stash') return !fl;
+    if (k === 'stash') return !fl && isPort(e, nx, ny, 'in', d, item) && !!this.stashSlot(e, item);
     if (k === 'thermal') return !!FUEL[item];
     if (k === 'tank') return fl && ITEMS[item].cat === TYPES[e.type].holds && isPort(e, nx, ny, 'in', d, item);
     if (k === 'sink') return TYPES[e.type].accepts.includes(item) && isPort(e, nx, ny, 'in', d, item);
@@ -1068,7 +1076,7 @@ class World {
       case 'miner':
         if (!isPort(e, cx, cy, 'in', d, item) || item !== t.needs || e.water >= 4) return false;
         e.water++; return true;
-      case 'stash': if (fl) return false; this.addDepot(item, 1); e.got++; return true;
+      case 'stash': { if (fl || !isPort(e, cx, cy, 'in', d, item)) return false; const sl = this.stashSlot(e, item); if (!sl) return false; sl.item = item; sl.n++; e.got++; this.noteIn(item); return true; }
       case 'pac': if (!isPort(e, cx, cy, 'in', d, item)) return false; this.addDepot(item, 1); e.got = (e.got || 0) + 1; return true;
       case 'loader': if (!isPort(e, cx, cy, 'in', d, item) || !e.busOn || e.off) return false; this.addDepot(item, 1); e.got++; return true;
       case 'thermal': {
@@ -1132,7 +1140,7 @@ class World {
   step(dt) {
     this.tick++;
     this.updatePower();
-    const ratio = this.power.ratio;
+    const ratio = 1; // over the power budget the factory keeps running at full speed; the header meter shows the overload
     for (const e of this.ents.values()) {
       const k = TYPES[e.type].kind;
       switch (k) {
@@ -1145,6 +1153,7 @@ class World {
         case 'miner': this.stepMiner(e, dt, ratio); break;
         case 'pump': this.stepPump(e, dt, ratio); break;
         case 'thermal': this.stepThermal(e, dt); break;
+        case 'stash': this.stepStash(e); break;
         case 'sink': this.stepSink(e, dt, ratio); break;
         case 'conduit': this.stepConduit(e); break;
         case 'tank': this.emit(e, portCells(e, 'out'), () => (e.amt > 0 ? [e.fl] : []), () => { e.amt--; if (!e.amt) e.fl = null; }); break;
@@ -1280,13 +1289,13 @@ class World {
     if (e.t > 0) e.t = Math.max(0, e.t - dt);
     e.status = e.env ? 'working' : 'idle';
   }
-  // gases whose environment covers the centre of entity e
+  // gases whose environment covers the whole footprint of entity e (unlike power, touching the edge is not enough)
   gasEnvAt(e) {
-    const out = new Set(), cx = e.x + e.w / 2, cy = e.y + e.h / 2;
+    const out = new Set();
     for (const d of this.ents.values()) {
       if (!d.env) continue;
-      const r = TYPES[d.type].spread / 2, mx = d.x + d.w / 2, my = d.y + d.h / 2;
-      if (Math.abs(cx - mx) <= r && Math.abs(cy - my) <= r) out.add(d.env);
+      const r = (TYPES[d.type].spread - d.w) / 2;
+      if (e.x >= d.x - r && e.y >= d.y - r && e.x + e.w <= d.x + d.w + r && e.y + e.h <= d.y + d.h + r) out.add(d.env);
     }
     return out;
   }
@@ -1348,9 +1357,31 @@ class World {
     const c = this.stats.cur.out; c[item] = (c[item] || 0) + 1;
     const tt = this.stats.total.out; tt[item] = (tt[item] || 0) + 1;
   }
+  // Protocol Stash: 6 slots of up to 50 of one item each; a slot takes the same item until full, else an empty slot
+  stashSlot(e, item) {
+    return e.slots.find(q => q.item === item && q.n < 50) || e.slots.find(q => q.n === 0) || null;
+  }
+  stepStash(e) {
+    if (e.off) return;
+    this.emit(e, portCells(e, 'out'), () => [...new Set(e.slots.filter(q => q.n > 0).map(q => q.item))], k => {
+      const q = e.slots.find(q => q.item === k && q.n > 0); q.n--; if (!q.n) q.item = null;
+    });
+  }
+  // put n of an item into slot i by hand (replaces what was there); n = 0 empties the slot
+  fillStashSlot(e, i, item, n) {
+    const q = e.slots[i]; if (!q) return;
+    n = Math.max(0, Math.min(50, Math.floor(n || 0)));
+    if (!item || !ITEMS[item] || ITEMS[item].fluid || !n) { q.item = null; q.n = 0; return; }
+    q.item = item; q.n = n;
+  }
+  noteIn(item) {
+    const c = this.stats.cur.in; c[item] = (c[item] || 0) + 1;
+    const tt = this.stats.total.in; tt[item] = (tt[item] || 0) + 1;
+  }
   stepThermal(e, dt) {
     if (!e.powered || e.off) { e.out = 0; return; }
     if (e.burn && e.left > 0) { e.left -= dt; e.out = FUEL[e.burn].p; if (e.left <= 0) { e.burn = null; e.out = 0; } }
+    if (!e.burn && e.infFuel && FUEL[e.infFuel]) { e.burn = e.infFuel; e.left = FUEL[e.infFuel].t; e.out = FUEL[e.infFuel].p; this.noteOut(e.infFuel); return; } // user-chosen endless fuel
     if (!e.burn) {
       let best = null;
       for (const k in e.fuel) if (e.fuel[k] > 0 && (!best || FUEL[k].p > FUEL[best].p)) best = k;
@@ -1367,11 +1398,12 @@ class World {
     return { ...agg, window: b.length, total: this.stats.total, elapsed: this.time - this.stats.since };
   }
   resetStats() { this.stats.buckets = []; this.stats.cur = { in: {}, out: {}, made: {}, port: {} }; this.stats.total = { in: {}, out: {}, made: {}, port: {} }; this.stats.since = this.time; }
-  movePac(x, y) {
+  movePac(x, y, f) {
     const e = this.pac; if (!e) return { ok: false };
-    const c = this.canPlace('pac', x, y, e.f, e.id); if (!c.ok) return c;
+    f = f == null ? e.f : f;
+    const c = this.canPlace('pac', x, y, f, e.id); if (!c.ok) return c;
     this.mark(e, 0);
-    e.x = x; e.y = y; e.lastOut = {};
+    e.x = x; e.y = y; e.f = f; e.lastOut = {};
     this.mark(e, e.id);
     this.dirtyPower = true; return { ok: true };
   }
@@ -1420,6 +1452,8 @@ class World {
     if (TYPES[e.type].kind === 'unloader') o.item = e.item;
     if (TYPES[e.type].kind === 'control') { o.filter = e.filter; o.limit = e.limit; o.rate = e.rate; }
     if (TYPES[e.type].kind === 'conduit') { o.ch = e.ch; if (e.src) o.src = e.src; }
+    if (TYPES[e.type].kind === 'thermal' && e.infFuel) o.infFuel = e.infFuel;
+    if (TYPES[e.type].kind === 'stash' && e.slots.some(q => q.n)) o.slots = e.slots.map(q => q.n ? [q.item, q.n] : null);
     if (e.pin != null) o.pin = e.pin;
     if (e.mode) o.mode = e.mode;
     return o;
@@ -1429,6 +1463,8 @@ class World {
     if (s.item !== undefined && TYPES[e.type].kind === 'unloader') e.item = s.item;
     if (TYPES[e.type].kind === 'control') { e.filter = s.filter || null; e.limit = s.limit || 0; e.rate = s.rate || 0; }
     if (TYPES[e.type].kind === 'conduit') { e.ch = s.ch || 1; e.src = (TYPES[e.type].dirn === 'out' && s.src && ITEMS[s.src] && ITEMS[s.src].fluid) ? s.src : null; }
+    if (TYPES[e.type].kind === 'thermal') e.infFuel = s.infFuel && FUEL[s.infFuel] ? s.infFuel : null;
+    if (TYPES[e.type].kind === 'stash' && Array.isArray(s.slots)) s.slots.slice(0, 6).forEach((q, i) => { if (Array.isArray(q)) this.fillStashSlot(e, i, q[0], q[1]); });
     if (TYPES[e.type].modes && s.mode > 0 && s.mode < TYPES[e.type].modes.length) e.mode = s.mode;
     if (s.pin != null && TYPES[e.type].kind === 'machine' && RECIPES_BY_M[e.type][s.pin]) e.pin = s.pin;
   }
@@ -1472,7 +1508,7 @@ class World {
     }
     return { ok: true };
   }
-  bpPlace(bp, ox, oy) {
+  bpPlace(bp, ox, oy, opts) {
     if (!this.bpCheck(bp, ox, oy).ok) return null;
     const ids = [];
     const order = bp.ents.slice().sort((a, b) => (TYPES[a.t].kind === 'busport' ? -1 : TYPES[a.t].kind === 'bus' ? 1 : 0) - (TYPES[b.t].kind === 'busport' ? -1 : TYPES[b.t].kind === 'bus' ? 1 : 0));
@@ -1487,6 +1523,7 @@ class World {
     }
     for (const s of lds) { const e = this.place(s.t, ox + s.x, oy + s.y, s.f); if (e) { this.applyCfg(e, s); ids.push(e.id); } }
     // pasted conduits keep their pairs among themselves but move to fresh channels, so every channel stays one-to-one
+    if (opts && opts.keepChannels) return ids; // moving: the conduits keep their own channels
     const cds = ids.map(id => this.ents.get(id)).filter(e => e && TYPES[e.type].kind === 'conduit' && this.pairable(e));
     const groups = new Map(); for (const e of cds) { if (!groups.has(e.ch)) groups.set(e.ch, []); groups.get(e.ch).push(e); e.ch = 0; }
     for (const g of groups.values()) {
@@ -1573,7 +1610,7 @@ const PRESETS = {
       beltPath(w, [[27, 30], [30, 30], [30, 22]], 0);
       const x = w.at(30, 21, 'belt'); if (x) w.remove(x.id); w.place('bridge', 30, 21, 3);
       beltPath(w, [[30, 20], [30, 13]], 0);
-      w.place('pylon', 19, 21, 2);
+      w.place('pylon', 25, 19, 2); // the PAC itself powers nothing: one pylon in the middle covers every machine
     },
   },
   battery: {
@@ -1596,11 +1633,11 @@ const PRESETS = {
       w.place('splitter', 24, 32, 2);
       beltPath(w, [[23, 32]], 3); w.place('thermal', 21, 32, 2);
       beltPath(w, [[25, 32]], 1); w.place('thermal', 26, 32, 2);
-      w.place('pylon', 19, 21, 2); w.place('pylon', 19, 29, 2);
+      w.place('pylon', 23, 23, 2); // covers the thermal banks too, so their power reaches the grid
     },
   },
   farm: {
-    ko: '메밀꽃 무한 재배',
+    ko: '메밀꽃 순환 재배',
     note: '씨앗 추출기(메밀꽃 1 → 씨앗 2) → 재배기(씨앗 1 → 메밀꽃 1). 재배기 출력 절반을 씨앗 추출기로 되돌리면 외부 공급 없이 계속 돕니다. 남는 메밀꽃은 분쇄기에서 가루가 되어 저장함으로 갑니다.',
     build(w) {
       w.place('seed', 37, 4, 2, { inBuf: { buckflower: 2 } });
@@ -1609,7 +1646,8 @@ const PRESETS = {
       beltPath(w, [[37, 16], [36, 16], [36, 3], [37, 3]], 2);
       beltPath(w, [[41, 16], [41, 17]], 2);
       w.place('shred', 40, 18, 2);
-      w.place('stash', 40, 21, 2);
+      beltPath(w, [[41, 21], [41, 22], [33, 22], [33, 13]], 0);
+      w.place('pylon', 38, 16, 2);
     },
   },
   xiranite: {
@@ -1623,8 +1661,9 @@ const PRESETS = {
       w.place('forge', 35, 15, 2);
       const src = w.place('coutlet', 29, 16, 1); w.setSource(src, 'clean_water');
       // carbon → xiranite only runs inside an inergen area: a Gas Dispersing Unit fed straight from an inergen outlet
-      w.place('gasdisp', 30, 13, 2);
-      const iner = w.place('coutlet', 27, 13, 1); w.setSource(iner, 'inergen');
+      w.place('gasdisp', 38, 12, 0); // the forge sits wholly inside its 13×13 area
+      const iner = w.place('coutlet', 41, 12, 3); w.setSource(iner, 'inergen');
+      w.place('pylon', 34, 13, 2);
       beltPath(w, [[32, 17], [34, 17]], 1, 'pipe');
       beltPath(w, [[37, 20], [37, 21], [33, 21], [33, 13]], 0);
     },
@@ -1650,10 +1689,10 @@ const PRESETS = {
       const xg = w.place('coutlet', 13, 24, 1); w.setSource(xg, 'xiragen');
       beltPath(w, [[16, 25], [17, 25]], 1, 'pipe');
       beltPath(w, [[22, 28], [29, 28], [29, 13]], 0);
-      w.place('pylon', 25, 19, 2);
+      w.place('pylon', 23, 17, 2);
     },
   },
-  empty: { ko: '빈 부지', note: 'PAC만 있는 빈 부지입니다. 기초 원자재는 무한으로 쓸 수 있습니다.', build() {} },
+  empty: { ko: '빈 부지', note: 'PAC만 있는 빈 부지입니다. 기초 원자재는 얼마든지 꺼내 쓸 수 있습니다.', build() {} },
 };
 function bbox(ents) {
   let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
@@ -1858,7 +1897,7 @@ function boot(){
 const markTouched = () => { ui.touched = true; };
 
 // ---------- palette ----------
-const TOOLS = [['select','선택','선택 (클릭)'],['area','범위','범위 선택 (드래그)'],['pan','이동','화면 이동'],['delete','철거','철거']];
+const TOOLS = [['select','선택','선택 (클릭)'],['area','범위','범위 선택 (드래그)'],['pan','화면','화면 끌기'],['delete','철거','철거']];
 function renderTools(){
   const el = $('#tools'); el.innerHTML = '';
   for (const [id, nm, tip] of TOOLS){
@@ -2000,6 +2039,7 @@ function logiGlyph(g, kind, x, y, s, f){
   g.restore();
 }
 function setTool(id){
+  if (ui.move && id !== 'paste') cancelMove();
   ui.tool = id;
   if (id !== 'paste') ui.paste = null;
   document.querySelectorAll('[data-tool]').forEach(b => b.setAttribute('aria-pressed', b.dataset.tool===id));
@@ -2108,8 +2148,8 @@ function render(){
   ctx.setLineDash([]);
   if (ui.multi.size){ ctx.fillStyle = C.accent; ctx.globalAlpha = .25; for (const id of ui.multi){ const e = world.ents.get(id); if (e) ctx.fillRect(e.x*S, e.y*S, e.w*S, e.h*S); } ctx.globalAlpha = 1; }
   if (ui.drag && ui.drag.kind === 'area'){
-    const r = areaRect(); ctx.fillStyle = C.accent; ctx.globalAlpha = .12; ctx.fillRect(r.x*S, r.y*S, r.w*S, r.h*S); ctx.globalAlpha = 1;
-    ctx.strokeStyle = C.accent; ctx.lineWidth = 2/z; ctx.setLineDash([5/z,3/z]); ctx.strokeRect(r.x*S, r.y*S, r.w*S, r.h*S); ctx.setLineDash([]);
+    const r = areaRect(), col = ui.drag.mode === 'sub' ? C.bad : C.accent; ctx.fillStyle = col; ctx.globalAlpha = .12; ctx.fillRect(r.x*S, r.y*S, r.w*S, r.h*S); ctx.globalAlpha = 1;
+    ctx.strokeStyle = col; ctx.lineWidth = 2/z; ctx.setLineDash([5/z,3/z]); ctx.strokeRect(r.x*S, r.y*S, r.w*S, r.h*S); ctx.setLineDash([]);
   }
   drawGhost();
 }
@@ -2166,7 +2206,7 @@ function drawSpread(e){
 }
 function drawRanges(){
   ctx.fillStyle = C['cv-range'];
-  for (const s of world.ents.values()) if ((s.type==='pylon' && s.powered) || s.type==='pac') ctx.fillRect((s.x-PYLON_R)*S, (s.y-PYLON_R)*S, (s.w+2*PYLON_R)*S, (s.h+2*PYLON_R)*S);
+  for (const s of world.ents.values()) if (s.type==='pylon' && s.powered) ctx.fillRect((s.x-PYLON_R)*S, (s.y-PYLON_R)*S, (s.w+2*PYLON_R)*S, (s.h+2*PYLON_R)*S);
   ctx.strokeStyle = C['cv-range-line']; ctx.lineWidth = 1.5/ui.cam.z; ctx.setLineDash([4/ui.cam.z,4/ui.cam.z]);
   for (const s of world.ents.values()) if (s.link){ const p = world.ents.get(s.link); if (p){ ctx.beginPath(); ctx.moveTo((s.x+s.w/2)*S,(s.y+s.h/2)*S); ctx.lineTo((p.x+p.w/2)*S,(p.y+p.h/2)*S); ctx.stroke(); } }
   ctx.setLineDash([]);
@@ -2250,6 +2290,22 @@ function portSummary(e){
   return parts.join(' · ') || '없음';
 }
 const STCOL = () => ({ working:C.ok, slow:C.warn, idle:C.muted, blocked:C.warn, nopower:C.bad, off:C.muted, nogas:C.bad, nocat:C.bad });
+// label that always stays inside maxW: shrink the font, then wrap onto two lines at a space, then cut with …
+function fitLabel(txt, x, y, maxW, size, weight, color, align, minSize){
+  minSize = minSize || 7; weight = weight || 600;
+  const font = sz => `${weight} ${sz}px ${C.fBody}`, width = (t, sz) => { ctx.font = font(sz); return ctx.measureText(t).width; };
+  for (let sz = size; sz >= minSize; sz -= .5) if (width(txt, sz) <= maxW){ label(txt, x, y, sz, weight, color, align); return sz; }
+  const words = txt.split(' ');
+  if (words.length > 1){
+    let best = null;
+    for (let i = 1; i < words.length; i++){ const a = words.slice(0, i).join(' '), b = words.slice(i).join(' '); const m = Math.max(width(a, 10), width(b, 10)); if (!best || m < best.m) best = { a, b, m }; }
+    for (let sz = Math.min(size, 9); sz >= minSize; sz -= .5) if (Math.max(width(best.a, sz), width(best.b, sz)) <= maxW){
+      label(best.a, x, y, sz, weight, color, align); label(best.b, x, y + sz + 1.5, sz, weight, color, align); return sz;
+    }
+  }
+  let t = txt; while (t.length > 1 && width(t + '…', minSize) > maxW) t = t.slice(0, -1);
+  label(t + '…', x, y, minSize, weight, color, align); return minSize;
+}
 function label(txt, x, y, size, weight, color, align){
   ctx.fillStyle = color || C['cv-mach-ink']; ctx.font = `${weight||600} ${size}px ${C.fBody}`; ctx.textAlign = align || 'left'; ctx.textBaseline = 'top'; ctx.fillText(txt, x, y);
 }
@@ -2274,7 +2330,7 @@ function drawDepotPort(e, x, y, w, h, live){
   ctx.fillStyle = fg; ctx.font = `700 9px ${C.fBody}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(inp ? '입력' : '출력', lx, ly);
   if (!inp && e.item) drawItem(ctx, e.item, rx, ry, 4.5);
   else { ctx.strokeStyle = fg; ctx.lineWidth = 1.8; chevron(ctx, rx, ry, flow, 3.6); }
-  if (live && !e.busOn) label('버스 없음', cx + DX[f]*S*.9, cy + DY[f]*S*.9 - 5, 8, 700, C.bad, 'center');
+  if (live && !e.busOn) fitLabel('버스 없음', cx + DX[f]*S*.9, cy + DY[f]*S*.9 - 5, 3*S - 6, 8, 700, C.bad, 'center');
 }
 function drawBuilding(e){
   const t = TYPES[e.type], k = t.kind, x = e.x*S+2, y = e.y*S+2, w = e.w*S-4, h = e.h*S-4;
@@ -2283,7 +2339,7 @@ function drawBuilding(e){
     ctx.fillStyle = C['cv-mach']; ctx.strokeStyle = ink; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.roundRect(x, y, w, h, 4); ctx.fill(); ctx.stroke();
     ctx.fillStyle = e.powered ? C.power : C.muted; poly(ctx, x+w/2, y+h/2, Math.min(w,h)*.36, 4, 0); ctx.fill();
     ctx.strokeStyle = C['cv-mach']; ctx.lineWidth = 1.6; const mx = x+w/2, my = y+h/2; ctx.beginPath(); ctx.moveTo(mx+1.5,my-6); ctx.lineTo(mx-2,my+.5); ctx.lineTo(mx+2,my-.5); ctx.lineTo(mx-1.5,my+6); ctx.stroke();
-    if (k==='relay') label(t.short, x+4, y+3, 9, 600);
+    if (k==='relay') fitLabel(t.short, x+4, y+3, w - 8, 9, 600);
     return;
   }
   if (k==='bus'){
@@ -2322,7 +2378,12 @@ function drawBuilding(e){
     portMarks(e, 'in', ink, true);
     ctx.textAlign='left'; if (e.off) offVeil(x,y,w,h); return;
   }
-  if (e.w * e.h > 1 && k !== 'loader' && k !== 'unloader' && k !== 'conduit') label(t.short, x+4, y+4, t.w>=5 ? 11 : 9.5, 600, ink);
+  if (e.w * e.h > 4 && k !== 'loader' && k !== 'unloader' && k !== 'conduit'){ // 2×2 units are too small for a name: the icon and the hover text say what they are
+    // keep the name clear of port marks on the top edge and of the status dots at the top right
+    const top = ['in', 'out'].some(w2 => AIC.portCells(e, w2).some(c => c[1] === e.y && (c[2] === 0 || c[2] === 2)));
+    const right = e.status ? (e.pin != null ? 22 : 14) : 4;
+    fitLabel(t.short, x+4, y + (top ? 12 : 4), w - 4 - right, t.w>=5 ? 11 : 9.5, 600, ink, 'left', 6.5);
+  }
   if (e.status){ ctx.fillStyle = STCOL()[e.status] || C.muted; ctx.beginPath(); ctx.arc(x+w-6, y+6, 3, 0, 7); ctx.fill(); }
   if (k==='machine'){
     portMarks(e, 'in', C.muted, false); portMarks(e, 'out', ink, true);
@@ -2331,17 +2392,26 @@ function drawBuilding(e){
     if (pinR){ ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(x+w-14, y+6, 3, 0, 7); ctx.fill(); }
     ctx.globalAlpha = e.cur ? 1 : .4; drawItem(ctx, show, x+w/2, y+h/2+3, Math.min(12, Math.min(w,h)*.16)); ctx.globalAlpha = 1;
     if (e.cur){ ctx.fillStyle = C.ink; ctx.globalAlpha=.8; ctx.fillRect(x+5, y+h-8, (w-10)*Math.min(1, e.t/e.cur.t), 3); ctx.globalAlpha=1; }
-    if (e.status==='nopower') label('전력 없음', x+w/2, y+h-20, 9, 700, C.bad, 'center');
+    const warnTxt = { nopower:'전력 없음', nogas:'기체 환경 필요', nocat:'촉매 부족' }[e.status];
+    if (warnTxt) fitLabel(warnTxt, x+w/2, y+h-20, w - 8, 9, 700, C.bad, 'center');
   } else if (k==='miner' || k==='pump'){
     portMarks(e, 'out', ink, true); if (t.ports.in) portMarks(e, 'in', C.muted, false);
     const it = k==='miner' ? e.ore : t.makes; if (it) drawItem(ctx, it, x+w/2, y+h/2+3, 7);
     if (e.status==='working'){ ctx.fillStyle=C.ink; ctx.globalAlpha=.8; ctx.fillRect(x+5, y+h-7, (w-10)*Math.min(1,e.t/t.rate), 2.5); ctx.globalAlpha=1; }
   } else if (k==='thermal'){
     const on = e.out > 0; ctx.fillStyle = on ? C.warn : C.muted; ctx.beginPath(); const fx = x+w/2, fy = y+h/2+1; ctx.moveTo(fx, fy-8); ctx.quadraticCurveTo(fx+8, fy, fx, fy+7); ctx.quadraticCurveTo(fx-8, fy, fx, fy-8); ctx.fill();
-    label(on ? '+'+e.out : '연료 없음', x+w/2, y+h-12, 8.5, 600, ink, 'center');
+    fitLabel(on ? '+'+e.out : '연료 없음', x+w/2, y+h-12, w - 6, 8.5, 600, ink, 'center', 6.5);
   } else if (k==='stash'){
-    ctx.strokeStyle = C.muted; ctx.lineWidth = 2; const cx = x+w/2, cy = y+h/2+3;
-    ctx.beginPath(); ctx.moveTo(cx, cy-8); ctx.lineTo(cx, cy+6); ctx.moveTo(cx-5, cy+1); ctx.lineTo(cx, cy+6); ctx.lineTo(cx+5, cy+1); ctx.stroke();
+    portMarks(e, 'in', C.muted, false); portMarks(e, 'out', ink, true);
+    // 3 × 2 slot grid; the green fill shows how full each slot is (50 max)
+    const sw = Math.min(16, (w - 14) / 3), sx0 = x + w/2 - sw*1.5, sy0 = y + h/2 - sw + 4;
+    e.slots.forEach((q, i) => {
+      const bx = sx0 + (i % 3) * sw, by = sy0 + Math.floor(i / 3) * sw;
+      ctx.fillStyle = C['panel-2']; ctx.fillRect(bx + 1, by + 1, sw - 2, sw - 2);
+      if (q.n){ ctx.fillStyle = C.ok; ctx.globalAlpha = .35; ctx.fillRect(bx + 1, by + sw - 1 - (sw - 2) * q.n / 50, sw - 2, (sw - 2) * q.n / 50); ctx.globalAlpha = 1; }
+      if (q.item){ ctx.globalAlpha = q.n ? 1 : .35; drawItem(ctx, q.item, bx + sw/2, by + sw/2, sw * .28); ctx.globalAlpha = 1; }
+      ctx.strokeStyle = C.line; ctx.lineWidth = 1; ctx.strokeRect(bx + 1, by + 1, sw - 2, sw - 2);
+    });
   } else if (k==='tank'){
     portMarks(e,'in',C.muted,false); portMarks(e,'out',ink,true);
     ctx.fillStyle = C['panel-2']; ctx.fillRect(x+w/2-8, y+h/2-6, 16, 16);
@@ -2363,10 +2433,10 @@ function drawBuilding(e){
     }
     const far = inl ? e.f : opp(e.f), len = (far & 1) ? w : h;
     const dx = x+w/2 + DX[far]*(len/2 - S*.62), dy = y+h/2 + DY[far]*(len/2 - S*.62), rr = S*.42;
-    label(t.short, x+w/2, (far & 1) ? y+4 : y+h/2 - 5, 8.5, 600, ink, 'center'); // sideways: the top row is free
+    fitLabel(t.short, x+w/2, (far & 1) ? y+4 : y+h/2 - 5, w - 8, 8.5, 600, ink, 'center'); // sideways: the top row is free
     ctx.fillStyle = C['cv-pipe']; ctx.beginPath(); ctx.arc(dx, dy, rr, 0, 7); ctx.fill();
     ctx.strokeStyle = ink; ctx.globalAlpha = .5; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(dx, dy, rr + 2.5, 0, 7); ctx.stroke(); ctx.globalAlpha = 1;
-    if (e.src){ drawItem(ctx, e.src, dx, dy, rr*.62); label('∞', dx + rr + 3, dy - rr - 2, 9, 700, ink, 'left'); }
+    if (e.src){ drawItem(ctx, e.src, dx, dy, rr*.62); }
     else label(String(e.ch), dx, dy - 5, 9.5, 700, '#fff', 'center');
   }
   if (e.off) offVeil(x,y,w,h);
@@ -2381,7 +2451,7 @@ function ghostInfo(){
   if ((K(type)==='loader' || K(type)==='unloader') && !world.canPlace(type, x, y, f).ok && world.canPlace(type, x, y, opp(f)).ok) f = opp(f);
   return { type, x, y, w, h, f };
 }
-function pasteOrigin(){ if (!ui.paste || !ui.hover) return null; return { x: ui.hover.cx - Math.floor(ui.paste.w/2), y: ui.hover.cy - Math.floor(ui.paste.h/2) }; }
+function pasteOrigin(){ if (!ui.paste || !ui.hover) return null; const g = ui.move && ui.move.grab; return g ? { x: ui.hover.cx - g.x, y: ui.hover.cy - g.y } : { x: ui.hover.cx - Math.floor(ui.paste.w/2), y: ui.hover.cy - Math.floor(ui.paste.h/2) }; }
 function pacGhost(){ if (!ui.hover || !world.pac) return null; const p = world.pac; return { type:'pac', x: ui.hover.cx - 4, y: ui.hover.cy - 4, w: p.w, h: p.h, f: p.f }; }
 function drawGhost(){
   const z = ui.cam.z;
@@ -2392,7 +2462,7 @@ function drawGhost(){
     portMarks(g, 'out', '#fff', true); portMarks(g, 'in', '#fff', false); return;
   }
   if (ui.tool==='paste' && ui.paste && ui.hover){
-    const o = pasteOrigin(), ok = world.bpCheck(ui.paste, o.x, o.y).ok;
+    const o = pasteOrigin(), ok = (ui.move ? moveCheck(o) : world.bpCheck(ui.paste, o.x, o.y)).ok;
     ctx.globalAlpha = .45; ctx.fillStyle = ok ? C.ok : C.bad;
     for (const s of ui.paste.ents){ const [w,h] = AIC.dims(s.t, s.f); ctx.fillRect((o.x+s.x)*S+1, (o.y+s.y)*S+1, w*S-2, h*S-2); }
     ctx.globalAlpha = 1; ctx.strokeStyle = ok ? C.ok : C.bad; ctx.lineWidth = 2/z; ctx.setLineDash([6/z,4/z]); ctx.strokeRect(o.x*S, o.y*S, ui.paste.w*S, ui.paste.h*S); ctx.setLineDash([]);
@@ -2424,9 +2494,9 @@ cv.addEventListener('pointerdown', ev => {
   const c = toCell(ev.offsetX, ev.offsetY); ui.hover = c;
   const panBtn = ev.button === 1 || ev.button === 2;
   if (panBtn || ui.tool === 'pan'){ ui.drag = { kind:'pan', sx:ev.offsetX, sy:ev.offsetY, cam:Object.assign({}, ui.cam), moved:false, btn:ev.button }; return; }
-  if (ui.tool === 'area' || (ui.tool === 'select' && ev.shiftKey)){ ui.drag = { kind:'area', a:c, b:c, add: ev.shiftKey && ui.tool==='select' }; return; }
+  if (ui.tool === 'area' || (ui.tool === 'select' && ev.shiftKey)){ ui.drag = { kind:'area', a:c, b:c, mode: ev.shiftKey && ui.multi.size ? 'sub' : (ev.ctrlKey || ev.metaKey) ? 'add' : 'set' }; return; }
   if (ui.tool === 'delete'){ ui.drag = { kind:'delete' }; delAt(c.cx, c.cy); return; }
-  if (ui.tool === 'paste'){ placePaste(); ui.drag = { kind:'none' }; return; }
+  if (ui.tool === 'paste'){ if (ui.move) dropMove(); else placePaste(); ui.drag = { kind:'none' }; return; }
   if (ui.tool === 'movepac'){ const o = pacGhost(); const res = o ? world.movePac(o.x, o.y) : { ok:false }; if (res.ok){ markTouched(); setTool('select'); ui.sel = world.pac.id; renderInspector(true); flash('PAC를 옮겼습니다'); } else flash(res.why || '여기에는 놓을 수 없습니다'); ui.drag = { kind:'none' }; return; }
   if (ui.tool === 'build:belt' || ui.tool === 'build:pipe'){ ui.drag = { kind:'line', type: ui.tool.slice(6), last:null, cells:new Set() }; lineTo(c.cx, c.cy); return; }
   if (ui.tool.startsWith('build:')){ placeGhost(); ui.drag = { kind:'build' }; return; }
@@ -2436,8 +2506,9 @@ cv.addEventListener('pointerdown', ev => {
   if (e){
     if (here.length === 2 && !(ev.ctrlKey || ev.metaKey)) flash(`이 칸에는 ${TYPES[here[0].type].ko}와 ${TYPES[here[1].type].ko}가 겹쳐 있습니다. 다시 누르면 다른 쪽을 고릅니다.`);
     if (ev.ctrlKey || ev.metaKey){ if (ui.multi.has(e.id)) ui.multi.delete(e.id); else ui.multi.add(e.id); if (ui.sel && ui.sel !== e.id){ ui.multi.add(ui.sel); } ui.sel = null; }
-    else { ui.sel = e.id; ui.multi.clear(); }
-    renderInspector(true); renderSelbar(); ui.drag = { kind:'none' };
+    else if (!ui.multi.has(e.id)){ ui.sel = e.id; ui.multi.clear(); }
+    renderInspector(true); renderSelbar();
+    ui.drag = (ev.ctrlKey || ev.metaKey) ? { kind:'none' } : { kind:'grab', id:e.id, sx:ev.offsetX, sy:ev.offsetY, cell:c };
   }
   else ui.drag = { kind:'pan', sx:ev.offsetX, sy:ev.offsetY, cam:Object.assign({}, ui.cam), moved:false, desel:true };
 });
@@ -2454,6 +2525,10 @@ cv.addEventListener('pointermove', ev => {
   else if (d.kind==='line') lineTo(c.cx, c.cy);
   else if (d.kind==='delete') delAt(c.cx, c.cy);
   else if (d.kind==='area') d.b = c;
+  else if (d.kind==='grab' && Math.abs(ev.offsetX - d.sx) + Math.abs(ev.offsetY - d.sy) > 6){
+    const ids = ui.multi.has(d.id) ? [...ui.multi] : [d.id];
+    if (startMove(ids, d.cell)) ui.drag = { kind:'moving' }; else ui.drag = null;
+  }
 });
 function endPointer(ev){
   pointers.delete(ev.pointerId);
@@ -2464,10 +2539,11 @@ function endPointer(ev){
     else if (d.desel){ ui.sel = null; ui.multi.clear(); renderInspector(true); renderSelbar(); }
   }
   if (d && d.kind==='area'){
-    const r = areaRect(); if (!d.add) ui.multi.clear();
-    for (const e of world.ents.values()) if (e.type!=='pac' && e.x < r.x+r.w && e.x+e.w > r.x && e.y < r.y+r.h && e.y+e.h > r.y) ui.multi.add(e.id);
+    const r = areaRect(), mode = d.mode || 'set'; if (mode === 'set') ui.multi.clear();
+    for (const e of world.ents.values()) if (e.x < r.x+r.w && e.x+e.w > r.x && e.y < r.y+r.h && e.y+e.h > r.y){ if (mode === 'sub') ui.multi.delete(e.id); else ui.multi.add(e.id); }
     ui.sel = null; ui.drag = null; renderInspector(true); renderSelbar(); return;
   }
+  if (d && d.kind==='moving'){ if (!dropMove()){ const why = $('#warn').textContent; cancelMove(); setTool('select'); flash(why + ' · 제자리로 돌려놓았습니다'); } ui.drag = null; return; }
   if (d && (d.kind==='line'||d.kind==='build'||d.kind==='delete')){ markTouched(); renderInspector(true); renderFacs(); }
   ui.drag = null;
 }
@@ -2545,6 +2621,50 @@ function updateHover(){
 // ---------- selection actions ----------
 function selectionIds(){ return ui.multi.size ? [...ui.multi] : (ui.sel ? [ui.sel] : []); }
 function startPaste(bp, name){ setTool('paste'); ui.paste = JSON.parse(JSON.stringify(bp)); ui.pasteName = name || null; renderSelbar(); renderInspector(true); }
+// ----- moving: pick the selection up (it leaves the site while carried), drop it with a click or on release -----
+function startMove(ids, grabCell){
+  ids = ids.filter(id => world.ents.get(id));
+  if (!ids.length){ flash('옮길 설비를 먼저 고르세요'); return false; }
+  const pac = world.pac && ids.includes(world.pac.id) ? world.pac : null, rest = ids.filter(id => !pac || id !== pac.id);
+  let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+  for (const id of ids){ const e = world.ents.get(id); x0 = Math.min(x0, e.x); y0 = Math.min(y0, e.y); x1 = Math.max(x1, e.x + e.w); y1 = Math.max(y1, e.y + e.h); }
+  const bp = rest.length ? world.blueprint(rest) : { v: 2, w: 0, h: 0, ents: [] };
+  // one carried group in group-relative coordinates; the PAC rides along as an entry of its own
+  let bx = 1e9, by = 1e9; for (const id of rest){ const e = world.ents.get(id); bx = Math.min(bx, e.x); by = Math.min(by, e.y); }
+  const group = { v: 2, w: x1 - x0, h: y1 - y0, ents: bp.ents.map(q => Object.assign({}, q, { x: q.x + bx - x0, y: q.y + by - y0 })) };
+  if (pac) group.ents.push({ t: 'pac', x: pac.x - x0, y: pac.y - y0, f: pac.f });
+  for (const id of rest) world.remove(id);
+  const grab = grabCell ? { x: grabCell.cx - x0, y: grabCell.cy - y0 } : null;
+  setTool('paste'); ui.paste = group; ui.pasteName = '이동';
+  ui.move = { bp, bx, by, grab, pac: !!pac };
+  renderSelbar(); renderInspector(true); return true;
+}
+// split the carried group into the PAC entry and the ordinary blueprint
+function moveParts(){ const pacS = ui.paste.ents.find(q => q.t === 'pac'); return { pacS, rest: Object.assign({}, ui.paste, { ents: ui.paste.ents.filter(q => q.t !== 'pac') }) }; }
+function moveCheck(o){
+  const { pacS, rest } = moveParts();
+  if (pacS){ const c = world.canPlace('pac', o.x + pacS.x, o.y + pacS.y, pacS.f, world.pac.id); if (!c.ok) return c; }
+  return rest.ents.length ? world.bpCheck(rest, o.x, o.y) : { ok: true };
+}
+function cancelMove(){
+  const m = ui.move; if (!m) return; ui.move = null;
+  if (m.bp.ents.length) world.bpPlace(m.bp, m.bx, m.by, { keepChannels: true });
+  ui.paste = null; flash('옮기기를 취소하고 제자리에 두었습니다');
+}
+function dropMove(){
+  const o = pasteOrigin(); if (!o || !ui.move) return false;
+  const { pacS, rest } = moveParts(), p = world.pac, old = p && { x: p.x, y: p.y, f: p.f };
+  if (pacS){ const r = world.movePac(o.x + pacS.x, o.y + pacS.y, pacS.f); if (!r.ok){ flash((r.why || '여기에는 놓을 수 없습니다') + (rest.ents.length ? '' : ' (PAC에 이어진 벨트까지 함께 옮기려면 범위로 같이 고르세요)')); return false; } }
+  const chk = rest.ents.length ? world.bpCheck(rest, o.x, o.y) : { ok: true };
+  if (!chk.ok){ if (pacS) world.movePac(old.x, old.y, old.f); flash(chk.why); return false; }
+  const ids = rest.ents.length ? world.bpPlace(rest, o.x, o.y, { keepChannels: true }) : [];
+  if (pacS) ids.push(p.id);
+  ui.move = null; markTouched(); setTool('select');
+  if (ids.length === 1) ui.sel = ids[0]; else ids.forEach(id => ui.multi.add(id));
+  renderInspector(true); renderSelbar(); renderFacs(); flash(`설비 ${ids.length}개를 옮겼습니다`);
+  return true;
+}
+function moveSel(){ if (startMove(selectionIds())) flash('놓을 곳을 클릭하세요 · R 회전 · Esc 취소'); }
 function copySel(){ const bp = world.blueprint(selectionIds()); if (!bp){ flash('복사할 설비를 먼저 고르세요'); return; } ui.clip = bp; startPaste(bp); flash('붙여넣을 곳을 클릭하세요'); }
 function placePaste(){
   const o = pasteOrigin(); if (!o) return;
@@ -2553,21 +2673,21 @@ function placePaste(){
   const ids = world.bpPlace(ui.paste, o.x, o.y); markTouched(); renderFacs();
   flash(`설비 ${ids.length}개를 붙여넣었습니다`);
 }
-function deleteSel(){ const ids = selectionIds(); let n = 0; for (const id of ids) if (world.remove(id)) n++; ui.multi.clear(); ui.sel = null; markTouched(); renderInspector(true); renderSelbar(); renderFacs(); if (n) flash(`설비 ${n}개를 철거했습니다`); }
+function deleteSel(){ const ids = selectionIds().filter(id => !world.pac || id !== world.pac.id); let n = 0; for (const id of ids) if (world.remove(id)) n++; ui.multi.clear(); ui.sel = null; markTouched(); renderInspector(true); renderSelbar(); renderFacs(); if (n) flash(`설비 ${n}개를 철거했습니다`); }
 function toggleSel(off){ for (const id of selectionIds()) world.setOff(id, off); markTouched(); renderInspector(true); renderFacs(); flash(off ? '선택한 설비를 껐습니다' : '선택한 설비를 켰습니다'); }
 function renderSelbar(){
   const bar = $('#selbar');
   if (ui.tool === 'paste' && ui.paste){
     bar.hidden = false;
-    bar.innerHTML = `<b>붙여넣기${ui.pasteName ? ' · '+esc(ui.pasteName) : ''}</b><span class="dim">${ui.paste.w}×${ui.paste.h} · 설비 ${ui.paste.ents.length}개</span><button class="btn sm" id="sbRot">회전 (R)</button><button class="btn sm" id="sbDone">끝내기 (Esc)</button>`;
-    $('#sbRot').onclick = () => { ui.paste = AIC.bpRotate(ui.paste); renderSelbar(); };
+    bar.innerHTML = `<b>${ui.move ? '옮기는 중' : '붙여넣기' + (ui.pasteName ? ' · '+esc(ui.pasteName) : '')}</b><span class="dim">${ui.paste.w}×${ui.paste.h} · 설비 ${ui.paste.ents.length}개</span><button class="btn sm" id="sbRot">회전 (R)</button><button class="btn sm" id="sbDone">${ui.move ? '취소 (Esc)' : '끝내기 (Esc)'}</button>`;
+    $('#sbRot').onclick = () => { ui.paste = AIC.bpRotate(ui.paste); if (ui.move) ui.move.grab = null; renderSelbar(); };
     $('#sbDone').onclick = () => setTool('select');
     return;
   }
   if (!ui.multi.size){ bar.hidden = true; bar.innerHTML = ''; return; }
   bar.hidden = false;
-  bar.innerHTML = `<b>${ui.multi.size}개 선택</b><button class="btn sm" id="sbCopy">복사</button><button class="btn sm danger" id="sbDel">삭제</button><button class="btn sm" id="sbOn">켜기</button><button class="btn sm" id="sbOff">끄기</button><span class="row" style="gap:4px"><input id="sbName" placeholder="청사진 이름" maxlength="40" aria-label="청사진 이름"><button class="btn sm primary" id="sbSave">청사진으로 저장</button></span><button class="btn sm" id="sbClear">선택 해제</button>`;
-  $('#sbCopy').onclick = copySel; $('#sbDel').onclick = deleteSel;
+  bar.innerHTML = `<b>${ui.multi.size}개 선택</b><button class="btn sm primary" id="sbMove">이동 (M)</button><button class="btn sm" id="sbCopy">복사</button><button class="btn sm danger" id="sbDel">삭제</button><button class="btn sm" id="sbOn">켜기</button><button class="btn sm" id="sbOff">끄기</button><span class="row" style="gap:4px"><input id="sbName" placeholder="청사진 이름" maxlength="40" aria-label="청사진 이름"><button class="btn sm primary" id="sbSave">청사진으로 저장</button></span><button class="btn sm" id="sbClear">선택 해제</button>`;
+  $('#sbMove').onclick = moveSel; $('#sbCopy').onclick = copySel; $('#sbDel').onclick = deleteSel;
   $('#sbOn').onclick = () => toggleSel(false); $('#sbOff').onclick = () => toggleSel(true);
   $('#sbClear').onclick = () => { ui.multi.clear(); renderSelbar(); renderInspector(true); };
   $('#sbSave').onclick = async () => {
@@ -2584,6 +2704,7 @@ document.addEventListener('keydown', ev => {
   if (mod && k==='c'){ copySel(); ev.preventDefault(); return; }
   if (mod && k==='v'){ if (ui.clip) startPaste(ui.clip); ev.preventDefault(); return; }
   if (k==='r'){ rotateAction(); ev.preventDefault(); }
+  else if (k==='m' && ui.tool !== 'paste' && (ui.sel || ui.multi.size)) moveSel();
   else if (k==='escape'){ setTool('select'); ui.sel = null; ui.multi.clear(); renderInspector(true); renderSelbar(); }
   else if (k==='delete' || k==='backspace'){ if (ui.multi.size || ui.sel) deleteSel(); }
   else if (k===' '){ togglePlay(); ev.preventDefault(); }
@@ -2594,7 +2715,7 @@ document.addEventListener('keydown', ev => {
 // pick a build tool from the keyboard and show its category in the facility bar
 function selectBuild(type){ if (ui.cat !== TYPES[type].group || ui.q){ ui.cat = TYPES[type].group; ui.q = ''; $('#q').value = ''; renderPalette(); } setTool('build:' + type); flash(`${TYPES[type].ko} 선택 · 드래그해서 깔기`); }
 function rotateAction(){
-  if (ui.tool==='paste' && ui.paste){ ui.paste = AIC.bpRotate(ui.paste); renderSelbar(); return; }
+  if (ui.tool==='paste' && ui.paste){ ui.paste = AIC.bpRotate(ui.paste); if (ui.move) ui.move.grab = null; renderSelbar(); return; }
   if (ui.tool.startsWith('build:')){ ui.rot = (ui.rot + 1) & 3; return; }
   if (ui.sel){ if (world.rotate(ui.sel) === false) flash('회전할 공간이 없습니다'); markTouched(); renderInspector(true); }
 }
@@ -2751,7 +2872,7 @@ function renderInspector(force){
   } else if (k==='pac'){
     h += `<p>좌우 가장자리의 출력 포트 6개(왼쪽 1–3, 오른쪽 4–6)로 창고 재고를 내보냅니다. 위·아래 가장자리의 입력 포트 7개씩(모두 14개)에 벨트로 들어온 물품은 바로 창고로 들어갑니다.</p><div class="sub">출력 포트</div><div class="ports">`;
     for (let i=0;i<6;i++) h += `<label for="port${i}">${i<3?'왼쪽':'오른쪽'} ${i+1}</label><select id="port${i}" data-p="${i}">${itemOptions(e.ports[i], 'solid', '— 끔 —')}</select>`;
-    h += `</div><div class="sub">포트별 소비량</div><div class="tscroll"><table class="dep" id="iports"></table></div><dl class="kv" id="ikv"></dl><div class="acts"><button class="btn sm" id="imovepac">PAC 옮기기</button><button class="btn sm" id="irotpac">PAC 회전</button></div>`;
+    h += `</div><div class="sub">포트별 소비량</div><div class="tscroll"><table class="dep" id="iports"></table></div><dl class="kv" id="ikv"></dl><div class="acts"><button class="btn sm" id="imovepac">PAC 옮기기 (M)</button><button class="btn sm" id="irotpac">PAC 회전</button></div>`;
   } else if (k==='control' && t.carrier==='fluid'){
     h += `<p>설정한 액체·기체만 통과시키고, 흐르는 양을 분당 6 단위씩 조절합니다 (0은 제한 없음, 파이프 최대 분당 120). 기체 공정을 정밀하게 맞출 때 씁니다.</p>
       <div class="ports"><label for="cflt">통과 재료</label><select id="cflt">${itemOptions(e.filter, t.carrier)}</select>
@@ -2767,13 +2888,17 @@ function renderInspector(force){
   } else if (k==='loader'){
     h += `<p>가운데 칸으로 들어온 물품을 창고로 보냅니다. 긴 쪽이 창고 입출력 라인에 붙어 있어야 합니다.</p><dl class="kv" id="ikv"></dl>`;
   } else if (k==='thermal'){
-    h += `<dl class="kv" id="ikv"></dl><div class="sub">연료</div><div class="rlist">${Object.entries(FUEL).map(([f,v]) => `<div class="rec">${icS(f,1)} ${esc(ITEMS[f].ko)} <span class="t">+${v.p} · ${v.t}초</span></div>`).join('')}</div>`;
+    h += `<div class="ports"><label for="ifuel">연료 공급</label><select id="ifuel"><option value="">— 없음 (벨트로 넣은 연료만) —</option>${Object.keys(FUEL).map(f => `<option value="${f}"${e.infFuel===f?' selected':''}>${esc(ITEMS[f].ko)} (+${FUEL[f].p})</option>`).join('')}</select></div><p class="note">고른 연료가 계속 들어가 발전이 끊기지 않습니다. 쓴 양은 원자재 소비량에 잡힙니다.</p><dl class="kv" id="ikv"></dl><div class="sub">연료</div><div class="rlist">${Object.entries(FUEL).map(([f,v]) => `<div class="rec">${icS(f,1)} ${esc(ITEMS[f].ko)} <span class="t">+${v.p} · ${v.t}초</span></div>`).join('')}</div>`;
   } else if (k==='miner' || k==='pump'){
     h += `<dl class="kv" id="ikv"></dl><p>${k==='miner' ? '출력 쪽에 벨트가 없으면 캐낸 광석을 창고로 바로 보냅니다.' : '출력 쪽 파이프로 내보냅니다.'}</p>`;
   } else if (k==='pylon' || k==='relay'){
     h += `<dl class="kv"><dt>전력망</dt><dd>${e.powered?'연결됨':'연결 안 됨'}</dd><dt>연결 거리</dt><dd>제한 없음 (프로토콜 공간 안)</dd><dt>공급 범위</dt><dd>${k==='pylon'?'주변 '+PYLON_R+'칸':'없음 (연결 전용)'}</dd></dl>`;
   } else if (k==='stash'){
-    h += `<p>들어온 물품을 모두 창고로 보냅니다.</p><dl class="kv" id="ikv"></dl>`;
+    h += `<p>칸 6개에 한 칸당 한 종류를 최대 50개까지 담고, 아래쪽 출력 포트에 벨트를 이으면 담긴 물품을 내보냅니다. 아래에서 칸을 골라 아이템과 개수를 정해 직접 넣을 수 있습니다.</p>
+      <div class="slots">${e.slots.map((q, i) => `<div class="slot"><span class="sn">${i+1}</span><span class="sc" id="sc${i}"></span><button class="btn sm" data-empty="${i}">비우기</button></div>`).join('')}</div>
+      <div class="sub">칸에 직접 넣기</div>
+      <div class="ports sfill"><label for="sfI">아이템</label><select id="sfI">${itemOptions(null, 'solid', '— 아이템 고르기 —')}</select><label for="sfN">개수</label><input id="sfN" type="number" min="1" max="50" value="50"><label for="sfS">칸</label><select id="sfS">${e.slots.map((q, i) => `<option value="${i}">${i+1}번 칸${q.n ? '' : ' (빈 칸)'}</option>`).join('')}</select></div>
+      <div class="acts"><button class="btn sm primary" id="sfGo">넣기</button></div><dl class="kv" id="ikv"></dl>`;
   } else if (k==='tank'){
     h += `<p>${t.holds==='gas' ? '기체' : '액체'} 한 종류를 최대 500까지 담아 두었다가 앞쪽 파이프로 내보냅니다.</p><dl class="kv" id="ikv"></dl>`;
   } else if (k==='sink'){
@@ -2781,13 +2906,13 @@ function renderInspector(force){
   } else if (k==='conduit'){
     h += `<p>${t.dirn==='in' ? '뒤쪽 파이프로 들어온 액체·기체를 같은 채널의 출구로 땅속으로 보냅니다.' : '같은 채널의 입구에서 온 액체·기체를 앞쪽 파이프로 내보냅니다.'} 입구와 출구는 1:1로 짝지어지고 양 끝에 500씩 담깁니다. 게임에서는 최단 거리 300m 안이어야 합니다.${t.multi ? ' 다중 암관은 파이프 2줄을 한꺼번에 받아 보냅니다.' : ''}</p>
       <div class="ports">${t.dirn==='out' ? `<label for="isrc">나오는 재료</label><select id="isrc"><option value="">— 없음 (입구와 짝) —</option>${fluidOptions(e.src)}</select>` : ''}${e.src ? '' : `<label for="ich">채널</label><select id="ich">${world.channelChoices(e).map(n => `<option value="${n}"${e.ch===n?' selected':''}>${n}</option>`).join('')}</select>`}</div>
-      <p class="note">${e.src ? `고른 ${ITEMS[e.src].cat==='gas'?'기체':'액체'}가 파이프 속도대로 끝없이 나옵니다. 입구와 짝을 짓지 않고, 나간 양은 원자재 소비량에 잡힙니다.` : '채널마다 입구 하나와 출구 하나만 짝지어집니다. 목록에는 비어 있는 채널만 나옵니다.'}</p><dl class="kv" id="ikv"></dl>`;
+      <p class="note">${e.src ? `고른 ${ITEMS[e.src].cat==='gas'?'기체':'액체'}가 파이프 속도대로 계속 나옵니다. 입구와 짝을 짓지 않고, 나간 양은 원자재 소비량에 잡힙니다.` : '채널마다 입구 하나와 출구 하나만 짝지어집니다. 목록에는 비어 있는 채널만 나옵니다.'}</p><dl class="kv" id="ikv"></dl>`;
   } else if (k==='bus' || k==='busport'){
     h += `<dl class="kv"><dt>상태</dt><dd>${e.busOn?'활성':'핵심 장치와 이어지지 않음'}</dd></dl><p>벨트를 직접 연결할 수 없습니다. 핵심 장치나 기초 장치에 창고 입력·출력 포트(1×3)를 긴 쪽으로 붙이고, 포트 가운데 칸에 벨트를 잇습니다.</p>`;
   } else {
     h += `<dl class="kv" id="ikv"></dl><p>${toolHelp(e.type)}</p>`;
   }
-  if (e.type !== 'pac') h += `<div class="acts"><button class="btn sm" id="irot">회전 (R)</button><button class="btn sm" id="icopy">복사</button><button class="btn sm danger" id="idel">철거</button></div>`;
+  if (e.type !== 'pac') h += `<div class="acts"><button class="btn sm" id="imove">이동 (M)</button><button class="btn sm" id="irot">회전 (R)</button><button class="btn sm" id="icopy">복사</button><button class="btn sm danger" id="idel">철거</button></div>`;
   el.innerHTML = h;
   const on = el.querySelector('#ion'); if (on) on.onchange = () => { world.setOff(e.id, !on.checked); markTouched(); renderInspector(true); renderFacs(); };
   el.querySelectorAll('select[data-p]').forEach(s => s.onchange = () => { e.ports[+s.dataset.p] = s.value || null; markTouched(); });
@@ -2801,9 +2926,21 @@ function renderInspector(force){
   const crt = el.querySelector('#crate'); if (crt) crt.onchange = () => { e.rate = Math.min(120, Math.max(0, Math.round((parseInt(crt.value, 10)||0)/6)*6)); crt.value = e.rate; markTouched(); };
   const cr = el.querySelector('#creset'); if (cr) cr.onclick = () => { e.passed = 0; };
   const r = el.querySelector('#irot'); if (r) r.onclick = rotateAction;
-  const mp = el.querySelector('#imovepac'); if (mp) mp.onclick = () => { setTool('movepac'); flash('PAC를 놓을 곳을 클릭하세요'); };
+  const mp = el.querySelector('#imovepac'); if (mp) mp.onclick = () => { if (startMove([world.pac.id])) flash('PAC를 놓을 곳을 클릭하세요 · R 회전 · Esc 취소'); };
   const rp = el.querySelector('#irotpac'); if (rp) rp.onclick = () => { if (world.rotate(world.pac.id) === false) flash('회전할 공간이 없습니다'); markTouched(); renderInspector(true); };
   const cp = el.querySelector('#icopy'); if (cp) cp.onclick = copySel;
+  el.querySelectorAll('[data-empty]').forEach(bt => bt.onclick = () => { world.fillStashSlot(e, +bt.dataset.empty, null, 0); markTouched(); renderInspector(true); });
+  const sg = el.querySelector('#sfGo'); if (sg){
+    const firstEmpty = e.slots.findIndex(q => !q.n); if (firstEmpty >= 0) el.querySelector('#sfS').value = firstEmpty;
+    sg.onclick = () => {
+      const it = el.querySelector('#sfI').value, n = +el.querySelector('#sfN').value, i = +el.querySelector('#sfS').value;
+      if (!it){ flash('넣을 아이템을 고르세요'); return; }
+      if (!(n >= 1 && n <= 50)){ flash('개수는 1–50 사이로 정하세요'); return; }
+      world.fillStashSlot(e, i, it, n); markTouched(); renderInspector(true); flash(`${i+1}번 칸에 ${ITEMS[it].ko} ${Math.floor(n)}개를 넣었습니다`);
+    };
+  }
+  const fu = el.querySelector('#ifuel'); if (fu) fu.onchange = () => { e.infFuel = fu.value || null; markTouched(); renderInspector(true); };
+  const mv = el.querySelector('#imove'); if (mv) mv.onclick = moveSel;
   const d = el.querySelector('#idel'); if (d) d.onclick = () => { world.remove(e.id); ui.sel = null; markTouched(); renderInspector(true); renderFacs(); };
   lastDyn = ''; updateInspectorDynamic(e);
 }
@@ -2848,8 +2985,11 @@ function updateInspectorDynamic(e){
     const r = world.rates(), tb = document.getElementById('iports');
     if (tb) tb.innerHTML = `<thead><tr><th>포트</th><th>분당</th><th>시간당</th><th>누적</th></tr></thead><tbody>${e.ports.map((it, i) => `<tr><td>${i<3?'왼쪽':'오른쪽'} ${i+1} ${it ? icS(it) + ' ' + esc(ITEMS[it].ko) : '<span class="dim">꺼짐</span>'}</td><td>${fmt(r.port[i]||0)}</td><td>${fmt((r.port[i]||0)*60)}</td><td>${fmt(r.total.port[i]||0)}</td></tr>`).join('')}</tbody>`;
     kv.innerHTML = `<dt>입력 포트로 받은 수</dt><dd>${e.got || 0}</dd><dt>기본 전력</dt><dd>200</dd>`;
-  } else if (k==='loader' || k==='stash'){
-    kv.innerHTML = `${k==='loader'?`<dt>버스</dt><dd>${e.busOn?'연결됨':'연결 안 됨'}</dd>`:''}<dt>창고로 보낸 수</dt><dd>${e.got}</dd>`;
+  } else if (k==='stash'){
+    e.slots.forEach((q, i) => { const c = document.getElementById('sc'+i); if (c) c.innerHTML = q.n ? `${icS(q.item)} ${q.n} / 50` : '<span class="dim">비어 있음</span>'; });
+    kv.innerHTML = `<dt>받은 수</dt><dd>${e.got}</dd><dt>담긴 수</dt><dd>${e.slots.reduce((a, q) => a + q.n, 0)} / 300</dd>`;
+  } else if (k==='loader'){
+    kv.innerHTML = `<dt>버스</dt><dd>${e.busOn?'연결됨':'연결 안 됨'}</dd><dt>창고로 보낸 수</dt><dd>${e.got}</dd>`;
   } else if (k==='tank'){
     kv.innerHTML = `<dt>내용물</dt><dd>${it(e.fl)}</dd><dt>양</dt><dd>${e.amt} / 500</dd>`;
   } else if (k==='sink'){
@@ -2857,7 +2997,7 @@ function updateInspectorDynamic(e){
     kv.innerHTML = `<dt>환경</dt><dd>${e.env ? esc(ITEMS[e.env].ko) + ' · ' + e.t.toFixed(1) + '초 남음' : '없음'}</dd><dt>쓴 양</dt><dd>${e.used}</dd>`;
   } else if (k==='conduit'){
     const pair = world.conduitPair(e), dist = pair ? AIC.rectDist(e, pair) * AIC.M_PER_CELL : 0;
-    if (e.src) kv.innerHTML = `<dt>공급</dt><dd>${it(e.src)} · 무한</dd><dt>내보낸 양</dt><dd>${e.moved}</dd>`;
+    if (e.src) kv.innerHTML = `<dt>공급</dt><dd>${it(e.src)} · 계속</dd><dt>내보낸 양</dt><dd>${e.moved}</dd>`;
     else kv.innerHTML = `<dt>짝</dt><dd>${pair ? `${esc(TYPES[pair.type].ko)} (${pair.x}, ${pair.y}) · 약 ${dist}m` : '<span style="color:var(--bad)">같은 채널의 짝이 없습니다</span>'}</dd><dt>담긴 양</dt><dd>${e.q.length} / 500</dd><dt>옮긴 수</dt><dd>${e.moved}</dd>`;
   } else if (k==='belt' || k==='splitter' || k==='converger'){
     kv.innerHTML = `<dt>방향</dt><dd>${['북','동','남','서'][e.f]}</dd><dt>운반 중</dt><dd>${it(e.item)}</dd><dt>처리량</dt><dd>최대 분당 30</dd>`;
@@ -2874,11 +3014,12 @@ function itemOptions(sel, carrier, emptyLabel){
   let keys = Object.keys(ITEMS);
   if (carrier === 'solid') keys = keys.filter(k => !ITEMS[k].fluid);
   if (carrier === 'fluid') keys = keys.filter(k => ITEMS[k].fluid);
-  const raw = keys.filter(k => AIC.RAW.has(k));
-  const have = keys.filter(k => !AIC.RAW.has(k) && ((world.depot[k]||0) > 0 || k===sel));
-  const rest = keys.filter(k => !AIC.RAW.has(k) && !have.includes(k));
+  const inf = k => AIC.RAW.has(k);
+  const raw = keys.filter(inf);
+  const have = keys.filter(k => !inf(k) && ((world.depot[k]||0) > 0 || k===sel));
+  const rest = keys.filter(k => !inf(k) && !have.includes(k));
   const opt = k => `<option value="${k}"${k===sel?' selected':''}>${esc(ITEMS[k].ko)}${!world.isInf(k) && world.depot[k]?' ('+world.depot[k]+')':''}</option>`;
-  return `<option value="">${emptyLabel || (carrier ? '— 모두 통과 —' : '— 끔 —')}</option><optgroup label="기초 원자재 (무한)">${raw.map(opt).join('')}</optgroup>${have.length?`<optgroup label="창고에 있음">${have.map(opt).join('')}</optgroup>`:''}<optgroup label="기타">${rest.map(opt).join('')}</optgroup>`;
+  return `<option value="">${emptyLabel || (carrier ? '— 모두 통과 —' : '— 끔 —')}</option><optgroup label="기초 원자재">${raw.map(opt).join('')}</optgroup>${have.length?`<optgroup label="창고에 있음">${have.map(opt).join('')}</optgroup>`:''}<optgroup label="기타">${rest.map(opt).join('')}</optgroup>`;
 }
 function toolHelp(type){
   const t = TYPES[type];
@@ -2888,7 +3029,7 @@ function toolHelp(type){
     case 'converger': return t.carrier==='fluid' ? '뒤·왼쪽·오른쪽에서 들어온 액체·기체를 앞으로 합칩니다.' : '뒤·왼쪽·오른쪽에서 들어온 물품을 번갈아 앞으로 합칩니다. 출력은 벨트 1줄(분당 30)이 한계라 병목이 생길 수 있습니다.';
     case 'bridge': return '가로와 세로 흐름을 섞지 않고 교차시킵니다.';
     case 'control': return t.carrier==='fluid' ? '통과할 액체·기체와 분당 유량(6 단위씩)을 정합니다.' : '통과할 재료와 최대 수량(최대 5000)을 정합니다. 맞지 않는 재료는 앞에서 멈춥니다.';
-    case 'stash': return '들어온 물품을 창고로 바로 보냅니다.';
+    case 'stash': return '칸 6개 × 최대 50개. 칸에 아이템을 직접 넣을 수 있고, 아래쪽 출력 포트로 꺼낼 수 있습니다.';
     case 'loader': return '청록색. 1×3. 긴 쪽(3칸)을 핵심 장치나 기초 장치에 대어 놓습니다(조금 비껴도 한 칸 이상 닿으면 됨, 짧은 쪽으로는 불가). 벨트는 바깥쪽 가운데 칸으로 들어오는 방향일 때만 연결됩니다(다른 곳에 댄 벨트는 깔리지만 연결되지 않고 빨간 ×로 표시).';
     case 'unloader': return '주황색. 1×3. 긴 쪽(3칸)을 핵심 장치나 기초 장치에 대어 놓습니다(조금 비껴도 한 칸 이상 닿으면 됨, 짧은 쪽으로는 불가). 고른 품목이 바깥쪽 가운데 칸으로만 나오고, 벨트도 그 칸에서 나가는 방향일 때만 연결됩니다(다른 곳에 댄 벨트는 깔리지만 연결되지 않고 빨간 ×로 표시).';
     case 'busport': return '창고 입출력 라인의 시작점입니다. 혼자 놓을 수 있고, 기초 장치는 여기에 맞닿게 이어 붙입니다. 벨트는 직접 연결되지 않고 창고 입력·출력 포트를 거쳐야 합니다.';
@@ -2929,7 +3070,7 @@ function renderStats(){
   const open = [...el.querySelectorAll('details')].map(d => d.open);
   el.innerHTML = `
     <div class="row" style="justify-content:space-between;align-items:flex-start">
-      <p class="note" style="margin:0;flex:1;min-width:180px">기초 원자재(광석·식물·원목·청정수·산성 침적물·비활성 기체·식양 기체)는 무한입니다. 채굴 없이 PAC 출력 포트에서 바로 꺼내 씁니다.</p>
+      <p class="note" style="margin:0;flex:1;min-width:180px">기초 원자재(광석·식물·원목·청정수·산성 침적물·비활성 기체·식양 기체)는 채굴 없이 PAC 출력 포트에서 얼마든지 꺼내 씁니다.</p>
       <button class="btn sm" id="rst">통계 초기화</button>
     </div>
     <h4>원자재 소비량 <small>PAC 출력 포트·창고 출력 포트·공급 설정한 암관 출구로 나간 양</small></h4>
@@ -2937,7 +3078,7 @@ function renderStats(){
     <h4>산출물 <small>PAC 입력 포트·저장함·창고 입력 포트로 들어온 양</small></h4>
     ${rateTable(produced, '아직 창고로 들어온 생산품이 없습니다.')}
     <details><summary>설비 생산량 (중간재 포함)</summary>${rateTable(made, '아직 생산 기록이 없습니다.')}</details>
-    <details><summary>창고 재고${stock.length ? ' · '+stock.length+'종' : ''}</summary>${stock.length ? `<div class="tscroll"><table class="dep"><tbody>${stock.map(k => `<tr><td>${ic(k)}</td><td>${fmt(world.depot[k])}</td></tr>`).join('')}</tbody></table></div>` : '<p class="note">무한 원자재 외에 쌓인 재고가 없습니다.</p>'}</details>
+    <details><summary>창고 재고${stock.length ? ' · '+stock.length+'종' : ''}</summary>${stock.length ? `<div class="tscroll"><table class="dep"><tbody>${stock.map(k => `<tr><td>${ic(k)}</td><td>${fmt(world.depot[k])}</td></tr>`).join('')}</tbody></table></div>` : '<p class="note">기초 원자재 외에 쌓인 재고가 없습니다.</p>'}</details>
     <p class="note">분당 값은 최근 ${r.window}초 평균, 시간당 값은 분당 값 × 60입니다. 누적은 ${Math.floor(r.elapsed/60)}분 ${Math.floor(r.elapsed%60)}초 동안의 합계입니다.</p>`;
   el.querySelectorAll('details').forEach((d,i) => { if (open[i]) d.open = true; });
   $('#rst').onclick = () => { world.resetStats(); renderStats(); };
@@ -3031,7 +3172,8 @@ function frame(now){
     const p = world.power, over = p.demand > p.supply;
     $('#meter').classList.toggle('over', over);
     $('#meter i').style.width = Math.min(100, p.supply ? p.demand/p.supply*100 : 0) + '%';
-    $('#pwrtxt').textContent = `${p.demand} / ${p.supply}`;
+    $('#pwrtxt').textContent = `${p.demand} / ${p.supply}${over ? ' · 초과' : ''}`;
+    $('#pwrtxt').parentElement.title = over ? '전력 사용량이 공급량보다 많습니다. 시뮬레이션이라 설비는 그대로 가동합니다.' : '전력 사용량 / 공급량';
     const s = Math.floor(world.time), mm = Math.floor(s/60), ss = s%60;
     $('#clock').textContent = `T+${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
     const w = $('#warn');
