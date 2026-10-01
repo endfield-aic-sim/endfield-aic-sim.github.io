@@ -2530,7 +2530,8 @@ const board = {
     const el = this.el();
     el.innerHTML = '<div class="bwrap"><p class="note">불러오는 중…</p></div>';
     const db = this.db();
-    const [pr, cr, lr] = await Promise.all([
+    const [, pr, cr, lr] = await Promise.all([
+      loadAdmins(),
       db.from('posts').select('*').eq('id', id).maybeSingle(),
       db.from('comments').select('*').eq('post_id', id).order('created_at', { ascending: true }),
       acct.user ? db.from('likes').select('post_id').eq('post_id', id).eq('user_id', acct.user.id).maybeSingle() : null,
@@ -2566,7 +2567,7 @@ const board = {
       <div class="pacts">
         <button class="btn likebtn" id="bLike" aria-pressed="${this.liked}">${IC_HEART}<span>추천 ${p.like_count}</span></button>
         <span class="spacer"></span>
-        ${!mine ? '<button class="btn" id="bReport">신고</button>' : ''}
+        ${!mine && !adminNames.has(p.author_name) ? '<button class="btn" id="bReport">신고</button>' : ''}
         ${mine ? '<a class="btn" id="bEdit" href="#edit/' + p.id + '">수정</a>' : ''}
         ${mine || acct.isAdmin() ? `<button class="btn danger" id="bDel">${mine ? '삭제' : '삭제(관리자)'}</button>` : ''}
       </div>
@@ -2611,7 +2612,7 @@ const board = {
   cmtHTML(c){
     const me = acct.user ? acct.user.id : null, can = me && (c.author === me || acct.isAdmin());
     return `<li class="cmt"><div class="cmeta">${auLink(c.author_name)}${c.author === this.post.author ? '<span class="kbadge k-op">작성자</span>' : ''} <time datetime="${esc(c.created_at)}" title="${esc(fullDate(c.created_at))}">${ago(c.created_at)}</time>
-      <span class="cacts">${me !== c.author ? `<button class="linkbtn rp" data-rep="${c.id}">신고</button>` : ''}${can ? `<button class="linkbtn danger" data-del="${c.id}">삭제</button>` : ''}</span></div><div class="cbody">${esc(c.body)}</div></li>`;
+      <span class="cacts">${me !== c.author && !adminNames.has(c.author_name) ? `<button class="linkbtn rp" data-rep="${c.id}">신고</button>` : ''}${can ? `<button class="linkbtn danger" data-del="${c.id}">삭제</button>` : ''}</span></div><div class="cbody">${esc(c.body)}</div></li>`;
   },
   bindCmtDel(){
     document.querySelectorAll('.clist [data-rep]').forEach(b => b.onclick = () => { const c = this.comments.find(x => x.id === +b.dataset.rep); if (c) openReport('comment', c.id, this.post, c); });
@@ -2750,6 +2751,13 @@ const REPORT_REASONS = [
   ['부적절한 아이디·사칭'], ['추천 조작'],
 ];
 let reportTarget = null;
+// admins' posts and comments get no report button (the server refuses them too)
+let adminNames = new Set(), adminsAt = 0;
+async function loadAdmins(){
+  if (Date.now() - adminsAt < 60000) return;
+  const { data, error } = await acct.client.from('profiles').select('username').eq('role', 'admin');
+  if (!error){ adminNames = new Set((data || []).map(r => r.username)); adminsAt = Date.now(); }
+}
 function openReport(type, id, post, cmt){
   if (!acct.user){ openLogin('in'); return; }
   reportTarget = { type, id };
@@ -2778,6 +2786,7 @@ $('#rpForm').onsubmit = async ev => {
     msg.textContent = /duplicate|reports_once/i.test(m) ? '이미 신고한 내용입니다. 운영자가 확인할 때까지 기다려 주세요.'
       : /rate limit/i.test(m) ? '신고가 너무 많습니다. 잠시 후 다시 시도하세요.'
       : /yourself/i.test(m) ? '내가 쓴 글은 신고할 수 없습니다.'
+      : /admin/i.test(m) ? '관리자의 글과 댓글은 신고할 수 없습니다.'
       : /not found/i.test(m) ? '이미 지워진 글입니다.' : acctError(error);
     return;
   }
