@@ -237,6 +237,91 @@ dialog textarea{width:100%;height:200px;font-family:var(--f-mono);font-size:11px
   .pwr{min-width:160px;flex:1}
   .spacer{display:none}
 }
+
+/* board: the page turns into the board (#board, #post/ID, #write, #edit/ID) */
+.seg.view button{font-family:var(--f-body);font-size:12.5px;padding:5px 12px}
+.board{display:none}
+.app.boardmode main.stage,.app.boardmode .build,.app.boardmode aside.side,.app.boardmode .simonly{display:none!important}
+.app.boardmode .board{display:block;grid-column:1/-1;grid-row:2/4;overflow-y:auto;min-height:0;background:var(--bg)}
+.bwrap{max-width:960px;margin:0 auto;padding:22px 16px 56px}
+.bwrap h2{font-family:var(--f-display);font-size:22px;font-weight:700;margin:0;line-height:1.2;overflow-wrap:anywhere}
+.bhead{display:flex;align-items:flex-end;gap:12px;margin-bottom:14px}
+.bhead p{margin:3px 0 0;font-size:12.5px}
+.btool{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.btool .seg button{font-family:var(--f-body);font-size:12.5px;padding:5px 12px}
+.bsearch{display:flex;gap:6px;flex:1 1 240px;min-width:0}
+.bsearch input{flex:1;min-width:0;border:1px solid var(--line);background:var(--panel);border-radius:4px;padding:5px 9px}
+.blist{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:6px;background:var(--panel);overflow:hidden}
+.bempty{padding:28px 16px;margin:0;text-align:center;max-width:none}
+.prow{display:grid;grid-template-columns:128px minmax(0,1fr) auto;gap:14px;align-items:center;padding:10px 14px 10px 10px;color:inherit;text-decoration:none;border-top:1px solid var(--line)}
+.prow:first-child{border-top:0}
+.prow:hover{background:var(--panel-2)}
+.prow:hover .ptitle b{text-decoration:underline;text-underline-offset:3px}
+.prow.k-notice{background:color-mix(in srgb,var(--accent) 9%,var(--panel))}
+.pthumb{width:128px;height:80px;border-radius:4px;overflow:hidden;background:var(--panel-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.pthumb img{width:100%;height:100%;object-fit:cover;display:block}
+.pmain{display:flex;flex-direction:column;gap:3px;min-width:0}
+.ptitle{display:flex;align-items:center;gap:7px;min-width:0}
+.ptitle b{font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pex{font-size:12.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pmeta{font-size:11.5px;color:var(--muted)}
+.pstat{display:flex;flex-direction:column;gap:4px;align-items:flex-end;font-family:var(--f-mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.pstat span{display:inline-flex;align-items:center;gap:5px}
+.kbadge{flex:none;font-size:10.5px;font-weight:600;border-radius:3px;padding:1px 6px;border:1px solid var(--line);color:var(--muted);background:var(--panel-2);white-space:nowrap}
+.kbadge.k-bp{border-color:var(--power);color:var(--power)}
+.kbadge.k-notice{background:var(--accent);border-color:transparent;color:var(--on-accent)}
+.kbadge.k-op{margin-left:5px}
+.bmore{display:flex;justify-content:center;margin-top:12px}
+.back{display:inline-block;color:var(--muted);text-decoration:none;font-size:12.5px;margin-bottom:12px}
+.back:hover{color:var(--ink)}
+.phead{display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin-bottom:16px}
+.phead .pmeta{font-size:12.5px}
+.phead .pmeta b{color:var(--ink);font-weight:600}
+.bpfig{margin:0 0 18px;border:1px solid var(--line);border-radius:6px;background:var(--panel);padding:10px;display:flex;flex-direction:column;gap:8px}
+#bBig{width:100%;height:clamp(240px,52vw,460px);border-radius:4px;display:block}
+.bpfig figcaption{font-size:12.5px}
+.fchips{display:flex;flex-wrap:wrap}
+.pbody{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.7;margin:0 0 18px;max-width:72ch}
+.pacts{display:flex;align-items:center;gap:8px;padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+a.btn{color:inherit;text-decoration:none;display:inline-block}
+.likebtn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px}
+.likebtn svg{color:var(--muted)}
+.likebtn[aria-pressed="true"]{border-color:var(--bad);color:var(--bad);font-weight:600}
+.likebtn[aria-pressed="true"] svg{color:var(--bad)}
+.cmts h3{font-family:var(--f-display);font-size:15px;margin:18px 0 8px}
+.clist{list-style:none;margin:0 0 12px;padding:0;display:flex;flex-direction:column}
+.cmt{padding:10px 0;border-bottom:1px solid var(--line)}
+.cmeta{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.cmeta b{color:var(--ink);font-weight:600}
+.cbody{white-space:pre-wrap;overflow-wrap:anywhere;margin-top:3px;font-size:13.5px}
+.cnone{padding:6px 0}
+.cform{display:flex;flex-direction:column;gap:6px}
+.cform textarea,.pwrite input,.pwrite textarea{width:100%;border:1px solid var(--line);background:var(--panel);border-radius:4px;padding:8px 10px;font-size:13.5px;resize:vertical}
+.linkbtn{border:0;background:none;padding:0;color:var(--ink);text-decoration:underline;text-underline-offset:2px;font-size:inherit}
+.linkbtn.danger{color:var(--bad);margin-left:auto;font-size:11.5px}
+.pwrite h2{margin-bottom:16px}
+.field{display:grid;grid-template-columns:72px minmax(0,1fr);gap:10px;align-items:start;margin-bottom:14px}
+.flabel{font-size:12.5px;color:var(--muted);padding-top:7px}
+.field .seg{justify-self:start}
+.field .seg button{font-family:var(--f-body);font-size:12.5px;padding:6px 12px}
+.wbp{display:flex;flex-direction:column;gap:8px;min-width:0}
+.wbp .sel{max-width:100%}
+.wbp textarea{font-family:var(--f-mono);font-size:11.5px}
+#wPrev{width:100%;height:220px;border:1px solid var(--line);border-radius:4px;display:block}
+.wbp .note{margin:0}
+.pwrite .acts{margin-left:82px}
+@media (max-width: 960px){
+  .app.boardmode .board{grid-row:auto;overflow:visible}
+}
+@media (max-width: 640px){
+  .prow{grid-template-columns:84px minmax(0,1fr);gap:10px}
+  .pthumb{width:84px;height:56px}
+  .pstat{grid-column:2;flex-direction:row;gap:12px;justify-content:flex-start}
+  .field{grid-template-columns:minmax(0,1fr);gap:4px}
+  .flabel{padding-top:0}
+  .pwrite .acts{margin-left:0}
+  .bhead{align-items:center}
+}
 @media (prefers-reduced-motion: reduce){ .meter i,.switch input::after, }
 </style>
 
@@ -248,26 +333,29 @@ dialog textarea{width:100%;height:200px;font-family:var(--f-mono);font-size:11px
       <div class="mark" aria-hidden="true"></div>
       <div><h1>AIC 공장 시뮬레이터</h1><small>Arknights: Endfield · 협곡 IV / 무릉</small></div>
     </div>
-    <div class="ctl">
+    <nav class="seg view" id="viewSw" aria-label="화면" hidden><button data-v="sim" aria-pressed="true">시뮬레이터</button><button data-v="board" aria-pressed="false">게시판</button></nav>
+    <div class="ctl simonly">
       <button class="btn primary" id="play">일시정지</button>
       <div class="seg" id="speed" role="group" aria-label="배속">
         <button data-s="1" aria-pressed="true">1×</button><button data-s="2" aria-pressed="false">2×</button><button data-s="4" aria-pressed="false">4×</button><button data-s="8" aria-pressed="false">8×</button>
       </div>
       <span class="clock" id="clock">T+00:00</span>
     </div>
-    <div class="pwr" title="전력 사용량 / 공급량">
+    <div class="pwr simonly" title="전력 사용량 / 공급량">
       <span class="lbl">전력</span>
       <div class="meter" id="meter"><i></i></div>
       <b id="pwrtxt">0 / 200</b>
     </div>
     <div class="spacer"></div>
     <div class="ctl">
+      <span class="ctl simonly">
       <label class="lbl" for="site" style="font-size:11px;color:var(--muted)">부지</label>
       <select class="sel" id="site" aria-label="부지 크기"></select>
       <span class="seg" id="ebus" role="group" aria-label="부지 바깥 창고 입출력 라인" title="부지 바깥 고정 창고 입출력 라인 (협곡 IV 허브 최대 확장)"><button data-d="0" aria-label="위쪽">↑</button><button data-d="1" aria-label="오른쪽">→</button><button data-d="2" aria-label="아래쪽">↓</button><button data-d="3" aria-label="왼쪽">←</button></span>
       <span class="row" id="siteCustom" hidden style="gap:4px"><input id="sw" type="number" min="12" max="120" aria-label="부지 가로 칸 수" class="num"> × <input id="sh" type="number" min="12" max="120" aria-label="부지 세로 칸 수" class="num"><button class="btn sm primary" id="siteApply">적용</button><button class="btn sm" id="siteCancel">취소</button></span>
       <select class="sel" id="preset" aria-label="예시 공장 불러오기"><option value="">예시 공장 불러오기…</option></select>
       <button class="btn" id="io">레이아웃 코드</button>
+      </span>
       <span class="acct" id="acct" hidden></span>
     </div>
   </header>
@@ -305,6 +393,8 @@ dialog textarea{width:100%;height:200px;font-family:var(--f-mono);font-size:11px
     <div class="pane" id="pane-recipes" hidden></div>
     <div class="pane" id="pane-plan" hidden></div>
   </aside>
+
+  <section class="board" id="board" aria-label="게시판"></section>
 </div>
 
 <dialog id="loginDlg" aria-labelledby="lgTitle">
@@ -1854,14 +1944,14 @@ function iconURL(id){
   drawItem(c.getContext('2d'), id, 20, 21, 14);
   const u = c.toDataURL(); iconCache.set(id, u); return u;
 }
-const esc = s => String(s).replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+const esc = s => String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const ic = (id, n) => `<span class="ic" title="${esc(ITEMS[id].en)}"><img alt="" src="${iconURL(id)}">${n!=null?`<span>${n}×</span>`:''}<span>${esc(ITEMS[id].ko)}</span></span>`;
 const icS = (id, n) => `<span class="ic" title="${esc(ITEMS[id].ko)} · ${esc(ITEMS[id].en)}"><img alt="${esc(ITEMS[id].ko)}" src="${iconURL(id)}">${n!=null?n:''}</span>`;
 const fmt = n => { if (!isFinite(n)) return '∞'; const a = Math.abs(n); return a >= 1000 ? Math.round(n).toLocaleString('ko-KR') : (Math.round(n*10)/10).toString(); };
 
 // ---------- state ----------
 let world;
-const ui = { tool:'select', rot:2, sel:null, multi:new Set(), paste:null, clip:null, playing:true, speed:1, cam:{x:0,y:0,z:1}, hover:null, drag:null, tab:'stats', cat:'prod1', q:'', acc:0, touched:false, presetNote:null };
+const ui = { tool:'select', rot:2, sel:null, multi:new Set(), paste:null, clip:null, playing:true, speed:1, cam:{x:0,y:0,z:1}, hover:null, drag:null, tab:'stats', cat:'prod1', q:'', acc:0, touched:false, presetNote:null, view:'sim' };
 
 // ---------- persistence: account storage when the page has it, browser storage otherwise ----------
 const LS_LAYOUT = 'aic-sim-v2', LS_BP = 'aic-bp-v2';
@@ -1929,11 +2019,12 @@ const SB = window.AIC_SB || null;
 const loadScript = src => new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
 const USER_RE = /^[a-z0-9_]{3,20}$/;
 const acct = {
-  client: null, user: null, profile: null, mine: [], shared: [], sharedQ: '', sharedState: 'idle', down: false,
+  client: null, user: null, profile: null, mine: [], down: false, readyP: null,
   enabled(){ return !!(SB && SB.url && SB.key); },
   email(u){ return u + '@aicsim.local'; },
-  async init(){
-    if (!this.enabled()) return;
+  wait(){ return this.readyP || Promise.resolve(); },
+  init(){ if (this.enabled()) this.readyP = this._init(); },
+  async _init(){
     renderAcct();
     try {
       await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js');
@@ -1951,6 +2042,7 @@ const acct = {
       this.profile = data; await this.loadMine();
     }
     renderAcct(); renderPalette();
+    if (!force && ui.view === 'board') route();
   },
   name(){ return this.profile ? this.profile.username : ''; },
   isAdmin(){ return !!(this.profile && this.profile.role === 'admin'); },
@@ -1968,25 +2060,10 @@ const acct = {
     if (error) throw error;
     this.mine.unshift(data); renderPalette(); return data;
   },
-  async setPublic(b, on){
-    const { error } = await this.client.from('blueprints').update({ is_public: on, updated_at: new Date().toISOString() }).eq('id', b.id);
-    if (error) throw error;
-    b.is_public = on; this.sharedState = 'stale'; renderPalette();
-  },
   async del(id){
     const { error } = await this.client.from('blueprints').delete().eq('id', id);
     if (error) throw error;
-    this.mine = this.mine.filter(b => b.id !== id); this.shared = this.shared.filter(b => b.id !== id); renderPalette();
-  },
-  async loadShared(){
-    if (!this.client){ this.sharedState = this.down ? 'down' : 'loading'; return; }
-    this.sharedState = 'loading'; renderPalette();
-    let q = this.client.from('blueprints').select(this.COLS + ',profiles(username)').eq('is_public', true).order('created_at', { ascending: false }).limit(60);
-    if (this.sharedQ) q = q.ilike('name', '%' + this.sharedQ.replace(/[%_]/g, '') + '%');
-    const { data, error } = await q;
-    if (error){ this.sharedState = 'error'; this.shared = []; }
-    else { this.sharedState = 'ok'; this.shared = data || []; }
-    renderPalette();
+    this.mine = this.mine.filter(b => b.id !== id); renderPalette();
   },
   async fetchData(id){
     const { data, error } = await this.client.from('blueprints').select('name,data').eq('id', id).single();
@@ -2033,8 +2110,8 @@ function toolButton(type){
 }
 // palette: a row of category tabs (namu.wiki categories in wiki order, blueprints last);
 // the chosen category's facilities are laid out left to right in the strip below
-const CATS = GROUPS.concat([['bp', '청사진']]).concat(SB && SB.url ? [['share', '공유 청사진']] : []);
-function catCount(gid){ return gid==='bp' ? store.bps.length + acct.mine.length : gid==='share' ? (acct.sharedState === 'ok' ? acct.shared.length : '') : Object.keys(TYPES).filter(k => TYPES[k].group === gid).length; }
+const CATS = GROUPS.concat([['bp', '청사진']]);
+function catCount(gid){ return gid==='bp' ? store.bps.length + acct.mine.length : Object.keys(TYPES).filter(k => TYPES[k].group === gid).length; }
 function setCat(gid){
   if (ui.cat !== gid) ui.stripReset = true;
   ui.cat = gid; if (ui.q){ ui.q = ''; $('#q').value = ''; }
@@ -2061,12 +2138,11 @@ function renderPalette(){
     if (!keys.length) note(`"${ui.q}"와 맞는 설비가 없습니다.`);
     return;
   }
-  if (ui.cat === 'share'){ renderShared(el, note); return; }
   if (ui.cat !== 'bp'){
     Object.keys(TYPES).filter(k => TYPES[k].group === ui.cat).forEach(k => el.appendChild(toolButton(k)));
     return;
   }
-  if (acct.user) for (const b of acct.mine) el.appendChild(acctCard(b, true));
+  if (acct.user) for (const b of acct.mine) el.appendChild(acctCard(b));
   const imp = document.createElement('button'); imp.type = 'button'; imp.className = 'tool addbp';
   imp.innerHTML = `<span class="plus" aria-hidden="true">+</span><span class="nm">코드로 가져오기</span>`;
   imp.onclick = () => openDialog('bpimport');
@@ -2074,11 +2150,12 @@ function renderPalette(){
   for (const b of store.bps){
     const d = document.createElement('div'); d.className = 'bp';
     const n = (b.bp && b.bp.ents) ? b.bp.ents.length : 0;
-    d.innerHTML = `<b></b><span class="dim">${b.bp.w}×${b.bp.h} · 설비 ${n}개${acct.enabled() ? ' · 이 브라우저' : ''}</span><div class="row"><button class="btn sm primary" data-a="use">배치</button><button class="btn sm" data-a="code">코드</button>${acct.user ? '<button class="btn sm" data-a="up">계정에 저장</button>' : ''}<button class="btn sm danger" data-a="del">삭제</button></div>`;
+    d.innerHTML = `<b></b><span class="dim">${b.bp.w}×${b.bp.h} · 설비 ${n}개${acct.enabled() ? ' · 이 브라우저' : ''}</span><div class="row"><button class="btn sm primary" data-a="use">배치</button><button class="btn sm" data-a="code">코드</button>${acct.user ? '<button class="btn sm" data-a="up">계정에 저장</button>' : ''}${acct.enabled() ? '<button class="btn sm" data-a="post">게시</button>' : ''}<button class="btn sm danger" data-a="del">삭제</button></div>`;
     const up = d.querySelector('[data-a=up]'); if (up) up.onclick = async () => { try { await acct.addBp(b.name, b.bp); await store.delBp(b.id); flash(`"${b.name}"을 계정에 저장했습니다`); } catch(e){ flash(acctError(e)); } };
     d.querySelector('b').textContent = b.name;
     d.querySelector('[data-a=use]').onclick = () => startPaste(b.bp, b.name);
     d.querySelector('[data-a=code]').onclick = () => openDialog('bpcode', b);
+    const post = d.querySelector('[data-a=post]'); if (post) post.onclick = () => board.compose(b.name, b.bp);
     d.querySelector('[data-a=del]').onclick = ev => {
       const btn = ev.currentTarget;
       if (btn.dataset.confirm) store.delBp(b.id);
@@ -2087,8 +2164,8 @@ function renderPalette(){
     el.appendChild(d);
   }
   note(!store.bps.length && !acct.mine.length ? '저장한 청사진이 없습니다. 범위 선택으로 설비를 고른 뒤 "청사진으로 저장"을 누르세요.'
-    : acct.user ? '계정에 저장한 청사진은 어느 기기에서 로그인해도 그대로 있습니다. "공개"를 누르면 공유 청사진에 올라갑니다.'
-    : acct.enabled() ? '청사진은 이 브라우저에 저장됩니다. 로그인하면 계정에 저장하고 다른 사람과 공유할 수 있습니다.'
+    : acct.user ? '계정에 저장한 청사진은 어느 기기에서 로그인해도 그대로 있습니다. "게시"를 누르면 게시판에 글로 올릴 수 있습니다.'
+    : acct.enabled() ? '청사진은 이 브라우저에 저장됩니다. 로그인하면 계정에 저장하고 게시판에 올릴 수 있습니다.'
     : store.db ? '청사진은 내 계정에 저장되어 이 페이지를 다시 열어도 그대로 있습니다.' : '청사진은 이 브라우저에 저장됩니다. 다른 기기에서 쓰려면 "코드"로 복사해 가져가세요.');
 }
 // arrow keys move between category tabs; a mouse wheel scrolls the strip sideways
@@ -2102,45 +2179,441 @@ $('#plist').addEventListener('wheel', ev => {
   const el = ev.currentTarget; if (el.scrollWidth <= el.clientWidth || Math.abs(ev.deltaX) > Math.abs(ev.deltaY)) return;
   el.scrollLeft += ev.deltaY; ev.preventDefault();
 }, { passive: false });
-// a blueprint card for account rows (mine) or the shared board
-function acctCard(b, mine){
-  const d = document.createElement('div'); d.className = 'bp' + (mine ? '' : ' shared');
-  const who = !mine && b.profiles ? b.profiles.username : '';
+// a blueprint card for a blueprint saved to the account
+function acctCard(b){
+  const d = document.createElement('div'); d.className = 'bp';
   const date = new Date(b.created_at).toLocaleDateString('ko-KR');
-  const canDel = mine || acct.isAdmin() || (acct.user && b.owner === acct.user.id);
-  d.innerHTML = `<b></b><span class="dim"><span data-who></span>${b.w}×${b.h} · 설비 ${b.ent_count}개 · ${date}</span>
-    <div class="row"><button class="btn sm primary" data-a="use">배치</button><button class="btn sm" data-a="code">코드</button>
-    ${mine ? `<button class="btn sm${b.is_public ? ' on' : ''}" data-a="pub" aria-pressed="${b.is_public}">${b.is_public ? '공개 중' : '공개'}</button>` : ''}
-    ${canDel ? `<button class="btn sm danger" data-a="del">${!mine && acct.isAdmin() && b.owner !== (acct.user && acct.user.id) ? '삭제(관리자)' : '삭제'}</button>` : ''}</div>`;
+  d.innerHTML = `<b></b><span class="dim">${b.w}×${b.h} · 설비 ${b.ent_count}개 · ${date}</span>
+    <div class="row"><button class="btn sm primary" data-a="use">배치</button><button class="btn sm" data-a="code">코드</button><button class="btn sm" data-a="post">게시</button><button class="btn sm danger" data-a="del">삭제</button></div>`;
   d.querySelector('b').textContent = b.name;
-  if (who) d.querySelector('[data-who]').textContent = who + ' · ';
   const data = async () => b.data ? { name: b.name, data: b.data } : await acct.fetchData(b.id);
   d.querySelector('[data-a=use]').onclick = async () => { try { const r = await data(); startPaste(r.data, r.name); } catch(e){ flash(acctError(e)); } };
   d.querySelector('[data-a=code]').onclick = async () => { try { const r = await data(); openDialog('bpcode', { name: r.name, bp: r.data }); } catch(e){ flash(acctError(e)); } };
-  const pub = d.querySelector('[data-a=pub]');
-  if (pub) pub.onclick = async () => { try { await acct.setPublic(b, !b.is_public); flash(b.is_public ? `"${b.name}"을 공유 청사진에 올렸습니다` : `"${b.name}"을 공유에서 내렸습니다`); } catch(e){ flash(acctError(e)); } };
-  const del = d.querySelector('[data-a=del]');
-  if (del) del.onclick = ev => {
+  d.querySelector('[data-a=post]').onclick = async () => { try { const r = await data(); board.compose(r.name, r.data); } catch(e){ flash(acctError(e)); } };
+  d.querySelector('[data-a=del]').onclick = ev => {
     const btn = ev.currentTarget;
     if (btn.dataset.confirm) acct.del(b.id).catch(e => flash(acctError(e)));
     else { btn.dataset.confirm = '1'; btn.textContent = '한 번 더 눌러 삭제'; setTimeout(() => { if (btn.isConnected){ btn.textContent = '삭제'; delete btn.dataset.confirm; } }, 2500); }
   };
   return d;
 }
-function renderShared(el, note){
-  const box = document.createElement('div'); box.className = 'bp sharedsearch';
-  box.innerHTML = `<b>공유 청사진</b><span class="dim">다른 사람들이 공개한 청사진</span><div class="row"><input type="search" placeholder="이름으로 찾기" aria-label="공유 청사진 검색"><button class="btn sm">찾기</button></div>`;
-  const inp = box.querySelector('input'); inp.value = acct.sharedQ;
-  const go = () => { acct.sharedQ = inp.value.trim(); acct.loadShared(); };
-  box.querySelector('button').onclick = go; inp.onkeydown = ev => { if (ev.key === 'Enter') go(); };
-  el.appendChild(box);
-  if (acct.sharedState === 'idle' || acct.sharedState === 'stale'){ acct.loadShared(); return; }
-  if (acct.down || acct.sharedState === 'down'){ note('공유 서버에 연결하지 못했습니다. 잠시 후 다시 열어 주세요. (오래 쓰지 않으면 서버가 쉬는 상태일 수 있습니다)'); return; }
-  if (acct.sharedState === 'loading'){ note('불러오는 중…'); return; }
-  if (acct.sharedState === 'error'){ note('불러오지 못했습니다. 잠시 후 다시 시도하세요.'); return; }
-  for (const b of acct.shared) el.appendChild(acctCard(b, false));
-  note(acct.shared.length ? (acct.user ? '내 청사진은 청사진 탭에서 "공개"를 눌러 올립니다.' : '로그인하면 내 청사진도 여기에 올릴 수 있습니다.') : (acct.sharedQ ? '찾는 청사진이 없습니다.' : '아직 공개된 청사진이 없습니다. 첫 번째로 올려 보세요.'));
+// ---------- board: posts · comments · likes ----------
+// The whole page turns into the board. Addresses: #board (list), #post/ID, #write, #edit/ID; anything else is the simulator.
+// Reading is open to everyone; writing, comments and likes need a login. Counts, authors and times are set by the server.
+const BOARD_VIEWS = ['board', 'post', 'write', 'edit'];
+const KIND_KO = { bp: '청사진', text: '일반', notice: '공지' };
+const PAGE = 20;
+const LIST_COLS = 'id,kind,title,body,bp_w,bp_h,bp_ents,thumb,like_count,comment_count,author_name,author,created_at,updated_at';
+const IC_HEART = '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M8 13.6C8 13.6 1.8 9.9 1.8 5.9A3.1 3.1 0 0 1 8 4.6a3.1 3.1 0 0 1 6.2 1.3C14.2 9.9 8 13.6 8 13.6z" fill="currentColor"/></svg>';
+const IC_CMT = '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M2.5 3h11v7.5H8l-3.2 2.6v-2.6H2.5z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>';
+const IC_DOC = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 3h8l4 4v14H6z M14 3v4h4 M9 12h6 M9 15.5h6 M9 19h4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>';
+const IC_PIN = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 10v4h3l6 4V6L7 10z M16 9.5a4 4 0 0 1 0 5 M18.5 7a7.5 7.5 0 0 1 0 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/></svg>';
+
+function ago(ts){
+  const d = (Date.now() - new Date(ts).getTime()) / 1000;
+  if (d < 60) return '방금';
+  if (d < 3600) return Math.floor(d / 60) + '분 전';
+  if (d < 86400) return Math.floor(d / 3600) + '시간 전';
+  if (d < 86400 * 7) return Math.floor(d / 86400) + '일 전';
+  return new Date(ts).toLocaleDateString('ko-KR');
 }
+const fullDate = ts => new Date(ts).toLocaleString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+const edited = p => new Date(p.updated_at) - new Date(p.created_at) > 60000;
+
+// blueprint pictures: a small fixed-colour minimap for list thumbnails (stored with the post), a themed one for the post page
+function bpCat(t){
+  const T = TYPES[t], k = T.kind;
+  if (CARRIER.has(k)) return T.carrier === 'fluid' ? 'pipe' : 'belt';
+  if (k === 'pylon' || k === 'relay' || k === 'thermal') return 'power';
+  if (k === 'bus' || k === 'busport' || k === 'loader' || k === 'unloader') return 'depot';
+  if (k === 'stash' || k === 'tank' || k === 'sink') return 'store';
+  return 'mach';
+}
+const THUMB_PAL = { bg: '#121615', floor: '#1C2220', belt: '#7A8480', pipe: '#3AA3A6', mach: '#DCE0DA', store: '#A9B2AD', edge: '#0B0E0D', power: '#2DB3A0', depot: '#F2D300', ink: '#15191A' };
+const themePal = () => ({ bg: C['panel-2'], floor: C['cv-bg'], belt: C['cv-belt'], pipe: C['cv-pipe'], mach: C['cv-mach'], store: C['panel-2'], edge: C['cv-mach-ink'], power: C.power, depot: C.accent, ink: C['cv-mach-ink'] });
+function drawBp(g, bp, W, H, pal, labels){
+  g.fillStyle = pal.bg; g.fillRect(0, 0, W, H);
+  if (!bp || !bp.w || !bp.h || !Array.isArray(bp.ents)) return;
+  const pad = Math.max(4, Math.min(W, H) * 0.05);
+  const s = Math.min((W - 2 * pad) / bp.w, (H - 2 * pad) / bp.h);
+  const ox = (W - s * bp.w) / 2, oy = (H - s * bp.h) / 2;
+  g.fillStyle = pal.floor; g.fillRect(ox, oy, s * bp.w, s * bp.h);
+  const ents = bp.ents.filter(e => TYPES[e.t]);
+  const rect = e => { const [w, h] = AIC.dims(e.t, e.f); return [ox + e.x * s, oy + e.y * s, w * s, h * s]; };
+  // depot bus underneath, then belts and pipes, then facilities on top
+  g.globalAlpha = .45; g.fillStyle = pal.depot;
+  for (const e of ents) if (bpCat(e.t) === 'depot' && TYPES[e.t].kind === 'bus'){ const [x, y, w, h] = rect(e); g.fillRect(x, y, w, h); }
+  g.globalAlpha = 1;
+  const thin = s * 0.22;
+  for (const L of ['belt', 'pipe']){
+    g.fillStyle = pal[L];
+    for (const e of ents){
+      if (bpCat(e.t) !== L) continue;
+      const [x, y, w, h] = rect(e), K2 = TYPES[e.t].kind;
+      if (K2 !== 'belt') g.fillRect(x + thin * .5, y + thin * .5, w - thin, h - thin);       // bridges, splitters, convergers, control ports
+      else if (e.f === 1 || e.f === 3) g.fillRect(x, y + thin, w, h - 2 * thin);           // runs east-west
+      else g.fillRect(x + thin, y, w - 2 * thin, h);                                          // runs north-south
+    }
+  }
+  const lw = Math.max(1, Math.min(2.5, s * 0.1));
+  for (const e of ents){
+    const c = bpCat(e.t); if (c === 'belt' || c === 'pipe' || (c === 'depot' && TYPES[e.t].kind === 'bus')) continue;
+    const [x, y, w, h] = rect(e), i = lw / 2;
+    g.fillStyle = c === 'store' ? pal.store : c === 'depot' ? pal.depot : pal.mach; g.fillRect(x + i, y + i, w - lw, h - lw);
+    g.lineWidth = c === 'power' ? lw * 2 : lw; g.strokeStyle = c === 'power' ? pal.power : pal.edge; g.strokeRect(x + i, y + i, w - lw, h - lw);
+    if (!labels || w < 26 || h < 14) continue;
+    const name = TYPES[e.t].short || TYPES[e.t].ko;
+    let fs = Math.min(13, h * 0.32, s * 0.9);
+    g.font = `600 ${fs}px ${C.fBody || 'sans-serif'}`;
+    let tw = g.measureText(name).width;
+    if (tw > w - 6){ fs = fs * (w - 6) / tw; if (fs < 8) continue; g.font = `600 ${fs}px ${C.fBody || 'sans-serif'}`; }
+    g.fillStyle = c === 'depot' ? '#15191A' : pal.ink; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText(name, x + w / 2, y + h / 2);
+  }
+}
+// draw into a canvas at its on-screen size (sharp on high-DPI screens)
+function paintBp(cv, bp, pal, labels){
+  const r = cv.getBoundingClientRect(); if (!r.width) return;
+  const d = window.devicePixelRatio || 1;
+  cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d);
+  const g = cv.getContext('2d'); g.setTransform(d, 0, 0, d, 0, 0);
+  drawBp(g, bp, r.width, r.height, pal, labels);
+}
+function thumbURL(bp){
+  const c = document.createElement('canvas'); c.width = 320; c.height = 200;
+  drawBp(c.getContext('2d'), bp, 320, 200, THUMB_PAL, false);
+  return c.toDataURL('image/png');
+}
+function bpFacts(bp){
+  const n = {}; let belts = 0, pipes = 0;
+  for (const e of bp.ents){ if (!TYPES[e.t]) continue; const c = bpCat(e.t); if (c === 'belt') belts++; else if (c === 'pipe') pipes++; else n[e.t] = (n[e.t] || 0) + 1; }
+  const list = Object.entries(n).sort((a, b) => b[1] - a[1] || TYPES[a[0]].ko.localeCompare(TYPES[b[0]].ko, 'ko'));
+  return { list, belts, pipes, facs: list.reduce((a, [, c]) => a + c, 0) };
+}
+
+const board = {
+  filter: 'all', q: '', sort: 'new', rows: [], notices: [], more: false, state: 'idle', post: null, comments: [], liked: false, pending: null, seq: 0,
+  el(){ return $('#board'); },
+  db(){ return acct.client; },
+  // open the write page with a blueprint already attached (from a blueprint card)
+  compose(name, bp){ this.pending = { name, bp }; location.hash = 'write'; },
+  redraw(){
+    if (ui.view !== 'board') return;
+    const big = $('#bBig'); if (big && this.post && this.post.bp) paintBp(big, this.post.bp, themePal(), true);
+    const pv = $('#wPrev'); if (pv && this.wbp) paintBp(pv, this.wbp.bp, themePal(), true);
+  },
+  async show(v, arg){
+    const my = ++this.seq;
+    const el = this.el();
+    if (!acct.enabled()){ el.innerHTML = '<div class="bwrap"><p class="note">게시판은 공개 사이트에서만 열립니다.</p></div>'; return; }
+    if (!acct.client && !acct.down){ el.innerHTML = '<div class="bwrap"><p class="note">게시판에 연결하는 중…</p></div>'; await acct.wait(); if (my !== this.seq) return; }
+    if (acct.down || !acct.client){ el.innerHTML = '<div class="bwrap"><p class="note">게시판 서버에 연결하지 못했습니다. 잠시 후 새로고침해 주세요.</p><p><a class="btn" href="#">시뮬레이터로 돌아가기</a></p></div>'; return; }
+    if (v === 'board') return this.list(true, my);
+    if (v === 'post') return this.open(+arg, my);
+    if (v === 'write') return this.write(null, my);
+    if (v === 'edit') return this.write(+arg, my);
+  },
+
+  // ---- list ----
+  async list(reset, my){
+    if (reset){ this.rows = []; this.more = false; this.renderList('loading'); }
+    const db = this.db(), from = this.rows.length;
+    let q = db.from('posts').select(LIST_COLS);
+    q = this.filter === 'all' ? q.in('kind', ['bp', 'text']) : q.eq('kind', this.filter);
+    const term = this.q.replace(/[,()*%"\\]/g, ' ').trim();
+    if (term) q = q.or(`title.ilike.*${term}*,body.ilike.*${term}*,author_name.ilike.*${term}*`);
+    if (this.sort === 'like') q = q.order('like_count', { ascending: false });
+    if (this.sort === 'cmt') q = q.order('comment_count', { ascending: false });
+    q = q.order('created_at', { ascending: false }).range(from, from + PAGE);
+    const wantNotices = reset && !term && this.filter !== 'text' && this.filter !== 'bp';
+    const [res, nres] = await Promise.all([q, wantNotices ? db.from('posts').select(LIST_COLS).eq('kind', 'notice').order('created_at', { ascending: false }).limit(5) : null]);
+    if (my != null && my !== this.seq) return;
+    if (res.error){ this.renderList('error'); return; }
+    const got = res.data || [];
+    this.more = got.length > PAGE;
+    this.rows = this.rows.concat(got.slice(0, PAGE));
+    if (reset) this.notices = nres && !nres.error ? nres.data || [] : [];
+    this.renderList('ok');
+  },
+  renderList(state){
+    const el = this.el();
+    if (!$('#bList')){
+      el.innerHTML = `<div class="bwrap">
+        <div class="bhead"><div><h2>게시판</h2><p class="dim">청사진을 올리고 공장 이야기를 나누는 곳</p></div><span class="spacer"></span><button class="btn primary" id="bWrite">글쓰기</button></div>
+        <div class="btool">
+          <div class="seg" id="bFilter" role="group" aria-label="글 종류"><button data-f="all">전체</button><button data-f="bp">청사진</button><button data-f="text">일반</button></div>
+          <form class="bsearch" id="bSearch" role="search"><input type="search" id="bQ" placeholder="제목·내용·작성자 검색" aria-label="게시글 검색" maxlength="40"><button class="btn">검색</button></form>
+          <select class="sel" id="bSort" aria-label="정렬"><option value="new">최신순</option><option value="like">추천순</option><option value="cmt">댓글순</option></select>
+        </div>
+        <div class="blist" id="bList" aria-live="polite"></div>
+        <div class="bmore"><button class="btn" id="bMore" hidden>더 보기</button></div>
+      </div>`;
+      $('#bWrite').onclick = () => { this.pending = null; location.hash = 'write'; };
+      $('#bFilter').onclick = ev => { const b = ev.target.closest('button'); if (!b) return; this.filter = b.dataset.f; this.list(true, this.seq); };
+      $('#bSearch').onsubmit = ev => { ev.preventDefault(); this.q = $('#bQ').value.trim(); this.list(true, this.seq); };
+      $('#bSort').onchange = ev => { this.sort = ev.target.value; this.list(true, this.seq); };
+      $('#bMore').onclick = () => this.list(false, this.seq);
+    }
+    document.querySelectorAll('#bFilter button').forEach(b => b.setAttribute('aria-pressed', b.dataset.f === this.filter));
+    $('#bQ').value = this.q; $('#bSort').value = this.sort;
+    const list = $('#bList');
+    $('#bMore').hidden = !(state === 'ok' && this.more);
+    if (state === 'loading' && !this.rows.length){ list.innerHTML = '<p class="note bempty">불러오는 중…</p>'; return; }
+    if (state === 'error'){ list.innerHTML = '<p class="note bempty">글을 불러오지 못했습니다. 잠시 후 다시 시도하세요.</p>'; return; }
+    const rows = this.notices.concat(this.rows);
+    if (!rows.length){
+      list.innerHTML = `<p class="note bempty">${this.q ? `"${esc(this.q)}"와 맞는 글이 없습니다.` : '아직 글이 없습니다. 첫 글을 올려 보세요.'}</p>`; return;
+    }
+    list.innerHTML = rows.map(p => this.rowHTML(p)).join('');
+  },
+  rowHTML(p){
+    const thumb = p.kind === 'bp' && p.thumb ? `<img src="${esc(p.thumb)}" alt="">` : `<span class="pglyph">${p.kind === 'notice' ? IC_PIN : IC_DOC}</span>`;
+    const ex = (p.body || '').replace(/\s+/g, ' ').trim().slice(0, 120);
+    const size = p.kind === 'bp' && p.bp_w ? ` · ${p.bp_w}×${p.bp_h} · 설비 ${p.bp_ents}개` : '';
+    return `<a class="prow k-${p.kind}" href="#post/${p.id}">
+      <span class="pthumb">${thumb}</span>
+      <span class="pmain">
+        <span class="ptitle"><span class="kbadge k-${p.kind}">${KIND_KO[p.kind]}</span><b>${esc(p.title)}</b></span>
+        ${ex ? `<span class="pex">${esc(ex)}</span>` : ''}
+        <span class="pmeta">${esc(p.author_name)} · <time datetime="${esc(p.created_at)}" title="${esc(fullDate(p.created_at))}">${ago(p.created_at)}</time>${size}</span>
+      </span>
+      <span class="pstat"><span title="추천">${IC_HEART}${p.like_count}</span><span title="댓글">${IC_CMT}${p.comment_count}</span></span>
+    </a>`;
+  },
+
+  // ---- one post ----
+  async open(id, my){
+    const el = this.el();
+    el.innerHTML = '<div class="bwrap"><p class="note">불러오는 중…</p></div>';
+    const db = this.db();
+    const [pr, cr, lr] = await Promise.all([
+      db.from('posts').select('*').eq('id', id).maybeSingle(),
+      db.from('comments').select('*').eq('post_id', id).order('created_at', { ascending: true }),
+      acct.user ? db.from('likes').select('post_id').eq('post_id', id).eq('user_id', acct.user.id).maybeSingle() : null,
+    ]);
+    if (my !== this.seq) return;
+    if (pr.error || !pr.data){ el.innerHTML = `<div class="bwrap"><a class="back" href="#board">← 목록</a><p class="note">${pr.error ? '글을 불러오지 못했습니다.' : '지워졌거나 없는 글입니다.'}</p></div>`; return; }
+    this.post = pr.data; this.comments = cr.error ? [] : cr.data || []; this.liked = !!(lr && lr.data);
+    this.renderPost();
+  },
+  renderPost(){
+    const p = this.post, me = acct.user ? acct.user.id : null, mine = me && p.author === me;
+    const el = this.el();
+    let bpBlock = '';
+    if (p.bp && p.bp.ents){
+      const f = bpFacts(p.bp);
+      const extra = [f.belts ? `벨트 ${f.belts}칸` : '', f.pipes ? `파이프 ${f.pipes}칸` : ''].filter(Boolean).join(' · ');
+      bpBlock = `<figure class="bpfig">
+        <canvas id="bBig" role="img" aria-label="청사진 미리보기: ${esc(p.title)}"></canvas>
+        <figcaption><b>${p.bp.w}×${p.bp.h}</b> · 설비 ${f.facs}개${extra ? ' · ' + extra : ''}</figcaption>
+        <div class="fchips">${f.list.map(([t, c]) => `<span class="mchip">${esc(TYPES[t].ko)} ×${c}</span>`).join('')}</div>
+        <div class="row"><button class="btn primary" id="bUse">시뮬레이터에 배치</button><button class="btn" id="bSave">내 청사진에 저장</button><button class="btn" id="bCode">청사진 코드</button></div>
+      </figure>`;
+    }
+    el.innerHTML = `<article class="bwrap post">
+      <a class="back" href="#board">← 목록</a>
+      <header class="phead">
+        <span class="kbadge k-${p.kind}">${KIND_KO[p.kind]}</span>
+        <h2>${esc(p.title)}</h2>
+        <div class="pmeta"><b>${esc(p.author_name)}</b> · <time datetime="${esc(p.created_at)}">${fullDate(p.created_at)}</time>${edited(p) ? ' · 수정됨' : ''}</div>
+      </header>
+      ${bpBlock}
+      ${p.body ? `<div class="pbody">${esc(p.body)}</div>` : ''}
+      <div class="pacts">
+        <button class="btn likebtn" id="bLike" aria-pressed="${this.liked}">${IC_HEART}<span>추천 ${p.like_count}</span></button>
+        <span class="spacer"></span>
+        ${mine ? '<a class="btn" id="bEdit" href="#edit/' + p.id + '">수정</a>' : ''}
+        ${mine || acct.isAdmin() ? `<button class="btn danger" id="bDel">${mine ? '삭제' : '삭제(관리자)'}</button>` : ''}
+      </div>
+      <section class="cmts" aria-labelledby="cmtH">
+        <h3 id="cmtH">댓글 <span class="dim">${this.comments.length}</span></h3>
+        <ol class="clist">${this.comments.map(c => this.cmtHTML(c)).join('') || '<li class="note cnone">첫 댓글을 남겨 보세요.</li>'}</ol>
+        ${acct.user ? `<form class="cform" id="cForm"><textarea id="cBody" maxlength="1000" rows="3" placeholder="댓글 쓰기 (1000자까지)" aria-label="댓글"></textarea><div class="row"><span class="dim" id="cMsg"></span><span class="spacer"></span><button class="btn primary" type="submit" id="cGo">등록</button></div></form>`
+          : '<p class="note">댓글을 쓰려면 <button class="linkbtn" id="cLogin">로그인</button>하세요.</p>'}
+      </section>
+    </article>`;
+    if (p.bp && p.bp.ents){
+      paintBp($('#bBig'), p.bp, themePal(), true);
+      $('#bUse').onclick = () => { history.pushState(null, '', location.pathname + location.search); route(); startPaste(p.bp, p.title); flash('놓을 곳을 클릭하세요 · R 회전 · Esc 취소'); };
+      $('#bSave').onclick = async () => { const where = await saveBp(p.title, p.bp); flash(where === 'account' ? '내 계정 청사진에 저장했습니다' : '이 브라우저 청사진에 저장했습니다'); };
+      $('#bCode').onclick = () => openDialog('bpcode', { name: p.title, bp: p.bp });
+    }
+    $('#bLike').onclick = () => this.toggleLike();
+    const del = $('#bDel');
+    if (del) del.onclick = async ev => {
+      const btn = ev.currentTarget;
+      if (!btn.dataset.confirm){ btn.dataset.confirm = '1'; btn.textContent = '한 번 더 눌러 삭제'; setTimeout(() => { if (btn.isConnected){ btn.textContent = mine ? '삭제' : '삭제(관리자)'; delete btn.dataset.confirm; } }, 2500); return; }
+      const { error } = await this.db().from('posts').delete().eq('id', p.id);
+      if (error){ flash(acctError(error)); return; }
+      flash('글을 지웠습니다'); location.hash = 'board';
+    };
+    const cl = $('#cLogin'); if (cl) cl.onclick = () => openLogin('in');
+    const cf = $('#cForm');
+    if (cf) cf.onsubmit = async ev => {
+      ev.preventDefault();
+      const body = $('#cBody').value.trim(); if (!body){ $('#cMsg').textContent = '내용을 쓰세요'; return; }
+      $('#cGo').disabled = true; $('#cMsg').textContent = '';
+      const { error } = await this.db().from('comments').insert({ post_id: p.id, body });
+      $('#cGo').disabled = false;
+      if (error){ $('#cMsg').textContent = acctError(error); return; }
+      await this.reloadComments();
+    };
+    this.bindCmtDel();
+  },
+  cmtHTML(c){
+    const me = acct.user ? acct.user.id : null, can = me && (c.author === me || acct.isAdmin());
+    return `<li class="cmt"><div class="cmeta"><b>${esc(c.author_name)}</b>${c.author === this.post.author ? '<span class="kbadge k-op">작성자</span>' : ''} <time datetime="${esc(c.created_at)}" title="${esc(fullDate(c.created_at))}">${ago(c.created_at)}</time>
+      ${can ? `<button class="linkbtn danger" data-del="${c.id}">삭제</button>` : ''}</div><div class="cbody">${esc(c.body)}</div></li>`;
+  },
+  bindCmtDel(){
+    document.querySelectorAll('.clist [data-del]').forEach(b => b.onclick = async () => {
+      if (!b.dataset.confirm){ b.dataset.confirm = '1'; b.textContent = '한 번 더 눌러 삭제'; setTimeout(() => { if (b.isConnected){ b.textContent = '삭제'; delete b.dataset.confirm; } }, 2500); return; }
+      const { error } = await this.db().from('comments').delete().eq('id', +b.dataset.del);
+      if (error){ flash(acctError(error)); return; }
+      await this.reloadComments();
+    });
+  },
+  async reloadComments(){
+    const p = this.post;
+    const [cr, pr] = await Promise.all([
+      this.db().from('comments').select('*').eq('post_id', p.id).order('created_at', { ascending: true }),
+      this.db().from('posts').select('like_count,comment_count').eq('id', p.id).maybeSingle(),
+    ]);
+    if (!cr.error) this.comments = cr.data || [];
+    if (pr.data) Object.assign(p, pr.data);
+    $('.clist').innerHTML = this.comments.map(c => this.cmtHTML(c)).join('') || '<li class="note cnone">첫 댓글을 남겨 보세요.</li>';
+    $('#cmtH .dim').textContent = this.comments.length;
+    const t = $('#cBody'); if (t) t.value = '';
+    this.bindCmtDel();
+  },
+  async toggleLike(){
+    if (!acct.user){ openLogin('in'); return; }
+    const p = this.post, db = this.db(), btn = $('#bLike'); btn.disabled = true;
+    const { error } = this.liked
+      ? await db.from('likes').delete().eq('post_id', p.id).eq('user_id', acct.user.id)
+      : await db.from('likes').insert({ post_id: p.id });
+    if (!error || /duplicate/i.test(error.message || '')) this.liked = !this.liked;
+    else flash(acctError(error));
+    const { data } = await db.from('posts').select('like_count').eq('id', p.id).maybeSingle();
+    if (data) p.like_count = data.like_count;
+    if (!btn.isConnected) return;
+    btn.disabled = false; btn.setAttribute('aria-pressed', this.liked); btn.querySelector('span').textContent = '추천 ' + p.like_count;
+  },
+
+  // ---- write / edit ----
+  async write(id, my){
+    const el = this.el();
+    if (!acct.user){
+      el.innerHTML = `<div class="bwrap"><a class="back" href="#board">← 목록</a><h2>글쓰기</h2><p class="note">글을 쓰려면 로그인하세요.</p><p><button class="btn primary" id="wLogin">로그인</button></p></div>`;
+      $('#wLogin').onclick = () => openLogin('in'); return;
+    }
+    let p = null;
+    if (id){
+      el.innerHTML = '<div class="bwrap"><p class="note">불러오는 중…</p></div>';
+      const r = await this.db().from('posts').select('*').eq('id', id).maybeSingle();
+      if (my !== this.seq) return;
+      if (r.error || !r.data){ el.innerHTML = '<div class="bwrap"><a class="back" href="#board">← 목록</a><p class="note">글을 불러오지 못했습니다.</p></div>'; return; }
+      p = r.data;
+      if (p.author !== acct.user.id){ el.innerHTML = `<div class="bwrap"><a class="back" href="#post/${p.id}">← 글로 돌아가기</a><p class="note">내가 쓴 글만 고칠 수 있습니다.</p></div>`; return; }
+    }
+    const pend = !id ? this.pending : null; this.pending = null;
+    // where the attached blueprint can come from
+    const src = [];
+    if (p && p.bp) src.push(['keep', '지금 붙어 있는 청사진 그대로', () => ({ name: p.title, bp: p.bp })]);
+    if (pend) src.push(['pend', `고른 청사진 · ${pend.name}`, () => pend]);
+    const sel = selectionIds().filter(i => !world.pac || i !== world.pac.id);
+    if (sel.length) src.push(['sel', `시뮬레이터에서 선택한 범위 (설비 ${sel.filter(i => !CARRIER.has(K(world.ents.get(i).type))).length}개)`, () => ({ name: '선택한 설비', bp: world.blueprint(sel) })]);
+    const all = [...world.ents.keys()].filter(i => !world.pac || i !== world.pac.id);
+    const nFac = ids => ids.filter(i => !CARRIER.has(K(world.ents.get(i).type))).length;
+    if (all.length) src.push(['all', `시뮬레이터 공장 전체 (설비 ${nFac(all)}개)`, () => ({ name: '내 공장', bp: world.blueprint(all) })]);
+    for (const b of acct.mine) src.push(['a' + b.id, `내 계정 · ${b.name}`, async () => b.data ? { name: b.name, bp: b.data } : { name: b.name, bp: (await acct.fetchData(b.id)).data }]);
+    for (const b of store.bps) src.push(['l' + b.id, `이 브라우저 · ${b.name}`, () => ({ name: b.name, bp: b.bp })]);
+    src.push(['code', '청사진 코드 붙여넣기…', null]);
+    const kind0 = p ? p.kind : (pend || this.filter === 'bp' ? 'bp' : 'text');
+    el.innerHTML = `<form class="bwrap pwrite" id="wForm" novalidate>
+      <a class="back" href="${p ? '#post/' + p.id : '#board'}">← ${p ? '글로 돌아가기' : '목록'}</a>
+      <h2>${p ? '글 고치기' : '글쓰기'}</h2>
+      <div class="field"><span class="flabel" id="wKindL">종류</span>
+        <div class="seg" id="wKind" role="group" aria-labelledby="wKindL"><button type="button" data-k="bp">청사진 글</button><button type="button" data-k="text">일반 글</button>${acct.isAdmin() ? '<button type="button" data-k="notice">공지</button>' : ''}</div></div>
+      <label class="field"><span class="flabel">제목</span><input id="wTitle" maxlength="80" required placeholder="제목 (80자까지)"></label>
+      <div class="field" id="wBpF"><label class="flabel" for="wSrc">청사진</label>
+        <div class="wbp">
+          <select class="sel" id="wSrc">${src.map(([v, l]) => `<option value="${esc(v)}">${esc(l)}</option>`).join('')}</select>
+          <textarea id="wCode" hidden rows="3" placeholder="AIC2: 로 시작하는 청사진 코드를 붙여넣으세요" spellcheck="false" aria-label="청사진 코드"></textarea>
+          <canvas id="wPrev" role="img" aria-label="붙일 청사진 미리보기"></canvas>
+          <p class="note" id="wPrevNote"></p>
+        </div></div>
+      <label class="field"><span class="flabel">내용</span><textarea id="wBody" maxlength="5000" rows="10" placeholder="${kind0 === 'bp' ? '어떤 공장인지, 무엇을 넣으면 무엇이 나오는지, 분당 생산량 같은 설명을 적어 주세요' : '내용 (5000자까지)'}"></textarea></label>
+      <div class="msg" id="wMsg" role="alert"></div>
+      <div class="acts"><button class="btn primary" type="submit" id="wGo">${p ? '고친 내용 저장' : '올리기'}</button><a class="btn" href="${p ? '#post/' + p.id : '#board'}">취소</a></div>
+    </form>`;
+    let kind = kind0;
+    const setKind = k => { kind = k; document.querySelectorAll('#wKind button').forEach(b => b.setAttribute('aria-pressed', b.dataset.k === k)); $('#wBpF').hidden = k !== 'bp'; if (k === 'bp') this.redraw(); };
+    $('#wKind').onclick = ev => { const b = ev.target.closest('button'); if (b) setKind(b.dataset.k); };
+    if (p){ $('#wTitle').value = p.title; $('#wBody').value = p.body || ''; }
+    else if (pend) $('#wTitle').value = pend.name.slice(0, 80);
+    this.wbp = null;
+    const pick = async () => {
+      const v = $('#wSrc').value, s = src.find(x => x[0] === v), note = $('#wPrevNote');
+      $('#wCode').hidden = v !== 'code';
+      try {
+        if (v === 'code'){ const t = $('#wCode').value.trim(); if (!t){ this.wbp = null; note.textContent = '코드를 붙여넣으면 미리보기가 나옵니다.'; } else { const o = dec(t), bp = o.bp || o; if (!bp.ents) throw 0; this.wbp = { name: o.name || '청사진', bp }; } }
+        else this.wbp = await s[2]();
+      } catch(e){ this.wbp = null; note.textContent = '읽을 수 없는 청사진 코드입니다.'; }
+      const cv = $('#wPrev');
+      if (this.wbp && this.wbp.bp){ const f = bpFacts(this.wbp.bp); note.textContent = `${this.wbp.bp.w}×${this.wbp.bp.h} · 설비 ${f.facs}개${f.belts ? ' · 벨트 ' + f.belts + '칸' : ''}${f.pipes ? ' · 파이프 ' + f.pipes + '칸' : ''}`; cv.hidden = false; paintBp(cv, this.wbp.bp, themePal(), true); }
+      else cv.hidden = true;
+    };
+    $('#wSrc').onchange = pick; $('#wCode').oninput = pick;
+    setKind(kind); pick();
+    $('#wForm').onsubmit = async ev => {
+      ev.preventDefault();
+      const msg = $('#wMsg'), title = $('#wTitle').value.trim(), body = $('#wBody').value.trim();
+      if (!title){ msg.textContent = '제목을 쓰세요'; $('#wTitle').focus(); return; }
+      const row = { kind, title: title.slice(0, 80), body: body.slice(0, 5000) };
+      if (kind === 'bp'){
+        if (!this.wbp || !this.wbp.bp || !this.wbp.bp.ents || !this.wbp.bp.ents.length){ msg.textContent = '붙일 청사진을 고르세요'; return; }
+        if ($('#wSrc').value !== 'keep'){
+          const bp = this.wbp.bp;
+          if (JSON.stringify(bp).length > 380000){ msg.textContent = '청사진이 너무 큽니다. 범위를 나눠서 올려 주세요.'; return; }
+          Object.assign(row, { bp, bp_w: bp.w, bp_h: bp.h, bp_ents: bpFacts(bp).facs, thumb: thumbURL(bp) });
+        }
+      } else Object.assign(row, { bp: null, bp_w: null, bp_h: null, bp_ents: null, thumb: null });
+      $('#wGo').disabled = true; msg.textContent = p ? '저장하는 중…' : '올리는 중…';
+      const db = this.db();
+      const r = p ? await db.from('posts').update(row).eq('id', p.id).select('id').maybeSingle() : await db.from('posts').insert(row).select('id').single();
+      $('#wGo').disabled = false;
+      if (r.error || !r.data){ msg.textContent = r.error ? acctError(r.error) : '저장하지 못했습니다'; return; }
+      flash(p ? '글을 고쳤습니다' : '글을 올렸습니다');
+      location.hash = 'post/' + r.data.id;
+    };
+    $('#wTitle').focus();
+  },
+};
+
+// simulator ↔ board: the address decides which one is on screen
+function setView(v){
+  const was = ui.view; ui.view = v;
+  $('#app').classList.toggle('boardmode', v === 'board');
+  document.querySelectorAll('#viewSw button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v));
+  if (v === 'sim' && was === 'board'){ resize(); render(); }
+}
+function route(){
+  const [v, arg] = location.hash.replace(/^#\/?/, '').split('/');
+  if (!acct.enabled() || !BOARD_VIEWS.includes(v)){ setView('sim'); return; }
+  const first = ui.view !== 'board';
+  setView('board');
+  if (first || v !== 'board') window.scrollTo(0, 0), $('#board').scrollTop = 0;
+  board.show(v, arg);
+}
+window.addEventListener('hashchange', route);
+$('#viewSw').onclick = ev => {
+  const b = ev.target.closest('button'); if (!b) return;
+  if (b.dataset.v === 'board'){ if (location.hash !== '#board') location.hash = 'board'; else route(); }
+  else if (ui.view !== 'sim'){ history.pushState(null, '', location.pathname + location.search); route(); }
+};
+$('#viewSw').hidden = !acct.enabled();
+
 // header: login button or "id · logout"
 function renderAcct(){
   const el = $('#acct'); if (!el) return;
@@ -2895,7 +3368,7 @@ function renderSelbar(){
 }
 
 document.addEventListener('keydown', ev => {
-  if (ev.target.closest('input,select,textarea,dialog')) return;
+  if (ui.view === 'board' || ev.target.closest('input,select,textarea,dialog')) return;
   const k = ev.key.toLowerCase(), mod = ev.ctrlKey || ev.metaKey;
   if (mod && k==='c'){ copySel(); ev.preventDefault(); return; }
   if (mod && k==='v'){ if (ui.clip) startPaste(ui.clip); ev.preventDefault(); return; }
@@ -3362,7 +3835,7 @@ function frame(now){
     let n = 0; while (ui.acc >= 0.05 && n < 400){ world.step(0.05); ui.acc -= 0.05; n++; }
     if (n >= 400) ui.acc = 0;
   }
-  render();
+  if (ui.view !== 'board') render();
   if (now - uiT > 250){
     uiT = now;
     const p = world.power, over = p.demand > p.supply;
@@ -3387,10 +3860,10 @@ function frame(now){
 }
 
 const mq = matchMedia('(prefers-color-scheme: dark)');
-const retheme = () => { readColors(); renderTools(); renderPalette(); renderInspector(true); renderStats(); renderRecipes(); renderPlan(); };
+const retheme = () => { readColors(); renderTools(); renderPalette(); renderInspector(true); renderStats(); renderRecipes(); renderPlan(); board.redraw(); };
 if (mq.addEventListener) mq.addEventListener('change', retheme);
 new MutationObserver(retheme).observe(document.documentElement, { attributes:true, attributeFilter:['data-theme'] });
-window.addEventListener('resize', resize);
+window.addEventListener('resize', () => { resize(); board.redraw(); });
 // save right away when the tab is closed, reloaded or hidden (the periodic save runs every 6 s)
 const saveNow = () => { if (ui.touched) store.saveLayout(); };
 window.addEventListener('pagehide', saveNow);
@@ -3403,6 +3876,7 @@ syncSite(); fitView();
 renderInspector(true); renderStats(); renderRecipes(); renderPlan();
 store.init();
 acct.init();
+route();
 if (document.fonts) document.fonts.ready.then(() => render());
 if (ui.oldSave) setTimeout(() => flash('PAC 포트 배치가 바뀌어 이전 공장 대신 예시 공장을 열었습니다. 청사진은 그대로 있습니다.'), 600);
 requestAnimationFrame(frame);
