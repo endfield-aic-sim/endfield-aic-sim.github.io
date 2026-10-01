@@ -326,7 +326,9 @@ const gapOf = item => (ITEMS[item] && ITEMS[item].fluid) ? PIPE_GAP : BELT_GAP;
 const cellTOf = item => (ITEMS[item] && ITEMS[item].fluid) ? PIPE_CELL_T : BELT_CELL_T;
 // Power ranges: pylon 30 m supply and link, relay 80 m, Xiranite pylon 30 m supply / 80 m link. Assumed 1 cell ≈ 3 m.
 const M_PER_CELL = 3;
-const PYLON_R = Math.round(30 / M_PER_CELL);
+const PYLON_R = 5; // supply area 12×12 centred on the 2×2 pylon (any overlap powers a facility)
+// cells a power node reaches beyond its own footprint: pylon 12×12 → 5, relay 7×7 → 2
+const supplyR = e => { const t = TYPES[e.type]; return t && t.supply ? (t.supply - Math.max(t.w, t.h)) / 2 : -1; };
 const PYLON_LINK = Math.round(30 / M_PER_CELL);
 const RELAY_LINK = Math.round(80 / M_PER_CELL);
 const PAC_POWER = 200;
@@ -632,10 +634,10 @@ const TYPES = {
   psplitter: { ko: '파이프 분류기', en: 'Pipe Splitter', short: '파이프 분류기', w: 1, h: 1, power: 0, kind: 'splitter', carrier: 'fluid', group: 'logi' },
   pcontrol:  { ko: '파이프 컨트롤 포트', en: 'Pipe Control Port', short: '파이프 컨트롤', w: 1, h: 1, power: 0, kind: 'control', carrier: 'fluid', group: 'logi' },
   // 전력 공급
-  pylon:     { ko: '전력 공급기', en: 'Electric Pylon', short: '공급기', w: 2, h: 2, power: 0, kind: 'pylon', link: PYLON_LINK, group: 'power' },
-  xpylon:    { ko: '식양 전력 공급기', en: 'Xiranite Pylon', short: '식양 공급기', w: 2, h: 2, power: 0, kind: 'pylon', link: RELAY_LINK, group: 'power', wuling: true },
-  relay:     { ko: '중계기', en: 'Relay Tower', short: '중계기', w: 3, h: 3, power: 0, kind: 'relay', link: RELAY_LINK, group: 'power' },
-  xrelay:    { ko: '식양 중계기', en: 'Xiranite Relay', short: '식양 중계기', w: 3, h: 3, power: 0, kind: 'relay', link: RELAY_LINK, group: 'power', wuling: true },
+  pylon:     { ko: '전력 공급기', en: 'Electric Pylon', short: '공급기', w: 2, h: 2, power: 0, kind: 'pylon', link: PYLON_LINK, supply: 12, group: 'power' },
+  xpylon:    { ko: '식양 전력 공급기', en: 'Xiranite Pylon', short: '식양 공급기', w: 2, h: 2, power: 0, kind: 'pylon', link: RELAY_LINK, supply: 12, group: 'power', wuling: true },
+  relay:     { ko: '중계기', en: 'Relay Tower', short: '중계기', w: 3, h: 3, power: 0, kind: 'relay', link: RELAY_LINK, supply: 7, group: 'power' },
+  xrelay:    { ko: '식양 중계기', en: 'Xiranite Relay', short: '식양 중계기', w: 3, h: 3, power: 0, kind: 'relay', link: RELAY_LINK, supply: 7, group: 'power', wuling: true },
   thermal:   { ko: '열에너지 뱅크', en: 'Thermal Bank', short: '열에너지 뱅크', w: 2, h: 2, power: 0, kind: 'thermal', group: 'power' },
   // 저장고 입출력
   stash:     { ko: '프로토콜 저장함', en: 'Protocol Stash', short: '저장함', w: 3, h: 3, power: 5, kind: 'stash', group: 'depot' },
@@ -975,12 +977,12 @@ class World {
         let bi = 0, bj = null, bd = 1e9;
         for (let i = 0; i < left.length; i++) for (const o of on) { const d = rectDist(left[i], o); if (d < bd) { bd = d; bi = i; bj = o; } }
         const p = left.splice(bi, 1)[0]; p.powered = true; p.link = bj.id; on.push(p);
-        if (TYPES[p.type].kind === 'pylon') sources.push(p);
+        if (TYPES[p.type].supply) sources.push(p); // pylons 12×12, relays 7×7
       }
       for (const e of this.ents.values()) {
         const t = TYPES[e.type];
         if (!(t.power || t.kind === 'thermal' || t.kind === 'pump' || t.kind === 'miner')) continue;
-        for (const s of sources) if (rectDist(s, e) <= PYLON_R) { e.powered = true; break; }
+        for (const s of sources) if (rectDist(s, e) <= supplyR(s)) { e.powered = true; break; }
         if (!t.power && t.kind !== 'thermal') e.powered = true; // unpowered rigs/extractors run anywhere
       }
     }
@@ -1610,7 +1612,7 @@ const PRESETS = {
       beltPath(w, [[27, 30], [30, 30], [30, 22]], 0);
       const x = w.at(30, 21, 'belt'); if (x) w.remove(x.id); w.place('bridge', 30, 21, 3);
       beltPath(w, [[30, 20], [30, 13]], 0);
-      w.place('pylon', 25, 19, 2); // the PAC itself powers nothing: one pylon in the middle covers every machine
+      w.place('pylon', 28, 22, 2); // the PAC itself powers nothing: one pylon (12×12 area) covers every machine
     },
   },
   battery: {
@@ -1633,7 +1635,7 @@ const PRESETS = {
       w.place('splitter', 24, 32, 2);
       beltPath(w, [[23, 32]], 3); w.place('thermal', 21, 32, 2);
       beltPath(w, [[25, 32]], 1); w.place('thermal', 26, 32, 2);
-      w.place('pylon', 23, 23, 2); // covers the thermal banks too, so their power reaches the grid
+      w.place('pylon', 28, 22, 2); w.place('pylon', 22, 30, 2); // the second one covers the thermal banks, so their power reaches the grid
     },
   },
   farm: {
@@ -1647,7 +1649,7 @@ const PRESETS = {
       beltPath(w, [[41, 16], [41, 17]], 2);
       w.place('shred', 40, 18, 2);
       beltPath(w, [[41, 21], [41, 22], [33, 22], [33, 13]], 0);
-      w.place('pylon', 38, 16, 2);
+      w.place('pylon', 34, 13, 2);
     },
   },
   xiranite: {
@@ -1689,7 +1691,7 @@ const PRESETS = {
       const xg = w.place('coutlet', 13, 24, 1); w.setSource(xg, 'xiragen');
       beltPath(w, [[16, 25], [17, 25]], 1, 'pipe');
       beltPath(w, [[22, 28], [29, 28], [29, 13]], 0);
-      w.place('pylon', 23, 17, 2);
+      w.place('pylon', 24, 18, 2);
     },
   },
   empty: { ko: '빈 부지', note: 'PAC만 있는 빈 부지입니다. 기초 원자재는 얼마든지 꺼내 쓸 수 있습니다.', build() {} },
@@ -1770,7 +1772,7 @@ function plan(item, perMin, depth) {
   return node;
 }
 
-const AIC = { kindFits, FSLOT, layerOf, SITES, SITE_MIN, SITE_MAX, resizeWorld, presetSize, bbox, DX, DY, opp, ITEMS, RECIPES, RECIPES_BY_M, TYPES, GROUPS, FUEL, TILE, TILE_KO, World, newWorld, loadPreset, deserialize, PRESETS,
+const AIC = { supplyR, kindFits, FSLOT, layerOf, SITES, SITE_MIN, SITE_MAX, resizeWorld, presetSize, bbox, DX, DY, opp, ITEMS, RECIPES, RECIPES_BY_M, TYPES, GROUPS, FUEL, TILE, TILE_KO, World, newWorld, loadPreset, deserialize, PRESETS,
   dims, edgeCells, portCells, isPort, rectDist, plan, producerOf, RAW, IN_CAP, OUT_CAP, bpRotate, isFluid, TOGGLABLE,
   BELT_CELL_T, BELT_GAP, PIPE_CELL_T, PIPE_GAP, cellTOf, M_PER_CELL, PORT_GAP, PYLON_R, PYLON_LINK, RELAY_LINK, PAC_POWER };
 if (typeof module !== 'undefined' && module.exports) module.exports = AIC; else root.AIC = AIC;
@@ -2120,7 +2122,7 @@ function render(){
   for (const d of world.ents.values()) if (d.env && TYPES[d.type].spread){ const r = (TYPES[d.type].spread - d.w)/2; ctx.fillStyle = MAT[ITEMS[d.env].mat] || C.power; ctx.globalAlpha = .1; ctx.fillRect((d.x-r)*S, (d.y-r)*S, (d.w+2*r)*S, (d.h+2*r)*S); ctx.globalAlpha = 1; }
   const bt = ui.tool.startsWith('build:') ? ui.tool.slice(6) : null;
   const selType = ui.sel && world.ents.get(ui.sel) ? world.ents.get(ui.sel).type : null;
-  if ((bt && (TYPES[bt].power || ['pylon','relay','thermal'].includes(K(bt)))) || ['pylon','relay','pac','thermal'].includes(selType)) drawRanges();
+  if ((bt && (TYPES[bt].power || ['pylon','relay','thermal'].includes(K(bt)))) || (selType && (TYPES[selType].supply || ['pac','thermal'].includes(selType)))) drawRanges();
   // gas dispersing area (13×13 around the unit) while placing or selecting one
   { const g = ghostInfo(), sel = ui.sel && world.ents.get(ui.sel);
     for (const e of [g && TYPES[g.type].spread ? g : null, sel && TYPES[sel.type].spread ? sel : null]) if (e) drawSpread(e); }
@@ -2206,7 +2208,7 @@ function drawSpread(e){
 }
 function drawRanges(){
   ctx.fillStyle = C['cv-range'];
-  for (const s of world.ents.values()) if (s.type==='pylon' && s.powered) ctx.fillRect((s.x-PYLON_R)*S, (s.y-PYLON_R)*S, (s.w+2*PYLON_R)*S, (s.h+2*PYLON_R)*S);
+  for (const s of world.ents.values()) if (TYPES[s.type].supply && s.powered){ const r = AIC.supplyR(s); ctx.fillRect((s.x-r)*S, (s.y-r)*S, (s.w+2*r)*S, (s.h+2*r)*S); }
   ctx.strokeStyle = C['cv-range-line']; ctx.lineWidth = 1.5/ui.cam.z; ctx.setLineDash([4/ui.cam.z,4/ui.cam.z]);
   for (const s of world.ents.values()) if (s.link){ const p = world.ents.get(s.link); if (p){ ctx.beginPath(); ctx.moveTo((s.x+s.w/2)*S,(s.y+s.h/2)*S); ctx.lineTo((p.x+p.w/2)*S,(p.y+p.h/2)*S); ctx.stroke(); } }
   ctx.setLineDash([]);
@@ -2480,7 +2482,7 @@ function drawGhost(){
     if (g.w*g.h > 1 && t.kind!=='pylon' && t.kind!=='relay' && t.kind!=='bus' && t.kind!=='busport'){ if (t.ports.out) portMarks(g, 'out', '#fff', true); if (t.ports.in && t.kind!=='pump') portMarks(g, 'in', '#fff', false); }
     ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; chevron(ctx, (g.x+g.w/2)*S, (g.y+g.h/2)*S, g.f, 5);
   }
-  if (g.type==='pylon'){ ctx.strokeStyle = C['cv-range-line']; ctx.lineWidth=1.5/z; ctx.strokeRect((g.x-PYLON_R)*S,(g.y-PYLON_R)*S,(g.w+2*PYLON_R)*S,(g.h+2*PYLON_R)*S); }
+  if (TYPES[g.type].supply){ const r = AIC.supplyR(g); ctx.strokeStyle = C['cv-range-line']; ctx.lineWidth=1.5/z; ctx.strokeRect((g.x-r)*S,(g.y-r)*S,(g.w+2*r)*S,(g.h+2*r)*S); }
 }
 
 // ---------- input ----------
@@ -2892,7 +2894,7 @@ function renderInspector(force){
   } else if (k==='miner' || k==='pump'){
     h += `<dl class="kv" id="ikv"></dl><p>${k==='miner' ? '출력 쪽에 벨트가 없으면 캐낸 광석을 창고로 바로 보냅니다.' : '출력 쪽 파이프로 내보냅니다.'}</p>`;
   } else if (k==='pylon' || k==='relay'){
-    h += `<dl class="kv"><dt>전력망</dt><dd>${e.powered?'연결됨':'연결 안 됨'}</dd><dt>연결 거리</dt><dd>제한 없음 (프로토콜 공간 안)</dd><dt>공급 범위</dt><dd>${k==='pylon'?'주변 '+PYLON_R+'칸':'없음 (연결 전용)'}</dd></dl>`;
+    h += `<dl class="kv"><dt>전력망</dt><dd>${e.powered?'연결됨':'연결 안 됨'}</dd><dt>연결 거리</dt><dd>제한 없음 (프로토콜 공간 안)</dd><dt>공급 범위</dt><dd>${t.supply}×${t.supply}칸 (가운데에 두고, 조금이라도 걸치면 공급)</dd></dl>`;
   } else if (k==='stash'){
     h += `<p>칸 6개에 한 칸당 한 종류를 최대 50개까지 담고, 아래쪽 출력 포트에 벨트를 이으면 담긴 물품을 내보냅니다. 아래에서 칸을 골라 아이템과 개수를 정해 직접 넣을 수 있습니다.</p>
       <div class="slots">${e.slots.map((q, i) => `<div class="slot"><span class="sn">${i+1}</span><span class="sc" id="sc${i}"></span><button class="btn sm" data-empty="${i}">비우기</button></div>`).join('')}</div>
@@ -3040,8 +3042,8 @@ function toolHelp(type){
     case 'machine': return '뒤쪽 면(빈 삼각형)이 입력, 앞쪽 면(채운 삼각형)이 출력입니다. 고체는 벨트로, 액체·기체는 파이프로 넣고 뺍니다.' + (t.limitNote ? ' ' + t.limitNote : '');
     case 'miner': return (t.ores.map(o => ITEMS[o].ko).join('·')) + ' 광맥 위에 설치합니다.' + (t.needs ? ' 뒤쪽 가운데로 청정수를 넣어야 돌아갑니다.' : '');
     case 'pump': return `${AIC.TILE_KO[t.tile]} 위에 설치하면 ${ITEMS[t.makes].ko}을(를) 파이프로 내보냅니다.`;
-    case 'pylon': return `주변 ${PYLON_R}칸 안의 설비에 전력을 줍니다. 프로토콜 공간 안에서는 거리와 상관없이 전력망에 이어집니다.`;
-    case 'relay': return '전력망을 잇는 연결 전용 설비입니다. 프로토콜 공간 안에서는 거리와 상관없이 이어지며, 직접 전력을 주지는 않습니다.';
+    case 'pylon': return `공급기를 가운데에 둔 ${t.supply}×${t.supply}칸 범위에 조금이라도 걸친 설비에 전력을 줍니다. 프로토콜 공간 안에서는 거리와 상관없이 전력망에 이어집니다.`;
+    case 'relay': return `중계기를 가운데에 둔 ${t.supply}×${t.supply}칸 범위에 조금이라도 걸친 설비에 전력을 줍니다. 프로토콜 공간 안에서는 거리와 상관없이 전력망에 이어집니다.`;
     case 'thermal': return '오리지늄 광물이나 배터리를 태워 전력 상한을 올립니다. 공급기 범위 안에 있어야 합니다.';
   }
   return '';
