@@ -346,41 +346,138 @@ a.btn{color:inherit;text-decoration:none;display:inline-block}
   .pwrite .acts{margin-left:0}
   .bhead{align-items:center}
 }
+
+/* reports */
+.cacts{margin-left:auto;display:inline-flex;gap:10px}
+.linkbtn.danger{margin-left:0}
+.linkbtn.rp{color:var(--muted);font-size:11.5px}
+.rpwhat{margin:0 0 10px;overflow-wrap:anywhere}
+.rpset{border:1px solid var(--line);border-radius:5px;padding:8px 10px 10px;margin:0}
+.rpset legend{font-size:12.5px;font-weight:600;padding:0 4px}
+.rplist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 12px}
+.rpi{display:flex;align-items:center;gap:7px;font-size:12.5px;padding:3px 0;cursor:pointer;min-width:0}
+.rpi input[type=checkbox]{margin:0;flex:none;accent-color:var(--bad)}
+.rpetc{grid-column:1/-1;flex-wrap:wrap}
+.rpetc input[type=text]{flex:1;min-width:160px;border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:4px 7px;font-size:12.5px}
+.rpetc input[type=text]:disabled{opacity:.5}
+.rpdl{display:block;font-size:12.5px;font-weight:600;margin:12px 0 4px}
+#rpDetail{height:auto;min-height:64px;font-family:var(--f-body);width:100%;border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:6px 8px;font-size:12.5px;resize:vertical}
+.rpbadge{font-size:11.5px;font-weight:600;color:var(--muted);text-decoration:none;border:1px solid var(--line);border-radius:99px;padding:1px 8px}
+.rpbadge.hot{background:var(--bad);border-color:var(--bad);color:#fff}
+.seg a.segb{display:inline-block;color:inherit;text-decoration:none;background:var(--panel-2);padding:5px 12px;font-size:12.5px}
+.seg a.segb+a.segb{border-left:1px solid var(--line)}
+.seg a.segb[aria-pressed="true"]{background:var(--ink);color:var(--panel)}
+#rpRows{display:flex;flex-direction:column;gap:10px}
+.rpcard{border:1px solid var(--line);border-left:3px solid var(--bad);border-radius:6px;background:var(--panel);padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.rpcard.st-done,.rpcard.st-dismissed{border-left-color:var(--line)}
+.rphead{display:flex;align-items:center;gap:8px;min-width:0}
+.rphead b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rpst{font-size:11.5px;color:var(--muted);white-space:nowrap}
+.mchip.rpr{border-color:var(--bad);color:var(--bad)}
+.rpline{margin:0;font-size:12.5px;overflow-wrap:anywhere}
+.rpq{margin:0;padding:6px 10px;border-left:2px solid var(--line);background:var(--panel-2);font-size:12.5px;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--muted)}
+@media (max-width: 640px){ .rplist{grid-template-columns:minmax(0,1fr)} }
+
+/* admin tab, bans, saved factories */
+.subtabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin:0 0 14px}
+.subtabs a{color:var(--muted);text-decoration:none;padding:8px 14px;font-size:13px;font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px}
+.subtabs a:hover{color:var(--ink)}
+.subtabs a[aria-current="page"]{color:var(--ink);font-weight:600;border-bottom-color:var(--accent)}
+.subtabs #amRpCount{margin-left:4px;color:var(--bad);font-family:var(--f-mono);font-size:12px}
+.amsub{margin:0 0 10px;font-size:12.5px}
+.banbar{border:1px solid var(--bad);background:color-mix(in srgb,var(--bad) 10%,var(--panel));color:var(--ink);border-radius:6px;padding:10px 12px;margin-bottom:14px;font-size:12.5px;line-height:1.6}
+.banbar b{color:var(--bad)}
+.banbar span{color:var(--muted)}
+.kbadge.k-ban{background:var(--bad);border-color:transparent;color:#fff}
+.aulist{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:6px;background:var(--panel);overflow:hidden}
+.aurow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center;padding:10px 14px;border-top:1px solid var(--line)}
+.aurow:first-child{border-top:0}
+.aurow.banned{background:color-mix(in srgb,var(--bad) 6%,var(--panel))}
+.aumain{display:flex;flex-direction:column;gap:3px;min-width:0}
+.aumain .au{font-size:13.5px}
+.banline{color:var(--bad)}
+.auacts{display:flex;gap:6px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.banform{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:10px;border:1px dashed var(--bad);border-radius:5px;font-size:12.5px}
+.banform label{display:inline-flex;align-items:center;gap:6px}
+.banform .grow{flex:1 1 240px}
+.banform .grow input{flex:1;min-width:0;border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:4px 7px;font-size:12.5px}
+.banform .row{width:100%}
+.banform .msg{margin:0;min-height:0}
+.facmode{display:flex;flex-direction:column;gap:4px;margin:0 0 8px;font-size:12.5px}
+.facmode label{display:inline-flex;gap:6px;align-items:center}
+#facDesc{height:auto;font-family:var(--f-body);font-size:13px;resize:vertical}
+.fhead p{margin:0 0 12px;font-size:12.5px}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.fgrid .bempty{grid-column:1/-1;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+.fcard{border:1px solid var(--line);border-radius:6px;background:var(--panel);overflow:hidden;display:flex;flex-direction:column}
+.fthumb{aspect-ratio:16/10;background:#121615}
+.fthumb img{width:100%;height:100%;object-fit:contain;display:block}
+.fbody{padding:10px 12px;display:flex;flex-direction:column;gap:5px;flex:1}
+.fname{font-size:14px;font-weight:600;overflow-wrap:anywhere}
+.fbody .kbadge{align-self:flex-start}
+.fdesc{margin:0;font-size:12.5px;color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.fbody .row{margin-top:auto;gap:5px;padding-top:4px}
+@media (max-width: 640px){ .aurow{grid-template-columns:minmax(0,1fr)} .auacts{justify-content:flex-start} }
+.uhead #pwBtn{align-self:center}
+.pwothers{margin:2px 0 4px}
+
+/* header: on the public site the account row sits on top and the factory controls get their own full-width row */
+header.bar{gap:8px 12px}
+.toolbar{display:flex;flex-wrap:nowrap;align-items:center;gap:8px 12px;flex:1 0 auto;order:1}
+.toolbar .ctl{flex-wrap:nowrap;gap:6px}
+.bar .acct{order:2;margin-left:auto;flex:none}
+/* compact controls so everything fits on one line on wide screens */
+.bar .btn{padding:4px 9px;font-size:12px}
+.bar .seg button{padding:4px 8px;font-size:11.5px}
+.bar .seg.view button{padding:4px 11px;font-size:12px}
+.bar select.sel{padding:4px 6px;font-size:12px;max-width:160px}
+.bar #preset{max-width:140px}
+.bar .pwr{min-width:150px}
+.bar .meter{min-width:56px}
+.brand h1{font-size:16px}
+/* long nicknames are cut with … (full name on hover); the 관리자 badge always shows */
+.acct .who{max-width:112px}
+.bar.site:not(.tworow) .brand small{display:none}
+.acct .kbadge{flex:none}
+/* when it does not fit, the factory controls move to their own row */
+.bar.tworow .toolbar{order:3;flex:1 1 100%;flex-wrap:wrap;margin:0 -16px;padding:8px 16px 0;border-top:1px solid var(--line)}
+.bar.tworow .toolbar .ctl{flex-wrap:wrap}
 @media (prefers-reduced-motion: reduce){ .meter i,.switch input::after, }
 </style>
 
 </head>
 <body>
 <div class="app" id="app">
-  <header class="bar">
+  <header class="bar" id="bar">
     <div class="brand">
       <div class="mark" aria-hidden="true"></div>
       <div><h1>AIC 공장 시뮬레이터</h1><small>Arknights: Endfield · 협곡 IV / 무릉</small></div>
     </div>
-    <nav class="seg view" id="viewSw" aria-label="화면" hidden><button data-v="sim" aria-pressed="true">공장</button><button data-v="board" aria-pressed="false">게시판</button></nav>
-    <div class="ctl simonly">
-      <button class="btn primary" id="play">일시정지</button>
-      <div class="seg" id="speed" role="group" aria-label="배속">
-        <button data-s="1" aria-pressed="true">1×</button><button data-s="2" aria-pressed="false">2×</button><button data-s="4" aria-pressed="false">4×</button><button data-s="8" aria-pressed="false">8×</button>
+    <nav class="seg view" id="viewSw" aria-label="화면" hidden><button data-v="sim" aria-pressed="true">공장</button><button data-v="board" aria-pressed="false">게시판</button><button data-v="admin" aria-pressed="false" hidden>관리자</button></nav>
+    <span class="acct" id="acct" hidden></span>
+    <div class="toolbar simonly">
+      <div class="ctl">
+        <button class="btn primary" id="play">일시정지</button>
+        <div class="seg" id="speed" role="group" aria-label="배속">
+          <button data-s="1" aria-pressed="true">1×</button><button data-s="2" aria-pressed="false">2×</button><button data-s="4" aria-pressed="false">4×</button><button data-s="8" aria-pressed="false">8×</button>
+        </div>
+        <span class="clock" id="clock">T+00:00</span>
       </div>
-      <span class="clock" id="clock">T+00:00</span>
-    </div>
-    <div class="pwr simonly" title="전력 사용량 / 공급량">
-      <span class="lbl">전력</span>
-      <div class="meter" id="meter"><i></i></div>
-      <b id="pwrtxt">0 / 200</b>
-    </div>
-    <div class="spacer"></div>
-    <div class="ctl">
-      <span class="ctl simonly">
-      <label class="lbl" for="site" style="font-size:11px;color:var(--muted)">부지</label>
-      <select class="sel" id="site" aria-label="부지 크기"></select>
-      <span class="seg" id="ebus" role="group" aria-label="부지 바깥 창고 입출력 라인" title="부지 바깥 고정 창고 입출력 라인 (협곡 IV 허브 최대 확장)"><button data-d="0" aria-label="위쪽">↑</button><button data-d="1" aria-label="오른쪽">→</button><button data-d="2" aria-label="아래쪽">↓</button><button data-d="3" aria-label="왼쪽">←</button></span>
-      <span class="row" id="siteCustom" hidden style="gap:4px"><input id="sw" type="number" min="12" max="120" aria-label="부지 가로 칸 수" class="num"> × <input id="sh" type="number" min="12" max="120" aria-label="부지 세로 칸 수" class="num"><button class="btn sm primary" id="siteApply">적용</button><button class="btn sm" id="siteCancel">취소</button></span>
-      <select class="sel" id="preset" aria-label="예시 공장 불러오기"><option value="">예시 공장 불러오기…</option></select>
-      <button class="btn" id="io">레이아웃 코드</button>
-      </span>
-      <span class="acct" id="acct" hidden></span>
+      <div class="pwr" title="전력 사용량 / 공급량">
+        <span class="lbl">전력</span>
+        <div class="meter" id="meter"><i></i></div>
+        <b id="pwrtxt">0 / 200</b>
+      </div>
+      <div class="spacer"></div>
+      <div class="ctl">
+        <label class="lbl" for="site" style="font-size:11px;color:var(--muted)">부지</label>
+        <select class="sel" id="site" aria-label="부지 크기"></select>
+        <span class="seg" id="ebus" role="group" aria-label="부지 바깥 창고 입출력 라인" title="부지 바깥 고정 창고 입출력 라인 (협곡 IV 허브 최대 확장)"><button data-d="0" aria-label="위쪽">↑</button><button data-d="1" aria-label="오른쪽">→</button><button data-d="2" aria-label="아래쪽">↓</button><button data-d="3" aria-label="왼쪽">←</button></span>
+        <span class="row" id="siteCustom" hidden style="gap:4px"><input id="sw" type="number" min="12" max="120" aria-label="부지 가로 칸 수" class="num"> × <input id="sh" type="number" min="12" max="120" aria-label="부지 세로 칸 수" class="num"><button class="btn sm primary" id="siteApply">적용</button><button class="btn sm" id="siteCancel">취소</button></span>
+        <select class="sel" id="preset" aria-label="예시 공장 불러오기"><option value="">예시 공장 불러오기…</option></select>
+        <button class="btn" id="io">레이아웃 코드</button>
+        <button class="btn" id="facSave" hidden title="지금 공장을 내 계정에 저장">공장 저장</button>
+      </div>
     </div>
   </header>
 
@@ -433,6 +530,51 @@ a.btn{color:inherit;text-decoration:none;display:inline-block}
     <p class="note">이메일은 받지 않아서 비밀번호를 잊으면 찾을 수 없습니다. <b>다른 사이트에서 쓰는 비밀번호는 쓰지 마세요.</b> 저장하는 정보는 아이디, 암호화된 비밀번호, 내가 올린 청사진뿐입니다.</p>
     <div class="msg" id="lgMsg" role="alert"></div>
     <div class="acts"><button class="btn primary" id="lgGo" type="submit">로그인</button><button class="btn" id="lgSwitch" type="button">가입하기</button><span class="spacer"></span><button class="btn" id="lgClose" type="button">닫기</button></div>
+  </form>
+</dialog>
+
+<dialog id="reportDlg" aria-labelledby="rpTitle">
+  <form id="rpForm">
+    <h3 id="rpTitle">신고하기</h3>
+    <p class="note rpwhat" id="rpWhat"></p>
+    <fieldset class="rpset"><legend>어떤 운영 원칙을 어겼나요? <span class="dim">(여러 개 고를 수 있음)</span></legend><div class="rplist" id="rpList"></div></fieldset>
+    <label class="rpdl" for="rpDetail">추가 설명 <span class="dim">(선택)</span></label>
+    <textarea id="rpDetail" maxlength="1000" rows="3" placeholder="운영자가 판단하는 데 도움이 되는 내용을 적어 주세요"></textarea>
+    <div class="msg" id="rpMsg" role="alert"></div>
+    <div class="acts"><button class="btn primary" type="submit" id="rpGo">신고 보내기</button><span class="spacer"></span><button class="btn" type="button" id="rpClose">취소</button></div>
+  </form>
+</dialog>
+
+<dialog id="facDlg" aria-labelledby="facTitle">
+  <form id="facForm">
+    <h3 id="facTitle">공장 저장</h3>
+    <p class="note" id="facNote" style="margin:0 0 10px"></p>
+    <div id="facMode" class="facmode" hidden>
+      <label><input type="radio" name="facm" id="facModeOver"> "<span id="facOverName"></span>"에 덮어쓰기</label>
+      <label><input type="radio" name="facm" id="facModeNew"> 새 공장으로 저장</label>
+    </div>
+    <div class="lg">
+      <label for="facName">이름</label><input id="facName" maxlength="60" placeholder="예: 배터리 라인 1차" required>
+      <label for="facDesc">설명</label><textarea id="facDesc" maxlength="1000" rows="4" placeholder="무엇을 만드는 공장인지, 메모 (선택)"></textarea>
+    </div>
+    <div class="msg" id="facMsg" role="alert"></div>
+    <div class="acts"><button class="btn primary" type="submit" id="facGo">저장</button><span class="spacer"></span><button class="btn" type="button" id="facClose">취소</button></div>
+  </form>
+</dialog>
+
+<dialog id="pwDlg" aria-labelledby="pwTitle">
+  <form id="pwForm">
+    <h3 id="pwTitle">비밀번호 바꾸기</h3>
+    <input type="text" autocomplete="username" hidden aria-hidden="true" tabindex="-1">
+    <div class="lg">
+      <label for="pwOld">지금 비밀번호</label><input id="pwOld" type="password" autocomplete="current-password">
+      <label for="pwNew">새 비밀번호</label><input id="pwNew" type="password" autocomplete="new-password" minlength="6">
+      <label for="pwNew2">새 비밀번호 확인</label><input id="pwNew2" type="password" autocomplete="new-password">
+    </div>
+    <label class="switch pwothers"><input type="checkbox" id="pwOthers" checked> 다른 기기에서 로그아웃</label>
+    <p class="note">6자 이상이면 되지만, 길수록 안전합니다. 관리자라면 16자 이상, 다른 사이트에서 쓰지 않는 비밀번호를 권합니다. 이메일을 받지 않아서 잊으면 찾을 수 없으니 잘 보관하세요.</p>
+    <div class="msg" id="pwMsg" role="alert"></div>
+    <div class="acts"><button class="btn primary" type="submit" id="pwGo">바꾸기</button><span class="spacer"></span><button class="btn" type="button" id="pwClose">취소</button></div>
   </form>
 </dialog>
 
@@ -1045,7 +1187,9 @@ class World {
     return { ok: true };
   }
   place(type, x, y, f, extra) {
+    if (typeof type !== 'string' || !Object.prototype.hasOwnProperty.call(TYPES, type) || !Number.isInteger(x) || !Number.isInteger(y)) return null;
     f = f == null ? 2 : f;
+    if (![0, 1, 2, 3].includes(f)) return null;
     if (!this.canPlace(type, x, y, f).ok) return null;
     const [w, h] = dims(type, f);
     const t = TYPES[type];
@@ -1602,13 +1746,16 @@ class World {
   }
   applyCfg(e, s) {
     if (s.off) e.off = true;
-    if (s.item !== undefined && TYPES[e.type].kind === 'unloader') e.item = s.item;
-    if (TYPES[e.type].kind === 'control') { e.filter = s.filter || null; e.limit = s.limit || 0; e.rate = s.rate || 0; }
-    if (TYPES[e.type].kind === 'conduit') { e.ch = s.ch || 1; e.src = (TYPES[e.type].dirn === 'out' && s.src && ITEMS[s.src] && ITEMS[s.src].fluid) ? s.src : null; }
+    // settings can come from other people's blueprints: keep only valid values
+    const okItem = v => (typeof v === 'string' && ITEMS[v]) ? v : null;
+    const num = (v, lo, hi) => { v = Math.floor(+v || 0); return Math.max(lo, Math.min(hi, v)); };
+    if (s.item !== undefined && TYPES[e.type].kind === 'unloader') e.item = okItem(s.item);
+    if (TYPES[e.type].kind === 'control') { e.filter = okItem(s.filter); e.limit = num(s.limit, 0, 5000); e.rate = num(s.rate, 0, 100000); }
+    if (TYPES[e.type].kind === 'conduit') { e.ch = num(s.ch, 1, 9999); e.src = (TYPES[e.type].dirn === 'out' && s.src && ITEMS[s.src] && ITEMS[s.src].fluid) ? s.src : null; }
     if (TYPES[e.type].kind === 'thermal') e.infFuel = s.infFuel && FUEL[s.infFuel] ? s.infFuel : null;
     if (TYPES[e.type].kind === 'stash' && Array.isArray(s.slots)) s.slots.slice(0, 6).forEach((q, i) => { if (Array.isArray(q)) this.fillStashSlot(e, i, q[0], q[1]); });
     if (TYPES[e.type].modes && s.mode > 0 && s.mode < TYPES[e.type].modes.length) e.mode = s.mode;
-    if (s.pin != null && TYPES[e.type].kind === 'machine' && RECIPES_BY_M[e.type][s.pin]) e.pin = s.pin;
+    if (Number.isInteger(s.pin) && s.pin >= 0 && TYPES[e.type].kind === 'machine' && RECIPES_BY_M[e.type][s.pin]) e.pin = s.pin;
   }
   serialize() {
     const ents = []; for (const e of this.ents.values()) ents.push(this.entCfg(e));
@@ -1882,6 +2029,15 @@ function presetData(name) {
 }
 function loadPreset(name, W, H) { return buildWorld(presetData(name), W || 40, H || 40, 'center'); }
 function presetSize(name) { const b = bbox(presetData(name).ents); return { w: b.w, h: b.h }; }
+// a blueprint from outside (code, board post): keep only known facilities with sane coordinates
+function cleanBp(bp) {
+  if (!bp || !Array.isArray(bp.ents)) return null;
+  const ents = bp.ents.filter(s => s && typeof s.t === 'string' && s.t !== 'pac' && Object.prototype.hasOwnProperty.call(TYPES, s.t)
+    && Number.isInteger(s.x) && Number.isInteger(s.y) && s.x >= 0 && s.y >= 0 && s.x < 200 && s.y < 200 && (s.f == null || [0, 1, 2, 3].includes(s.f)));
+  if (!ents.length) return null;
+  let w = 0, h = 0; for (const s of ents) { const [a, b] = dims(s.t, s.f == null ? 2 : s.f); w = Math.max(w, s.x + a); h = Math.max(h, s.y + b); }
+  return { v: 2, w, h, ents };
+}
 function deserialize(o) {
   if (o.v >= 4) { const r = buildWorld(o, o.W, o.H, 'keep'); if (r.world) return r.world; }
   const W = o.W || 72, H = o.H || 52;
@@ -1912,7 +2068,7 @@ function plan(item, perMin, depth) {
   return node;
 }
 
-const AIC = { supplyR, kindFits, FSLOT, layerOf, SITES, SITE_MIN, SITE_MAX, resizeWorld, presetSize, bbox, DX, DY, opp, ITEMS, RECIPES, RECIPES_BY_M, TYPES, GROUPS, FUEL, TILE, TILE_KO, World, newWorld, loadPreset, deserialize, PRESETS,
+const AIC = { cleanBp, supplyR, kindFits, FSLOT, layerOf, SITES, SITE_MIN, SITE_MAX, resizeWorld, presetSize, bbox, DX, DY, opp, ITEMS, RECIPES, RECIPES_BY_M, TYPES, GROUPS, FUEL, TILE, TILE_KO, World, newWorld, loadPreset, deserialize, PRESETS,
   dims, edgeCells, portCells, isPort, rectDist, plan, producerOf, RAW, IN_CAP, OUT_CAP, bpRotate, isFluid, TOGGLABLE,
   BELT_CELL_T, BELT_GAP, PIPE_CELL_T, PIPE_GAP, cellTOf, M_PER_CELL, PORT_GAP, PYLON_R, PYLON_LINK, RELAY_LINK, PAC_POWER };
 if (typeof module !== 'undefined' && module.exports) module.exports = AIC; else root.AIC = AIC;
@@ -2028,7 +2184,7 @@ const store = {
     if (this.db){ try { await this.db.collection('data/users/' + this.uid).doc(id).delete(); } catch(e){} }
   },
 };
-function loadWorld(w){ world = w; ui.sel = null; ui.multi.clear(); ui.paste = null; if (ui.tool==='paste' || ui.tool==='movepac') ui.tool='select'; syncSite(); fitView(); renderInspector(true); renderSelbar(); renderStats(); renderFacs(); }
+function loadWorld(w){ world = w; ui.fac = null; ui.sel = null; ui.multi.clear(); ui.paste = null; if (ui.tool==='paste' || ui.tool==='movepac') ui.tool='select'; syncSite(); fitView(); renderInspector(true); renderSelbar(); renderStats(); renderFacs(); }
 function boot(){
   let w = null;
   const saved = store.lsGet(LS_LAYOUT);
@@ -2044,7 +2200,7 @@ const SB = window.AIC_SB || null;
 const loadScript = src => new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
 const USER_RE = /^[a-z0-9_]{3,20}$/;
 const acct = {
-  client: null, user: null, profile: null, mine: [], down: false, readyP: null,
+  client: null, user: null, profile: null, mine: [], down: false, readyP: null, ban: null,
   enabled(){ return !!(SB && SB.url && SB.key); },
   email(u){ return u + '@aicsim.local'; },
   wait(){ return this.readyP || Promise.resolve(); },
@@ -2061,10 +2217,15 @@ const acct = {
   },
   async setUser(u, force){
     if (!force && (u ? u.id : null) === (this.user ? this.user.id : null)) return;
-    this.user = u; this.profile = null; this.mine = [];
+    this.user = u; this.profile = null; this.mine = []; this.ban = null; facs.list = null;
     if (u){
-      const { data } = await this.client.from('profiles').select('username, role').eq('id', u.id).maybeSingle();
-      this.profile = data; await this.loadMine();
+      const [{ data }, br] = await Promise.all([
+        this.client.from('profiles').select('username, role').eq('id', u.id).maybeSingle(),
+        this.client.from('bans').select('until, reason').eq('user_id', u.id).maybeSingle(),
+      ]);
+      this.profile = data;
+      if (br && br.data && (!br.data.until || new Date(br.data.until) > new Date())) this.ban = br.data;
+      await this.loadMine();
     }
     renderAcct(); renderPalette();
     if (!force && ui.view === 'board') route();
@@ -2102,6 +2263,10 @@ function acctError(e){
   if (/already registered|already exists|duplicate/i.test(m)) return '이미 있는 아이디입니다';
   if (/invalid login credentials/i.test(m)) return '아이디 또는 비밀번호가 맞지 않습니다';
   if (/password/i.test(m) && /least|short|characters/i.test(m)) return '비밀번호는 6자 이상이어야 합니다';
+  if (/row-level security/i.test(m)) return acct.ban ? '이용이 제한된 계정이라 할 수 없습니다' : '권한이 없습니다';
+  if (/factory limit/i.test(m)) return '공장은 50개까지 저장할 수 있습니다. 안 쓰는 공장을 지워 주세요';
+  if (/different from the old/i.test(m)) return '지금 비밀번호와 다른 비밀번호를 쓰세요';
+  if (/reauthenticat|nonce/i.test(m)) return '보안 설정 때문에 바꿀 수 없습니다. 로그아웃 후 다시 로그인해서 시도하세요';
   if (/rate limit|too many/i.test(m)) return '잠시 후 다시 시도하세요';
   if (/fetch|network/i.test(m)) return '로그인 서버에 연결하지 못했습니다';
   return '문제가 생겼습니다: ' + m;
@@ -2225,7 +2390,7 @@ function acctCard(b){
 // ---------- board: posts · comments · likes ----------
 // The whole page turns into the board. Addresses: #board (list), #user/NAME (one person's posts), #post/ID, #write, #edit/ID; anything else is the simulator.
 // Reading is open to everyone; writing, comments and likes need a login. Counts, authors and times are set by the server.
-const BOARD_VIEWS = ['board', 'user', 'post', 'write', 'edit'];
+const BOARD_VIEWS = ['board', 'user', 'post', 'write', 'edit', 'reports', 'admin'];
 const KIND_KO = { bp: '청사진', text: '일반', notice: '공지' };
 const PAGE = 20;
 const LIST_COLS = 'id,kind,title,body,bp_w,bp_h,bp_ents,thumb,like_count,comment_count,author_name,author,created_at,updated_at';
@@ -2379,7 +2544,7 @@ const board = {
     const big = $('#bBig'); if (big && this.post && this.post.bp) paintBp(big, this.post.bp, themePal(), true);
     const pv = $('#wPrev'); if (pv && this.wbp) paintBp(pv, this.wbp.bp, themePal(), true);
   },
-  async show(v, arg){
+  async show(v, arg, arg2){
     const my = ++this.seq;
     const el = this.el();
     if (ucard.el){ ucard.el.hidden = true; ucard.target = null; }
@@ -2387,10 +2552,59 @@ const board = {
     if (!acct.client && !acct.down){ el.innerHTML = '<div class="bwrap"><p class="note">게시판에 연결하는 중…</p></div>'; await acct.wait(); if (my !== this.seq) return; }
     if (acct.down || !acct.client){ el.innerHTML = '<div class="bwrap"><p class="note">게시판 서버에 연결하지 못했습니다. 잠시 후 새로고침해 주세요.</p><p><a class="btn" href="#">공장으로 돌아가기</a></p></div>'; return; }
     if (v === 'board'){ this.lv = this.boardLv; return this.list(true, my); }
-    if (v === 'user') return this.profile(decodeURIComponent(arg || '').toLowerCase(), my);
+    if (v === 'user') return arg2 === 'factories' ? this.myFactories(decodeURIComponent(arg || '').toLowerCase(), my) : this.profile(decodeURIComponent(arg || '').toLowerCase(), my);
     if (v === 'post') return this.open(+arg, my);
     if (v === 'write') return this.write(null, my);
     if (v === 'edit') return this.write(+arg, my);
+    if (v === 'reports') return reports.show(arg || 'open', my);
+    if (v === 'admin') return arg === 'reports' ? reports.show(arg2 || 'open', my) : admin.users(my);
+  },
+
+  // ---- my saved factories (own profile only) ----
+  async myFactories(name, my){
+    const el = this.el();
+    if (!acct.user || acct.name() !== name){ el.innerHTML = `<div class="bwrap"><a class="back" href="#user/${encodeURIComponent(name)}">← 프로필</a><p class="note">저장한 공장은 본인만 볼 수 있습니다.${acct.user ? '' : ' 로그인하세요.'}</p></div>`; return; }
+    this.lv = { mode: 'user', name, filter: 'all', sort: 'new', q: '', stats: undefined, sub: 'factories' };
+    const lv = this.lv;
+    el.innerHTML = `<div class="bwrap"><a class="back" href="#board">← 게시판</a><div class="uhead" id="uHead"></div><div id="fSub">${ownSubtabs(name, 'factories')}</div>
+      <div class="fhead"><p class="dim">저장한 공장은 나만 볼 수 있습니다. 공장 화면 위쪽의 "공장 저장"으로 추가하고, 여기서 불러옵니다. (최대 50개)</p></div>
+      <div class="fgrid" id="fGrid" aria-live="polite"><p class="note">불러오는 중…</p></div></div>`;
+    this.renderUserHead();
+    userStats(name).then(st => { if (this.lv !== lv) return; lv.stats = st || null; this.renderUserHead(); }, () => {});
+    let list;
+    try { list = await facs.load(); } catch(e){ if (my === this.seq) $('#fGrid').innerHTML = '<p class="note">불러오지 못했습니다. 관리 기능 SQL(admin_setup.sql)을 실행했는지 확인하세요.</p>'; return; }
+    if (my !== this.seq) return;
+    $('#fSub').innerHTML = ownSubtabs(name, 'factories');
+    const grid = $('#fGrid');
+    if (!list.length){ grid.innerHTML = '<p class="note bempty">아직 저장한 공장이 없습니다. 공장 화면에서 공장을 만든 뒤 위쪽의 "공장 저장"을 누르세요.</p>'; return; }
+    grid.innerHTML = list.map(f => `<article class="fcard" data-id="${f.id}">
+      <div class="fthumb">${f.thumb ? `<img src="${esc(f.thumb)}" alt="">` : ''}</div>
+      <div class="fbody">
+        <b class="fname">${esc(f.name)}</b>${ui.fac && ui.fac.id === f.id ? '<span class="kbadge k-bp">지금 열려 있음</span>' : ''}
+        ${f.description ? `<p class="fdesc">${esc(f.description)}</p>` : ''}
+        <span class="pmeta">부지 ${f.site_w}×${f.site_h} · 설비 ${f.ent_count}개 · <time title="${esc(fullDate(f.updated_at))}">${ago(f.updated_at)} 저장</time></span>
+        <div class="row"><button class="btn sm primary" data-a="open">불러오기</button><button class="btn sm" data-a="over">지금 공장으로 덮어쓰기</button><button class="btn sm" data-a="edit">이름·설명</button><button class="btn sm danger" data-a="del">삭제</button></div>
+      </div></article>`).join('');
+    const twice = (btn, label, fn) => { if (!btn.dataset.confirm){ const t = btn.textContent; btn.dataset.confirm = '1'; btn.textContent = label; setTimeout(() => { if (btn.isConnected){ btn.textContent = t; delete btn.dataset.confirm; } }, 3000); return; } fn(); };
+    grid.querySelectorAll('.fcard').forEach(card => {
+      const f = list.find(x => x.id === +card.dataset.id);
+      card.querySelector('[data-a=open]').onclick = ev => {
+        const go = () => facs.open(f.id).catch(e => flash(acctError(e)));
+        if (ui.touched && !(ui.fac && ui.fac.id === f.id)) twice(ev.currentTarget, '한 번 더 (지금 공장은 바뀝니다)', go); else go();
+      };
+      card.querySelector('[data-a=over]').onclick = ev => twice(ev.currentTarget, `한 번 더 (지금 공장 ${world.W}×${world.H}으로 바뀝니다)`, async () => {
+        const { error } = await acct.client.from('factories').update(facs.snapshot()).eq('id', f.id);
+        if (error){ flash(acctError(error)); return; }
+        ui.fac = { id: f.id, name: f.name }; flash(`"${f.name}"을 지금 공장으로 덮어썼습니다`); route();
+      });
+      card.querySelector('[data-a=edit]').onclick = () => openFacDialog(f);
+      card.querySelector('[data-a=del]').onclick = ev => twice(ev.currentTarget, '한 번 더 눌러 삭제', async () => {
+        const { error } = await acct.client.from('factories').delete().eq('id', f.id);
+        if (error){ flash(acctError(error)); return; }
+        if (ui.fac && ui.fac.id === f.id) ui.fac = null;
+        flash(`"${f.name}"을 지웠습니다`); route();
+      });
+    });
   },
 
   // ---- list (whole board, or one person's posts) ----
@@ -2399,6 +2613,7 @@ const board = {
     else this.lv = { mode: 'user', name, filter: 'all', sort: 'new', q: '', stats: undefined };
     const lv = this.lv;
     userStats(name).then(st => { if (this.lv !== lv) return; lv.stats = st || null; this.renderUserHead(); }, () => { if (this.lv !== lv) return; lv.stats = false; this.renderUserHead(); });
+    if (acct.user && acct.name() === name && !facs.list) facs.load().then(() => { const t = document.querySelector('.subtabs a[href$="/factories"]'); if (t && this.lv === lv) t.textContent = '저장한 공장 ' + facs.list.length; }, () => {});
     return this.list(true, my);
   },
   async list(reset, my){
@@ -2414,14 +2629,14 @@ const board = {
     if (lv.sort === 'like') q = q.order('like_count', { ascending: false });
     if (lv.sort === 'cmt') q = q.order('comment_count', { ascending: false });
     q = q.order('created_at', { ascending: false }).range(from, from + PAGE);
-    const wantNotices = !user && reset && !term && lv.filter === 'all';
-    const [res, nres] = await Promise.all([q, wantNotices ? db.from('posts').select(LIST_COLS).eq('kind', 'notice').order('created_at', { ascending: false }).limit(5) : null]);
+    const wantNotices = !user && reset && !term && lv.filter !== 'notice';   // newest notice stays pinned on top
+    const [res, nres] = await Promise.all([q, wantNotices ? db.from('posts').select(LIST_COLS).eq('kind', 'notice').order('created_at', { ascending: false }).limit(1) : null]);
     if ((my != null && my !== this.seq) || this.lv !== lv) return;
     if (res.error){ this.renderList('error'); return; }
-    const got = res.data || [];
+    const got = Array.isArray(res.data) ? res.data : [];
     this.more = got.length > PAGE;
     this.rows = this.rows.concat(got.slice(0, PAGE));
-    if (reset) this.notices = nres && !nres.error ? nres.data || [] : [];
+    if (reset) this.notices = nres && !nres.error && Array.isArray(nres.data) ? nres.data : [];
     this.renderList('ok');
   },
   renderUserHead(){
@@ -2430,16 +2645,18 @@ const board = {
     h.innerHTML = `<span class="avatar" aria-hidden="true">${esc((nm[0] || '?').toUpperCase())}</span>
       <div class="umain"><h2>${esc(nm)}${st && st.role === 'admin' ? ' <span class="kbadge k-notice">관리자</span>' : ''}</h2>
       <p class="dim">${st ? '가입 ' + new Date(st.joined).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) : st === null ? '탈퇴했거나 없는 사용자입니다' : st === false ? '정보를 불러오지 못했습니다' : '불러오는 중…'}</p></div>
-      ${st ? statsHTML(st) : ''}`;
+      ${st ? statsHTML(st) : ''}
+      ${acct.user && acct.name() === nm ? '<button class="btn sm" id="pwBtn" type="button">비밀번호 바꾸기</button>' : ''}`;
+    const pb = $('#pwBtn'); if (pb) pb.onclick = openPwDialog;
   },
   renderList(state){
     const el = this.el(), lv = this.lv, user = lv.mode === 'user', key = user ? 'user:' + lv.name : 'board';
     if (!$('#bList') || $('#bList').dataset.lv !== key){
       el.innerHTML = `<div class="bwrap">
-        ${user ? `<a class="back" href="#board">← 게시판</a><div class="uhead" id="uHead"></div><h3 class="usub">쓴 글</h3>`
+        ${banBar()}${user ? `<a class="back" href="#board">← 게시판</a><div class="uhead" id="uHead"></div>${ownSubtabs(lv.name, 'posts') || '<h3 class="usub">쓴 글</h3>'}`
           : `<div class="bhead"><div><h2>게시판</h2><p class="dim">청사진 공유, 공장 이야기, 게임에 대한 질문까지 자유롭게 남기는 곳</p></div><span class="spacer"></span><button class="btn primary" id="bWrite">글쓰기</button></div>`}
         <div class="btool">
-          <div class="seg" id="bFilter" role="group" aria-label="글 종류"><button data-f="all">전체</button><button data-f="bp">청사진</button><button data-f="text">일반</button></div>
+          <div class="seg" id="bFilter" role="group" aria-label="글 종류"><button data-f="all">전체</button><button data-f="bp">청사진</button><button data-f="text">일반</button><button data-f="notice">공지</button></div>
           ${user ? '<span class="spacer"></span>' : '<form class="bsearch" id="bSearch" role="search"><input type="search" id="bQ" placeholder="제목·내용·작성자 검색" aria-label="게시글 검색" maxlength="40"><button class="btn">검색</button></form>'}
           <select class="sel" id="bSort" aria-label="정렬"><option value="new">최신순</option><option value="like">추천순</option><option value="cmt">댓글순</option></select>
         </div>
@@ -2462,7 +2679,7 @@ const board = {
     if (state === 'error'){ list.innerHTML = '<p class="note bempty">글을 불러오지 못했습니다. 잠시 후 다시 시도하세요.</p>'; return; }
     const rows = this.notices.concat(this.rows);
     if (!rows.length){
-      list.innerHTML = `<p class="note bempty">${lv.q ? `"${esc(lv.q)}"와 맞는 글이 없습니다.` : user ? (lv.filter === 'all' ? '아직 쓴 글이 없습니다.' : '이 종류로 쓴 글이 없습니다.') : '아직 글이 없습니다. 첫 글을 올려 보세요.'}</p>`; return;
+      list.innerHTML = `<p class="note bempty">${lv.q ? `"${esc(lv.q)}"와 맞는 글이 없습니다.` : user ? (lv.filter === 'all' ? '아직 쓴 글이 없습니다.' : '이 종류로 쓴 글이 없습니다.') : lv.filter === 'notice' ? '아직 공지가 없습니다.' : '아직 글이 없습니다. 첫 글을 올려 보세요.'}</p>`; return;
     }
     list.innerHTML = rows.map(p => this.rowHTML(p)).join('');
   },
@@ -2486,7 +2703,8 @@ const board = {
     const el = this.el();
     el.innerHTML = '<div class="bwrap"><p class="note">불러오는 중…</p></div>';
     const db = this.db();
-    const [pr, cr, lr] = await Promise.all([
+    const [, pr, cr, lr] = await Promise.all([
+      loadAdmins(),
       db.from('posts').select('*').eq('id', id).maybeSingle(),
       db.from('comments').select('*').eq('post_id', id).order('created_at', { ascending: true }),
       acct.user ? db.from('likes').select('post_id').eq('post_id', id).eq('user_id', acct.user.id).maybeSingle() : null,
@@ -2511,7 +2729,7 @@ const board = {
       </figure>`;
     }
     el.innerHTML = `<article class="bwrap post">
-      <a class="back" href="#board">← 목록</a>
+      ${banBar()}<a class="back" href="#board">← 목록</a>
       <header class="phead">
         <span class="kbadge k-${p.kind}">${KIND_KO[p.kind]}</span>
         <h2>${esc(p.title)}</h2>
@@ -2522,13 +2740,14 @@ const board = {
       <div class="pacts">
         <button class="btn likebtn" id="bLike" aria-pressed="${this.liked}">${IC_HEART}<span>추천 ${p.like_count}</span></button>
         <span class="spacer"></span>
+        ${!mine && !adminNames.has(p.author_name) ? '<button class="btn" id="bReport">신고</button>' : ''}
         ${mine ? '<a class="btn" id="bEdit" href="#edit/' + p.id + '">수정</a>' : ''}
         ${mine || acct.isAdmin() ? `<button class="btn danger" id="bDel">${mine ? '삭제' : '삭제(관리자)'}</button>` : ''}
       </div>
       <section class="cmts" aria-labelledby="cmtH">
         <h3 id="cmtH">댓글 <span class="dim">${this.comments.length}</span></h3>
         <ol class="clist">${this.comments.map(c => this.cmtHTML(c)).join('') || '<li class="note cnone">첫 댓글을 남겨 보세요.</li>'}</ol>
-        ${acct.user ? `<form class="cform" id="cForm"><textarea id="cBody" maxlength="1000" rows="3" placeholder="댓글 쓰기 (1000자까지)" aria-label="댓글"></textarea><div class="row"><span class="dim" id="cMsg"></span><span class="spacer"></span><button class="btn primary" type="submit" id="cGo">등록</button></div></form>`
+        ${acct.ban ? '<p class="note">이용이 제한된 계정이라 댓글을 쓸 수 없습니다.</p>' : acct.user ? `<form class="cform" id="cForm"><textarea id="cBody" maxlength="1000" rows="3" placeholder="댓글 쓰기 (1000자까지)" aria-label="댓글"></textarea><div class="row"><span class="dim" id="cMsg"></span><span class="spacer"></span><button class="btn primary" type="submit" id="cGo">등록</button></div></form>`
           : '<p class="note">댓글을 쓰려면 <button class="linkbtn" id="cLogin">로그인</button>하세요.</p>'}
       </section>
     </article>`;
@@ -2539,6 +2758,7 @@ const board = {
       $('#bCode').onclick = () => openDialog('bpcode', { name: p.title, bp: p.bp });
     }
     $('#bLike').onclick = () => this.toggleLike();
+    const rb = $('#bReport'); if (rb) rb.onclick = () => openReport('post', p.id, p);
     const del = $('#bDel');
     if (del) del.onclick = async ev => {
       const btn = ev.currentTarget;
@@ -2565,9 +2785,10 @@ const board = {
   cmtHTML(c){
     const me = acct.user ? acct.user.id : null, can = me && (c.author === me || acct.isAdmin());
     return `<li class="cmt"><div class="cmeta">${auLink(c.author_name)}${c.author === this.post.author ? '<span class="kbadge k-op">작성자</span>' : ''} <time datetime="${esc(c.created_at)}" title="${esc(fullDate(c.created_at))}">${ago(c.created_at)}</time>
-      ${can ? `<button class="linkbtn danger" data-del="${c.id}">삭제</button>` : ''}</div><div class="cbody">${esc(c.body)}</div></li>`;
+      <span class="cacts">${me !== c.author && !adminNames.has(c.author_name) ? `<button class="linkbtn rp" data-rep="${c.id}">신고</button>` : ''}${can ? `<button class="linkbtn danger" data-del="${c.id}">삭제</button>` : ''}</span></div><div class="cbody">${esc(c.body)}</div></li>`;
   },
   bindCmtDel(){
+    document.querySelectorAll('.clist [data-rep]').forEach(b => b.onclick = () => { const c = this.comments.find(x => x.id === +b.dataset.rep); if (c) openReport('comment', c.id, this.post, c); });
     document.querySelectorAll('.clist [data-del]').forEach(b => b.onclick = async () => {
       if (!b.dataset.confirm){ b.dataset.confirm = '1'; b.textContent = '한 번 더 눌러 삭제'; setTimeout(() => { if (b.isConnected){ b.textContent = '삭제'; delete b.dataset.confirm; } }, 2500); return; }
       const { error } = await this.db().from('comments').delete().eq('id', +b.dataset.del);
@@ -2591,6 +2812,7 @@ const board = {
   },
   async toggleLike(){
     if (!acct.user){ openLogin('in'); return; }
+    if (acct.ban){ flash('이용이 제한된 계정이라 추천할 수 없습니다'); return; }
     const p = this.post, db = this.db(), btn = $('#bLike'); btn.disabled = true;
     const { error } = this.liked
       ? await db.from('likes').delete().eq('post_id', p.id).eq('user_id', acct.user.id)
@@ -2610,6 +2832,7 @@ const board = {
       el.innerHTML = `<div class="bwrap"><a class="back" href="#board">← 목록</a><h2>글쓰기</h2><p class="note">글을 쓰려면 로그인하세요.</p><p><button class="btn primary" id="wLogin">로그인</button></p></div>`;
       $('#wLogin').onclick = () => openLogin('in'); return;
     }
+    if (acct.ban){ el.innerHTML = `<div class="bwrap">${banBar()}<a class="back" href="#board">← 목록</a><h2>글쓰기</h2><p class="note">이용이 제한된 계정이라 글을 쓸 수 없습니다.</p></div>`; return; }
     let p = null;
     if (id){
       el.innerHTML = '<div class="bwrap"><p class="note">불러오는 중…</p></div>';
@@ -2632,7 +2855,7 @@ const board = {
     for (const b of acct.mine) src.push(['a' + b.id, `내 계정 · ${b.name}`, async () => b.data ? { name: b.name, bp: b.data } : { name: b.name, bp: (await acct.fetchData(b.id)).data }]);
     for (const b of store.bps) src.push(['l' + b.id, `이 브라우저 · ${b.name}`, () => ({ name: b.name, bp: b.bp })]);
     src.push(['code', '청사진 코드 붙여넣기…', null]);
-    const kind0 = p ? p.kind : (pend || this.filter === 'bp' ? 'bp' : 'text');
+    const kind0 = p ? p.kind : (pend || this.filter === 'bp' ? 'bp' : this.filter === 'notice' && acct.isAdmin() ? 'notice' : 'text');
     el.innerHTML = `<form class="bwrap pwrite" id="wForm" novalidate>
       <a class="back" href="${p ? '#post/' + p.id : '#board'}">← ${p ? '글로 돌아가기' : '목록'}</a>
       <h2>${p ? '글 고치기' : '글쓰기'}</h2>
@@ -2694,39 +2917,342 @@ const board = {
   },
 };
 
+
+// ---------- reports: anyone logged in can report a post or a comment; admins see the list (#reports) ----------
+const REPORT_REASONS = [
+  ['주제와 관계없는 글'], ['욕설·비하·인신공격'], ['차별·혐오 표현'], ['다툼 유도'], ['음란·폭력·불법 내용'],
+  ['도배·의미 없는 글'], ['광고·홍보·피싱 링크'], ['개인정보 노출'], ['계정 거래·대리·핵 관련'], ['정치·종교 등 주제 밖 논쟁'],
+  ['친목 행위'], ['청사진으로 그린 부적절한 그림', 'bp'], ['제목·설명과 다른 청사진 (낚시)', 'bp'], ['남의 청사진 도용', 'bp'],
+  ['부적절한 아이디·사칭'], ['추천 조작'],
+];
+let reportTarget = null;
+// admins' posts and comments get no report button (the server refuses them too)
+let adminNames = new Set(), adminsAt = 0;
+async function loadAdmins(){
+  if (Date.now() - adminsAt < 60000) return;
+  const { data, error } = await acct.client.from('profiles').select('username').eq('role', 'admin');
+  if (!error){ adminNames = new Set((data || []).map(r => r.username)); adminsAt = Date.now(); }
+}
+function openReport(type, id, post, cmt){
+  if (!acct.user){ openLogin('in'); return; }
+  if (acct.ban){ flash('이용이 제한된 계정이라 신고할 수 없습니다'); return; }
+  reportTarget = { type, id };
+  const bp = type === 'post' && post.kind === 'bp';
+  $('#rpWhat').textContent = type === 'post' ? `게시글 "${post.title}" · ${post.author_name}` : `댓글 · ${cmt.author_name}: "${cmt.body.replace(/\s+/g, ' ').slice(0, 60)}${cmt.body.length > 60 ? '…' : ''}"`;
+  $('#rpList').innerHTML = REPORT_REASONS.filter(r => !r[1] || bp).map((r, i) => `<label class="rpi"><input type="checkbox" name="rr" value="${esc(r[0])}"><span>${esc(r[0])}</span></label>`).join('')
+    + `<label class="rpi rpetc"><input type="checkbox" name="rr" value="기타" id="rpEtc"><span>기타</span><input type="text" id="rpOther" maxlength="200" placeholder="어떤 문제인지 적어 주세요" aria-label="기타 내용" disabled></label>`;
+  $('#rpEtc').onchange = ev => { $('#rpOther').disabled = !ev.target.checked; if (ev.target.checked) $('#rpOther').focus(); };
+  $('#rpDetail').value = ''; $('#rpMsg').textContent = ''; $('#rpGo').disabled = false;
+  $('#reportDlg').showModal();
+}
+$('#rpClose').onclick = () => $('#reportDlg').close();
+$('#rpForm').onsubmit = async ev => {
+  ev.preventDefault();
+  const msg = $('#rpMsg'), picked = [...document.querySelectorAll('#rpList input[name=rr]:checked')].map(i => i.value);
+  const other = $('#rpOther').value.trim();
+  if (!picked.length){ msg.textContent = '어긴 원칙을 하나 이상 고르세요'; return; }
+  if (picked.includes('기타') && !other){ msg.textContent = '기타를 골랐다면 내용을 적어 주세요'; $('#rpOther').focus(); return; }
+  const row = { target_type: reportTarget.type, reasons: picked, other: picked.includes('기타') ? other : '', detail: $('#rpDetail').value.trim() };
+  if (reportTarget.type === 'post') row.post_id = reportTarget.id; else row.comment_id = reportTarget.id;
+  $('#rpGo').disabled = true; msg.textContent = '보내는 중…';
+  const { error } = await acct.client.from('reports').insert(row);
+  $('#rpGo').disabled = false;
+  if (error){
+    const m = error.message || '';
+    msg.textContent = /duplicate|reports_once/i.test(m) ? '이미 신고한 내용입니다. 운영자가 확인할 때까지 기다려 주세요.'
+      : /rate limit/i.test(m) ? '신고가 너무 많습니다. 잠시 후 다시 시도하세요.'
+      : /yourself/i.test(m) ? '내가 쓴 글은 신고할 수 없습니다.'
+      : /admin/i.test(m) ? '관리자의 글과 댓글은 신고할 수 없습니다.'
+      : /not found/i.test(m) ? '이미 지워진 글입니다.' : acctError(error);
+    return;
+  }
+  $('#reportDlg').close(); flash('신고했습니다. 운영자가 확인합니다.');
+};
+
+const RP_TABS = [['open', '처리 전'], ['done', '처리 완료'], ['dismissed', '기각'], ['all', '전체']];
+const RP_STATUS = { open: '처리 전', done: '처리 완료', dismissed: '기각' };
+const reports = {
+  rows: [],
+  async badge(){
+    const b = $('#rpBadge'); if (!b || !acct.isAdmin() || !acct.client) return;
+    const { count, error } = await acct.client.from('reports').select('id', { count: 'exact', head: true }).eq('status', 'open');
+    if (error || !$('#rpBadge')) return;
+    b.textContent = '신고 ' + count; b.hidden = false; b.classList.toggle('hot', count > 0);
+    b.title = count ? `처리하지 않은 신고 ${count}건` : '처리할 신고 없음';
+    const t = $('#amRpCount'); if (t) t.textContent = count ? ' ' + count : '';
+  },
+  async show(tab, my){
+    const el = $('#board');
+    if (!acct.isAdmin()){ el.innerHTML = '<div class="bwrap"><a class="back" href="#board">← 게시판</a><p class="note">관리자만 볼 수 있습니다.</p></div>'; return; }
+    el.innerHTML = adminShell('reports', `<p class="dim amsub">신고 당시의 내용이 함께 저장되어 글이 지워져도 남습니다</p>
+      <div class="btool"><div class="seg" id="rpTabs" role="group" aria-label="처리 상태">${RP_TABS.map(([k, n]) => `<a class="segb" href="#admin/reports/${k}" aria-pressed="${k === tab}">${n}</a>`).join('')}</div></div>
+      <div id="rpRows" aria-live="polite"><p class="note">불러오는 중…</p></div>`);
+    let q = acct.client.from('reports').select('*').order('created_at', { ascending: false }).limit(100);
+    if (tab !== 'all') q = q.eq('status', tab);
+    const { data, error } = await q;
+    if (my !== board.seq) return;
+    if (error){ $('#rpRows').innerHTML = '<p class="note">불러오지 못했습니다. 신고 기능 SQL(report_setup.sql)을 실행했는지 확인하세요.</p>'; return; }
+    this.rows = data || []; this.render(tab);
+  },
+  render(tab){
+    const box = $('#rpRows');
+    if (!this.rows.length){ box.innerHTML = `<p class="note bempty blist">${tab === 'open' ? '처리할 신고가 없습니다.' : '신고가 없습니다.'}</p>`; return; }
+    box.innerHTML = this.rows.map(r => `<article class="rpcard st-${r.status}" data-id="${r.id}">
+      <div class="rphead"><span class="kbadge">${r.target_type === 'comment' ? '댓글' : '게시글'}</span><b>${esc(r.target_title || '(제목 없음)')}</b><span class="spacer"></span><span class="rpst">${RP_STATUS[r.status]}${r.handled_by ? ' · ' + esc(r.handled_by) : ''}</span></div>
+      <div class="pmeta">작성자 ${auLink(r.target_author)} · 신고자 ${auLink(r.reporter_name)} · <time title="${esc(fullDate(r.created_at))}">${ago(r.created_at)}</time></div>
+      <div class="fchips">${r.reasons.map(x => `<span class="mchip rpr">${esc(x)}</span>`).join('')}</div>
+      ${r.other ? `<p class="rpline"><span class="dim">기타:</span> ${esc(r.other)}</p>` : ''}
+      ${r.detail ? `<p class="rpline"><span class="dim">추가 설명:</span> ${esc(r.detail)}</p>` : ''}
+      ${r.target_excerpt ? `<blockquote class="rpq">${esc(r.target_excerpt)}</blockquote>` : ''}
+      <div class="row">${r.post_id ? `<a class="btn sm" href="#post/${r.post_id}">글 보기</a>` : '<span class="dim">글이 지워졌습니다</span>'}<span class="spacer"></span>
+        ${r.status === 'open' ? '<button class="btn sm primary" data-st="done">처리 완료</button><button class="btn sm" data-st="dismissed">기각</button>' : '<button class="btn sm" data-st="open">다시 열기</button>'}</div>
+    </article>`).join('');
+    box.querySelectorAll('[data-st]').forEach(b => b.onclick = async () => {
+      const id = +b.closest('.rpcard').dataset.id; b.disabled = true;
+      const { error } = await acct.client.from('reports').update({ status: b.dataset.st }).eq('id', id);
+      if (error){ b.disabled = false; flash(acctError(error)); return; }
+      flash(b.dataset.st === 'done' ? '처리 완료로 바꿨습니다' : b.dataset.st === 'dismissed' ? '기각했습니다' : '다시 열었습니다');
+      this.rows = this.rows.filter(r => r.id !== id || tab === 'all');
+      if (tab === 'all'){ const r = this.rows.find(x => x.id === id); if (r){ r.status = b.dataset.st; } }
+      this.render(tab); this.badge();
+    });
+  },
+};
+setInterval(() => { if (acct.isAdmin() && document.visibilityState === 'visible') reports.badge(); }, 120000);
+
+
+// ---------- admin tab: users (search, restrict) and reports ----------
+function adminShell(sub, inner){
+  return `<div class="bwrap"><div class="bhead"><div><h2>관리자</h2></div></div>
+    <nav class="subtabs" aria-label="관리자 메뉴"><a href="#admin" aria-current="${sub === 'users' ? 'page' : 'false'}">사용자 관리</a><a href="#admin/reports" aria-current="${sub === 'reports' ? 'page' : 'false'}">신고 목록<span id="amRpCount"></span></a></nav>
+    ${inner}</div>`;
+}
+function banUntilText(until){ return until ? new Date(until).toLocaleString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) + '까지' : '영구'; }
+function banBar(){
+  const b = acct.ban; if (!b) return '';
+  return `<div class="banbar" role="status"><b>이용이 제한된 계정입니다</b> · ${esc(banUntilText(b.until))}${b.reason ? ' · 사유: ' + esc(b.reason) : ''}<br><span>글·댓글·추천·신고를 할 수 없습니다. 읽기와 공장 저장은 그대로 쓸 수 있습니다.</span></div>`;
+}
+const BAN_DAYS = [[1, '1일'], [3, '3일'], [7, '7일'], [30, '30일'], [0, '영구']];
+const admin = {
+  q: '', rows: [],
+  async users(my){
+    const el = $('#board');
+    if (!acct.isAdmin()){ el.innerHTML = '<div class="bwrap"><a class="back" href="#board">← 게시판</a><p class="note">관리자만 볼 수 있습니다.</p></div>'; return; }
+    el.innerHTML = adminShell('users', `<p class="dim amsub">아이디로 찾아서 이용을 제한하거나 풀 수 있습니다. 제한된 사용자는 글·댓글·추천·신고를 할 수 없습니다.</p>
+      <div class="btool"><form class="bsearch" id="auForm" role="search"><input type="search" id="auQ" placeholder="아이디 검색 (비우면 최근 가입자)" aria-label="사용자 검색" maxlength="20"><button class="btn">검색</button></form></div>
+      <div id="auRows" class="aulist" aria-live="polite"><p class="note">불러오는 중…</p></div>`);
+    $('#auQ').value = this.q;
+    $('#auForm').onsubmit = ev => { ev.preventDefault(); this.q = $('#auQ').value.trim().toLowerCase(); this.load(board.seq); };
+    reports.badge();
+    return this.load(my);
+  },
+  async load(my){
+    const { data, error } = await acct.client.rpc('admin_users', { q: this.q });
+    if (my !== board.seq) return;
+    if (error){ $('#auRows').innerHTML = '<p class="note">불러오지 못했습니다. 관리 기능 SQL(admin_setup.sql)을 실행했는지 확인하세요.</p>'; return; }
+    this.rows = data || []; this.render();
+  },
+  render(){
+    const box = $('#auRows'); if (!box) return;
+    if (!this.rows.length){ box.innerHTML = `<p class="note bempty">${this.q ? `"${esc(this.q)}"와 맞는 사용자가 없습니다.` : '사용자가 없습니다.'}</p>`; return; }
+    box.innerHTML = this.rows.map(u => `<article class="aurow${u.banned ? ' banned' : ''}" data-id="${esc(u.id)}">
+      <div class="aumain">
+        <div class="uc-h"><span class="avatar sm" aria-hidden="true">${esc(u.username[0].toUpperCase())}</span>${auLink(u.username)}${u.role === 'admin' ? '<span class="kbadge k-notice">관리자</span>' : ''}${u.banned ? '<span class="kbadge k-ban">제한 중</span>' : ''}</div>
+        <div class="pmeta">가입 ${new Date(u.joined).toLocaleDateString('ko-KR')} · 글 ${u.posts} · 댓글 ${u.comments} · 받은 추천 ${u.likes} · <span class="${u.reported ? 'neg' : ''}">신고된 횟수 ${u.reported}</span></div>
+        ${u.banned ? `<div class="pmeta banline">제한: ${esc(banUntilText(u.ban_until))}${u.ban_reason ? ' · 사유: ' + esc(u.ban_reason) : ''}${u.ban_by ? ' · 처리 ' + esc(u.ban_by) : ''}</div>` : ''}
+      </div>
+      <div class="auacts">${u.role === 'admin' ? '<span class="dim">관리자는 제한할 수 없습니다</span>'
+        : u.banned ? '<button class="btn sm" data-a="ban">기간 바꾸기</button><button class="btn sm primary" data-a="unban">제한 풀기</button>'
+        : '<button class="btn sm danger" data-a="ban">이용 제한</button>'}</div>
+      <form class="banform" hidden>
+        <label>기간 <select class="sel" name="days">${BAN_DAYS.map(([d, n]) => `<option value="${d}"${d === 7 ? ' selected' : ''}>${n}</option>`).join('')}</select></label>
+        <label class="grow">사유 <input name="reason" maxlength="300" placeholder="예: 운영 원칙 2. 욕설·비하" required></label>
+        <label class="switch"><input type="checkbox" name="purge"> 이 사용자의 글·댓글 모두 삭제</label>
+        <div class="row"><button class="btn sm danger" type="submit">제한하기</button><button class="btn sm" type="button" data-a="cancel">취소</button><span class="msg"></span></div>
+      </form>
+    </article>`).join('');
+    box.querySelectorAll('.aurow').forEach(row => {
+      const u = this.rows.find(x => x.id === row.dataset.id), form = row.querySelector('.banform');
+      const banBtn = row.querySelector('[data-a=ban]'), unBtn = row.querySelector('[data-a=unban]');
+      if (banBtn) banBtn.onclick = () => { form.hidden = !form.hidden; if (!form.hidden){ if (u.ban_reason) form.reason.value = u.ban_reason; form.reason.focus(); } };
+      if (unBtn) unBtn.onclick = async () => {
+        unBtn.disabled = true;
+        const { error } = await acct.client.from('bans').delete().eq('user_id', u.id);
+        if (error){ unBtn.disabled = false; flash(acctError(error)); return; }
+        flash(`${u.username}의 제한을 풀었습니다`); this.load(board.seq);
+      };
+      form.querySelector('[data-a=cancel]').onclick = () => { form.hidden = true; };
+      form.onsubmit = async ev => {
+        ev.preventDefault();
+        const msg = form.querySelector('.msg'), reason = form.reason.value.trim(), days = +form.days.value;
+        if (!reason){ msg.textContent = '사유를 적어 주세요'; form.reason.focus(); return; }
+        const purge = form.purge.checked;
+        const btn = form.querySelector('[type=submit]');
+        if (purge && !btn.dataset.confirm){ btn.dataset.confirm = '1'; btn.textContent = '글·댓글 삭제까지 진행 (한 번 더)'; return; }
+        btn.disabled = true; msg.textContent = '처리 중…';
+        const until = days ? new Date(Date.now() + days * 86400000).toISOString() : null;
+        const { error } = await acct.client.from('bans').upsert({ user_id: u.id, until, reason });
+        if (error){ btn.disabled = false; msg.textContent = /cannot ban admin/i.test(error.message || '') ? '관리자는 제한할 수 없습니다' : acctError(error); return; }
+        if (purge){
+          await acct.client.from('comments').delete().eq('author', u.id);
+          await acct.client.from('posts').delete().eq('author', u.id);
+          statsCache.clear();
+        }
+        flash(`${u.username}의 이용을 ${days ? days + '일' : '영구'} 제한했습니다${purge ? ' · 글·댓글 삭제' : ''}`);
+        this.load(board.seq);
+      };
+    });
+  },
+};
+
+// ---------- saved factories: private to each account, listed on your own profile ----------
+function ownSubtabs(name, sub){
+  if (!acct.user || acct.name() !== name) return '';
+  const n = facs.list ? facs.list.length : null;
+  return `<nav class="subtabs" aria-label="내 프로필"><a href="#user/${encodeURIComponent(name)}" aria-current="${sub === 'posts' ? 'page' : 'false'}">쓴 글</a><a href="#user/${encodeURIComponent(name)}/factories" aria-current="${sub === 'factories' ? 'page' : 'false'}">저장한 공장${n != null ? ' ' + n : ''}</a></nav>`;
+}
+const facs = {
+  list: null,
+  snapshot(){
+    const data = world.serialize();
+    const ents = data.ents.filter(e => TYPES[e.t]);
+    const n = ents.filter(e => !CARRIER.has(TYPES[e.t].kind) && e.t !== 'pac').length;
+    const c = document.createElement('canvas'); c.width = 320; c.height = 200;
+    drawBp(c.getContext('2d'), { w: data.W, h: data.H, ents }, 320, 200, THUMB_PAL, false);
+    return { data, site_w: data.W, site_h: data.H, ent_count: n, thumb: c.toDataURL('image/png') };
+  },
+  async load(){
+    const { data, error } = await acct.client.from('factories').select('id,name,description,site_w,site_h,ent_count,thumb,created_at,updated_at').order('updated_at', { ascending: false });
+    if (error) throw error;
+    this.list = data || []; return this.list;
+  },
+  async open(id){
+    const { data, error } = await acct.client.from('factories').select('id,name,data').eq('id', id).single();
+    if (error) throw error;
+    history.pushState(null, '', location.pathname + location.search); route();
+    ui.presetNote = null; loadWorld(AIC.deserialize(data.data)); ui.fac = { id: data.id, name: data.name }; markTouched(); setTool('select');
+    flash(`"${data.name}" 공장을 불러왔습니다`);
+  },
+};
+let facDlgMode = null;
+function openFacDialog(edit){
+  if (!acct.user){ openLogin('in'); return; }
+  facDlgMode = edit ? { edit } : { save: true };
+  const d = $('#facDlg');
+  $('#facTitle').textContent = edit ? '공장 이름·설명 고치기' : '공장 저장';
+  $('#facName').value = edit ? edit.name : (ui.fac ? ui.fac.name : '');
+  $('#facDesc').value = edit ? edit.description || '' : '';
+  $('#facMode').hidden = !!edit || !ui.fac;
+  if (ui.fac && !edit){ $('#facOverName').textContent = ui.fac.name; $('#facModeOver').checked = true; }
+  $('#facNote').textContent = edit ? '' : `지금 부지(${world.W}×${world.H})의 설비 배치와 설정을 통째로 저장합니다. 저장한 공장은 나만 볼 수 있고, 내 프로필 → "저장한 공장"에서 불러옵니다.`;
+  $('#facMsg').textContent = ''; $('#facGo').disabled = false; $('#facGo').textContent = edit ? '고치기' : '저장';
+  d.showModal(); $('#facName').focus();
+}
+$('#facSave').onclick = () => openFacDialog(null);
+$('#facClose').onclick = () => $('#facDlg').close();
+$('#facModeNew').onchange = $('#facModeOver').onchange = () => { if ($('#facModeNew').checked && ui.fac && $('#facName').value === ui.fac.name) $('#facName').select(); };
+$('#facForm').onsubmit = async ev => {
+  ev.preventDefault();
+  const msg = $('#facMsg'), name = $('#facName').value.trim(), description = $('#facDesc').value.trim();
+  if (!name){ msg.textContent = '공장 이름을 적어 주세요'; $('#facName').focus(); return; }
+  $('#facGo').disabled = true; msg.textContent = '저장하는 중…';
+  let r;
+  if (facDlgMode.edit) r = await acct.client.from('factories').update({ name, description }).eq('id', facDlgMode.edit.id).select('id,name').single();
+  else {
+    const snap = facs.snapshot();
+    if (JSON.stringify(snap.data).length > 1400000){ $('#facGo').disabled = false; msg.textContent = '공장이 너무 커서 저장할 수 없습니다'; return; }
+    const row = Object.assign({ name, description }, snap);
+    r = ui.fac && $('#facModeOver').checked
+      ? await acct.client.from('factories').update(row).eq('id', ui.fac.id).select('id,name').single()
+      : await acct.client.from('factories').insert(row).select('id,name').single();
+  }
+  $('#facGo').disabled = false;
+  if (r.error){ msg.textContent = acctError(r.error); return; }
+  if (!facDlgMode.edit) ui.fac = { id: r.data.id, name: r.data.name };
+  else if (ui.fac && ui.fac.id === r.data.id) ui.fac.name = r.data.name;
+  $('#facDlg').close(); facs.list = null;
+  flash(facDlgMode.edit ? '공장 정보를 고쳤습니다' : `"${name}" 공장을 저장했습니다 · 내 프로필 → 저장한 공장에서 불러올 수 있습니다`);
+  if (ui.view === 'board') route();
+};
+
+
+// ---------- change password (own profile) ----------
+function openPwDialog(){
+  if (!acct.user) { openLogin('in'); return; }
+  ['#pwOld', '#pwNew', '#pwNew2'].forEach(k => { $(k).value = ''; });
+  $('#pwOthers').checked = true; $('#pwMsg').textContent = ''; $('#pwGo').disabled = false;
+  $('#pwDlg').showModal(); $('#pwOld').focus();
+}
+$('#pwClose').onclick = () => $('#pwDlg').close();
+$('#pwForm').onsubmit = async ev => {
+  ev.preventDefault();
+  const msg = $('#pwMsg'), oldPw = $('#pwOld').value, pw = $('#pwNew').value;
+  if (!oldPw){ msg.textContent = '지금 비밀번호를 적어 주세요'; $('#pwOld').focus(); return; }
+  if (pw.length < 6){ msg.textContent = '새 비밀번호는 6자 이상이어야 합니다'; $('#pwNew').focus(); return; }
+  if (pw !== $('#pwNew2').value){ msg.textContent = '새 비밀번호 확인이 맞지 않습니다'; $('#pwNew2').focus(); return; }
+  if (pw === oldPw){ msg.textContent = '지금 비밀번호와 다른 비밀번호를 쓰세요'; return; }
+  $('#pwGo').disabled = true; msg.textContent = '확인하는 중…';
+  try {
+    // confirm it's really the owner: sign in again with the current password
+    const chk = await acct.client.auth.signInWithPassword({ email: acct.email(acct.name()), password: oldPw });
+    if (chk.error){ msg.textContent = /invalid login credentials/i.test(chk.error.message || '') ? '지금 비밀번호가 맞지 않습니다' : acctError(chk.error); return; }
+    msg.textContent = '바꾸는 중…';
+    const { error } = await acct.client.auth.updateUser({ password: pw });
+    if (error){ msg.textContent = acctError(error); return; }
+    if ($('#pwOthers').checked){ try { await acct.client.auth.signOut({ scope: 'others' }); } catch(e){} }
+    $('#pwDlg').close();
+    flash($('#pwOthers').checked ? '비밀번호를 바꿨습니다 · 다른 기기에서는 로그아웃됐습니다' : '비밀번호를 바꿨습니다');
+  } finally { $('#pwGo').disabled = false; }
+};
+
 // simulator ↔ board: the address decides which one is on screen
-function setView(v){
+function setView(v, tab){
   const was = ui.view; ui.view = v;
   $('#app').classList.toggle('boardmode', v === 'board');
-  document.querySelectorAll('#viewSw button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v));
-  if (v === 'sim' && was === 'board'){ resize(); render(); }
+  document.querySelectorAll('#viewSw button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === (tab || v)));
+  if (v === 'sim' && was === 'board'){ fitHeader(); resize(); render(); }
 }
 function route(){
-  const [v, arg] = location.hash.replace(/^#\/?/, '').split('/');
+  const [v, arg, arg2] = location.hash.replace(/^#\/?/, '').split('/');
   if (!acct.enabled() || !BOARD_VIEWS.includes(v)){ setView('sim'); return; }
   const first = ui.view !== 'board';
-  setView('board');
+  setView('board', v === 'admin' || v === 'reports' ? 'admin' : 'board');
   if (first || v !== 'board') window.scrollTo(0, 0), $('#board').scrollTop = 0;
-  board.show(v, arg);
+  board.show(v, arg, arg2);
 }
 window.addEventListener('hashchange', route);
 $('#viewSw').onclick = ev => {
   const b = ev.target.closest('button'); if (!b) return;
-  if (b.dataset.v === 'board'){ if (location.hash !== '#board') location.hash = 'board'; else route(); }
+  if (b.dataset.v === 'board' || b.dataset.v === 'admin'){ const h = '#' + b.dataset.v; if (location.hash !== h) location.hash = b.dataset.v; else route(); }
   else if (ui.view !== 'sim'){ history.pushState(null, '', location.pathname + location.search); route(); }
 };
 $('#viewSw').hidden = !acct.enabled();
+$('#bar').classList.toggle('site', acct.enabled());
+function fitHeader(){
+  const bar = $('#bar'), tb = bar.querySelector('.toolbar'), brand = bar.querySelector('.brand');
+  bar.classList.remove('tworow');
+  if (getComputedStyle(tb).display === 'none') return;
+  const ac = $('#acct'), low = el => el && !el.hidden && el.offsetTop > brand.offsetTop + brand.offsetHeight / 2;
+  if (low(tb) || low(ac)) bar.classList.add('tworow');
+}
+window.addEventListener('resize', fitHeader);
+if (document.fonts) document.fonts.ready.then(fitHeader);
+setTimeout(fitHeader, 0);
 ucard.init();
 
 // header: login button or "id · logout"
 function renderAcct(){
   const el = $('#acct'); if (!el) return;
+  const ab = $('#viewSw [data-v=admin]'); if (ab) ab.hidden = !acct.isAdmin();
+  const fs = $('#facSave'); if (fs) fs.hidden = !acct.enabled();
   if (!acct.enabled()){ el.hidden = true; return; }
-  el.hidden = false;
+  el.hidden = false; setTimeout(fitHeader, 0);
   if (acct.down){ el.innerHTML = '<span class="dim" style="font-size:12px">로그인 서버 연결 안 됨</span>'; return; }
   if (!acct.user){ el.innerHTML = '<button class="btn" id="loginBtn">로그인</button>'; $('#loginBtn').onclick = () => openLogin('in'); return; }
-  el.innerHTML = `<a class="who" title="내 프로필"></a><button class="btn sm" id="logoutBtn">로그아웃</button>`;
-  const who = el.querySelector('.who'); who.textContent = acct.name() + (acct.isAdmin() ? ' · 관리자' : ''); who.href = '#user/' + encodeURIComponent(acct.name());
+  el.innerHTML = `<a class="who"></a><button class="btn sm" id="logoutBtn">로그아웃</button>`;
+  const who = el.querySelector('.who'); who.textContent = acct.name(); who.title = acct.name() + ' · 내 프로필'; who.href = '#user/' + encodeURIComponent(acct.name());
+  if (acct.isAdmin()){ const t = document.createElement('span'); t.className = 'kbadge k-notice'; t.textContent = '관리자'; el.insertBefore(t, who.nextSibling); }
+  if (acct.isAdmin()){ const a = document.createElement('a'); a.className = 'rpbadge'; a.id = 'rpBadge'; a.href = '#admin/reports'; a.hidden = true; el.insertBefore(a, el.querySelector('#logoutBtn')); reports.badge(); }
   $('#logoutBtn').onclick = async () => { await acct.signOut(); flash('로그아웃했습니다'); };
 }
 function openLogin(mode){
@@ -3393,7 +3919,7 @@ function updateHover(){
 
 // ---------- selection actions ----------
 function selectionIds(){ return ui.multi.size ? [...ui.multi] : (ui.sel ? [ui.sel] : []); }
-function startPaste(bp, name){ setTool('paste'); ui.paste = JSON.parse(JSON.stringify(bp)); ui.pasteName = name || null; renderSelbar(); renderInspector(true); }
+function startPaste(bp, name){ bp = AIC.cleanBp(bp); if (!bp){ flash('읽을 수 없는 청사진입니다'); return; } setTool('paste'); ui.paste = JSON.parse(JSON.stringify(bp)); ui.pasteName = name || null; renderSelbar(); renderInspector(true); }
 // ----- moving: pick the selection up (it leaves the site while carried), drop it with a click or on release -----
 function startMove(ids, grabCell){
   ids = ids.filter(id => world.ents.get(id));
@@ -3501,7 +4027,7 @@ $('#play').onclick = togglePlay;
 function setSpeed(s){ ui.speed = s; document.querySelectorAll('#speed button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.s === s)); }
 document.querySelectorAll('#speed button').forEach(b => b.onclick = () => setSpeed(+b.dataset.s));
 const presetSel = $('#preset');
-for (const k in PRESETS){ const o = document.createElement('option'); o.value = k; o.textContent = PRESETS[k].ko; presetSel.appendChild(o); }
+for (const k in PRESETS){ if (k === 'empty') continue; const o = document.createElement('option'); o.value = k; o.textContent = PRESETS[k].ko; presetSel.appendChild(o); }
 presetSel.onchange = () => {
   const k = presetSel.value; if (!k) return; presetSel.value = '';
   let W = world.W, H = world.H, r = AIC.loadPreset(k, W, H);
