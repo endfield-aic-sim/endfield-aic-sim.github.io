@@ -317,7 +317,7 @@ dialog textarea{width:100%;height:200px;font-family:var(--f-mono);font-size:11px
     </div>
     <p class="note">이메일은 받지 않아서 비밀번호를 잊으면 찾을 수 없습니다. <b>다른 사이트에서 쓰는 비밀번호는 쓰지 마세요.</b> 저장하는 정보는 아이디, 암호화된 비밀번호, 내가 올린 청사진뿐입니다.</p>
     <div class="msg" id="lgMsg" role="alert"></div>
-    <div class="acts"><button class="btn primary" id="lgGo" type="submit">로그인</button><button class="btn" id="lgSwitch" type="button">처음이에요 · 가입하기</button><span class="spacer"></span><button class="btn" id="lgClose" type="button">닫기</button></div>
+    <div class="acts"><button class="btn primary" id="lgGo" type="submit">로그인</button><button class="btn" id="lgSwitch" type="button">가입하기</button><span class="spacer"></span><button class="btn" id="lgClose" type="button">닫기</button></div>
   </form>
 </dialog>
 
@@ -2157,7 +2157,7 @@ function openLogin(mode){
   const up = mode === 'up';
   $('#lgTitle').textContent = up ? '가입하기' : '로그인';
   $('#lgPw2Row').hidden = !up; $('#lgGo').textContent = up ? '가입하기' : '로그인';
-  $('#lgSwitch').textContent = up ? '이미 아이디가 있어요 · 로그인' : '처음이에요 · 가입하기';
+  $('#lgSwitch').textContent = up ? '로그인' : '가입하기';
   $('#lgMsg').textContent = ''; $('#lgPw').value = ''; $('#lgPw2').value = '';
   if (!d.open) d.showModal(); $('#lgUser').focus();
 }
