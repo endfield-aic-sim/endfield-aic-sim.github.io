@@ -197,7 +197,8 @@ details summary{cursor:pointer;font-family:var(--f-display);font-size:12px;font-
 .mchip{display:inline-block;margin:0 4px 4px 0;padding:1px 6px}
 button.mchip{cursor:pointer;color:inherit} button.mchip:hover{border-color:var(--bad)}
 .acct{display:flex;align-items:center;gap:8px}
-.acct .who{font-size:12.5px;font-weight:600;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acct a.who:hover{text-decoration:underline;text-underline-offset:2px}
+.acct .who{color:inherit;text-decoration:none;font-size:12.5px;font-weight:600;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lg{display:grid;grid-template-columns:auto 1fr;gap:8px 10px;align-items:center;margin:10px 0}
 .lg input{border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:6px 8px;font-size:13px;min-width:0}
 .lgrow{display:contents}
@@ -253,7 +254,11 @@ dialog textarea{width:100%;height:200px;font-family:var(--f-mono);font-size:11px
 .bsearch input{flex:1;min-width:0;border:1px solid var(--line);background:var(--panel);border-radius:4px;padding:5px 9px}
 .blist{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:6px;background:var(--panel);overflow:hidden}
 .bempty{padding:28px 16px;margin:0;text-align:center;max-width:none}
-.prow{display:grid;grid-template-columns:128px minmax(0,1fr) auto;gap:14px;align-items:center;padding:10px 14px 10px 10px;color:inherit;text-decoration:none;border-top:1px solid var(--line)}
+.prow{position:relative;display:grid;grid-template-columns:128px minmax(0,1fr) auto;gap:14px;align-items:center;padding:10px 14px 10px 10px;border-top:1px solid var(--line)}
+.plink{color:inherit;text-decoration:none;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.plink::after{content:"";position:absolute;inset:0}
+.plink:focus-visible{outline:0}
+.prow:has(.plink:focus-visible){outline:2px solid var(--accent);outline-offset:-2px}
 .prow:first-child{border-top:0}
 .prow:hover{background:var(--panel-2)}
 .prow:hover .ptitle b{text-decoration:underline;text-underline-offset:3px}
@@ -262,11 +267,30 @@ dialog textarea{width:100%;height:200px;font-family:var(--f-mono);font-size:11px
 .pthumb img{width:100%;height:100%;object-fit:cover;display:block}
 .pmain{display:flex;flex-direction:column;gap:3px;min-width:0}
 .ptitle{display:flex;align-items:center;gap:7px;min-width:0}
-.ptitle b{font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ptitle b{font-weight:600;font-size:14px}
 .pex{font-size:12.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pmeta{font-size:11.5px;color:var(--muted)}
 .pstat{display:flex;flex-direction:column;gap:4px;align-items:flex-end;font-family:var(--f-mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
 .pstat span{display:inline-flex;align-items:center;gap:5px}
+.au{position:relative;z-index:1;color:inherit;font-weight:600;text-decoration:none}
+.au:hover{text-decoration:underline;text-underline-offset:2px}
+.pmeta .au{color:var(--ink)}
+.ucard{position:fixed;z-index:50;min-width:200px;max-width:260px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px;box-shadow:0 6px 20px rgba(0,0,0,.18);font-size:12px}
+.ucard p{margin:8px 0 0;font-size:11px}
+.uc-h{display:flex;align-items:center;gap:7px}
+.uc-h b{font-size:13.5px}
+.avatar{flex:none;width:52px;height:52px;border-radius:50%;background:var(--ink);color:var(--accent);display:inline-flex;align-items:center;justify-content:center;font-family:var(--f-display);font-weight:700;font-size:24px}
+.avatar.sm{width:24px;height:24px;font-size:12px}
+.ustats{display:grid;grid-template-columns:repeat(3,auto);gap:4px 14px;margin:8px 0 0;justify-content:start}
+.ustats div{display:flex;flex-direction:column}
+.ustats dt{font-size:11px;color:var(--muted)}
+.ustats dd{margin:0;font-family:var(--f-mono);font-size:15px;font-weight:500;font-variant-numeric:tabular-nums}
+.uhead{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 16px;border:1px solid var(--line);border-radius:6px;background:var(--panel);margin-bottom:18px}
+.uhead .umain{flex:1;min-width:160px}
+.uhead .umain p{margin:3px 0 0;font-size:12.5px}
+.uhead .ustats{margin:0;gap:4px 22px}
+.uhead .ustats dd{font-size:20px}
+.usub{font-family:var(--f-display);font-size:15px;margin:0 0 10px}
 .kbadge{flex:none;font-size:10.5px;font-weight:600;border-radius:3px;padding:1px 6px;border:1px solid var(--line);color:var(--muted);background:var(--panel-2);white-space:nowrap}
 .kbadge.k-bp{border-color:var(--power);color:var(--power)}
 .kbadge.k-notice{background:var(--accent);border-color:transparent;color:var(--on-accent)}
@@ -333,7 +357,7 @@ a.btn{color:inherit;text-decoration:none;display:inline-block}
       <div class="mark" aria-hidden="true"></div>
       <div><h1>AIC 공장 시뮬레이터</h1><small>Arknights: Endfield · 협곡 IV / 무릉</small></div>
     </div>
-    <nav class="seg view" id="viewSw" aria-label="화면" hidden><button data-v="sim" aria-pressed="true">시뮬레이터</button><button data-v="board" aria-pressed="false">게시판</button></nav>
+    <nav class="seg view" id="viewSw" aria-label="화면" hidden><button data-v="sim" aria-pressed="true">공장</button><button data-v="board" aria-pressed="false">게시판</button></nav>
     <div class="ctl simonly">
       <button class="btn primary" id="play">일시정지</button>
       <div class="seg" id="speed" role="group" aria-label="배속">
@@ -395,6 +419,7 @@ a.btn{color:inherit;text-decoration:none;display:inline-block}
   </aside>
 
   <section class="board" id="board" aria-label="게시판"></section>
+  <div class="ucard" id="ucard" role="tooltip" hidden></div>
 </div>
 
 <dialog id="loginDlg" aria-labelledby="lgTitle">
@@ -2198,9 +2223,9 @@ function acctCard(b){
   return d;
 }
 // ---------- board: posts · comments · likes ----------
-// The whole page turns into the board. Addresses: #board (list), #post/ID, #write, #edit/ID; anything else is the simulator.
+// The whole page turns into the board. Addresses: #board (list), #user/NAME (one person's posts), #post/ID, #write, #edit/ID; anything else is the simulator.
 // Reading is open to everyone; writing, comments and likes need a login. Counts, authors and times are set by the server.
-const BOARD_VIEWS = ['board', 'post', 'write', 'edit'];
+const BOARD_VIEWS = ['board', 'user', 'post', 'write', 'edit'];
 const KIND_KO = { bp: '청사진', text: '일반', notice: '공지' };
 const PAGE = 20;
 const LIST_COLS = 'id,kind,title,body,bp_w,bp_h,bp_ents,thumb,like_count,comment_count,author_name,author,created_at,updated_at';
@@ -2291,8 +2316,60 @@ function bpFacts(bp){
   return { list, belts, pipes, facs: list.reduce((a, [, c]) => a + c, 0) };
 }
 
+// author stats (posts, likes received, comments): one server call per name, kept for 30 s
+const statsCache = new Map();
+function userStats(name){
+  const hit = statsCache.get(name);
+  if (hit && Date.now() - hit.t < 30000) return hit.p;
+  const p = acct.client.rpc('user_stats', { uname: name }).then(r => { if (r.error) throw r.error; return r.data; });
+  p.catch(() => statsCache.delete(name));
+  statsCache.set(name, { t: Date.now(), p }); return p;
+}
+const auLink = name => `<a class="au" href="#user/${encodeURIComponent(name)}" data-user="${esc(name)}">${esc(name)}</a>`;
+const statsHTML = st => `<dl class="ustats"><div><dt>게시글</dt><dd>${st.posts}</dd></div><div><dt>받은 추천</dt><dd>${st.likes}</dd></div><div><dt>댓글</dt><dd>${st.comments}</dd></div></dl>`;
+// hover (or keyboard focus) on an author name → a small card with their numbers
+const ucard = { el: null, timer: 0, hideT: 0, target: null,
+  show(a){
+    clearTimeout(this.hideT); if (this.target === a && !this.el.hidden) return;
+    clearTimeout(this.timer); this.target = a;
+    this.timer = setTimeout(async () => {
+      const name = a.dataset.user, el = this.el;
+      el.innerHTML = `<div class="uc-h"><b>${esc(name)}</b></div><p class="dim">불러오는 중…</p>`; el.hidden = false; this.place(a);
+      try {
+        const st = await userStats(name);
+        if (this.target !== a) return;
+        el.innerHTML = st ? `<div class="uc-h"><span class="avatar sm" aria-hidden="true">${esc(name[0].toUpperCase())}</span><b>${esc(name)}</b>${st.role === 'admin' ? '<span class="kbadge k-notice">관리자</span>' : ''}</div>${statsHTML(st)}<p class="dim">누르면 쓴 글 목록을 봅니다</p>`
+          : `<div class="uc-h"><b>${esc(name)}</b></div><p class="dim">탈퇴했거나 없는 사용자입니다</p>`;
+        this.place(a);
+      } catch(e){ if (this.target === a) el.innerHTML = `<div class="uc-h"><b>${esc(name)}</b></div><p class="dim">정보를 불러오지 못했습니다</p>`; }
+    }, 220);
+  },
+  hide(){ clearTimeout(this.timer); this.hideT = setTimeout(() => { this.el.hidden = true; this.target = null; }, 120); },
+  place(a){
+    const r = a.getBoundingClientRect(), el = this.el, w = el.offsetWidth, h = el.offsetHeight;
+    let x = Math.min(Math.max(8, r.left), innerWidth - w - 8), y = r.bottom + 6;
+    if (y + h > innerHeight - 8) y = Math.max(8, r.top - h - 6);
+    el.style.left = x + 'px'; el.style.top = y + 'px';
+  },
+  init(){
+    this.el = $('#ucard');
+    const b = $('#board');
+    b.addEventListener('mouseover', ev => { const a = ev.target.closest('.au'); if (a) this.show(a); });
+    b.addEventListener('mouseout', ev => { const a = ev.target.closest('.au'); if (a && !a.contains(ev.relatedTarget)) this.hide(); });
+    b.addEventListener('focusin', ev => { const a = ev.target.closest('.au'); if (a) this.show(a); });
+    b.addEventListener('focusout', ev => { if (ev.target.closest('.au')) this.hide(); });
+    b.addEventListener('click', ev => { if (ev.target.closest('.au')){ clearTimeout(this.timer); this.el.hidden = true; this.target = null; } });
+    b.addEventListener('scroll', () => { if (!this.el.hidden){ this.el.hidden = true; this.target = null; } }, { passive: true });
+    window.addEventListener('scroll', () => { if (!this.el.hidden){ this.el.hidden = true; this.target = null; } }, { passive: true });
+    this.el.addEventListener('mouseover', () => clearTimeout(this.hideT));
+    this.el.addEventListener('mouseout', ev => { if (!this.el.contains(ev.relatedTarget)) this.hide(); });
+  },
+};
+
 const board = {
-  filter: 'all', q: '', sort: 'new', rows: [], notices: [], more: false, state: 'idle', post: null, comments: [], liked: false, pending: null, seq: 0,
+  boardLv: { mode: 'board', filter: 'all', sort: 'new', q: '' }, lv: null,
+  rows: [], notices: [], more: false, post: null, comments: [], liked: false, pending: null, seq: 0,
+  get filter(){ return this.boardLv.filter; },
   el(){ return $('#board'); },
   db(){ return acct.client; },
   // open the write page with a blueprint already attached (from a blueprint card)
@@ -2305,29 +2382,41 @@ const board = {
   async show(v, arg){
     const my = ++this.seq;
     const el = this.el();
+    if (ucard.el){ ucard.el.hidden = true; ucard.target = null; }
     if (!acct.enabled()){ el.innerHTML = '<div class="bwrap"><p class="note">게시판은 공개 사이트에서만 열립니다.</p></div>'; return; }
     if (!acct.client && !acct.down){ el.innerHTML = '<div class="bwrap"><p class="note">게시판에 연결하는 중…</p></div>'; await acct.wait(); if (my !== this.seq) return; }
-    if (acct.down || !acct.client){ el.innerHTML = '<div class="bwrap"><p class="note">게시판 서버에 연결하지 못했습니다. 잠시 후 새로고침해 주세요.</p><p><a class="btn" href="#">시뮬레이터로 돌아가기</a></p></div>'; return; }
-    if (v === 'board') return this.list(true, my);
+    if (acct.down || !acct.client){ el.innerHTML = '<div class="bwrap"><p class="note">게시판 서버에 연결하지 못했습니다. 잠시 후 새로고침해 주세요.</p><p><a class="btn" href="#">공장으로 돌아가기</a></p></div>'; return; }
+    if (v === 'board'){ this.lv = this.boardLv; return this.list(true, my); }
+    if (v === 'user') return this.profile(decodeURIComponent(arg || '').toLowerCase(), my);
     if (v === 'post') return this.open(+arg, my);
     if (v === 'write') return this.write(null, my);
     if (v === 'edit') return this.write(+arg, my);
   },
 
-  // ---- list ----
+  // ---- list (whole board, or one person's posts) ----
+  async profile(name, my){
+    if (this.lv && this.lv.mode === 'user' && this.lv.name === name){ this.lv.stats = undefined; }
+    else this.lv = { mode: 'user', name, filter: 'all', sort: 'new', q: '', stats: undefined };
+    const lv = this.lv;
+    userStats(name).then(st => { if (this.lv !== lv) return; lv.stats = st || null; this.renderUserHead(); }, () => { if (this.lv !== lv) return; lv.stats = false; this.renderUserHead(); });
+    return this.list(true, my);
+  },
   async list(reset, my){
-    if (reset){ this.rows = []; this.more = false; this.renderList('loading'); }
+    const lv = this.lv, user = lv.mode === 'user';
+    if (reset){ this.rows = []; this.notices = []; this.more = false; this.renderList('loading'); }
     const db = this.db(), from = this.rows.length;
     let q = db.from('posts').select(LIST_COLS);
-    q = this.filter === 'all' ? q.in('kind', ['bp', 'text']) : q.eq('kind', this.filter);
-    const term = this.q.replace(/[,()*%"\\]/g, ' ').trim();
+    if (user) q = q.eq('author_name', lv.name);
+    if (lv.filter !== 'all') q = q.eq('kind', lv.filter);
+    else if (!user) q = q.in('kind', ['bp', 'text']);
+    const term = lv.q.replace(/[,()*%"\\]/g, ' ').trim();
     if (term) q = q.or(`title.ilike.*${term}*,body.ilike.*${term}*,author_name.ilike.*${term}*`);
-    if (this.sort === 'like') q = q.order('like_count', { ascending: false });
-    if (this.sort === 'cmt') q = q.order('comment_count', { ascending: false });
+    if (lv.sort === 'like') q = q.order('like_count', { ascending: false });
+    if (lv.sort === 'cmt') q = q.order('comment_count', { ascending: false });
     q = q.order('created_at', { ascending: false }).range(from, from + PAGE);
-    const wantNotices = reset && !term && this.filter !== 'text' && this.filter !== 'bp';
+    const wantNotices = !user && reset && !term && lv.filter === 'all';
     const [res, nres] = await Promise.all([q, wantNotices ? db.from('posts').select(LIST_COLS).eq('kind', 'notice').order('created_at', { ascending: false }).limit(5) : null]);
-    if (my != null && my !== this.seq) return;
+    if ((my != null && my !== this.seq) || this.lv !== lv) return;
     if (res.error){ this.renderList('error'); return; }
     const got = res.data || [];
     this.more = got.length > PAGE;
@@ -2335,34 +2424,45 @@ const board = {
     if (reset) this.notices = nres && !nres.error ? nres.data || [] : [];
     this.renderList('ok');
   },
+  renderUserHead(){
+    const lv = this.lv, h = $('#uHead'); if (!h || lv.mode !== 'user') return;
+    const st = lv.stats, nm = lv.name;
+    h.innerHTML = `<span class="avatar" aria-hidden="true">${esc((nm[0] || '?').toUpperCase())}</span>
+      <div class="umain"><h2>${esc(nm)}${st && st.role === 'admin' ? ' <span class="kbadge k-notice">관리자</span>' : ''}</h2>
+      <p class="dim">${st ? '가입 ' + new Date(st.joined).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) : st === null ? '탈퇴했거나 없는 사용자입니다' : st === false ? '정보를 불러오지 못했습니다' : '불러오는 중…'}</p></div>
+      ${st ? statsHTML(st) : ''}`;
+  },
   renderList(state){
-    const el = this.el();
-    if (!$('#bList')){
+    const el = this.el(), lv = this.lv, user = lv.mode === 'user', key = user ? 'user:' + lv.name : 'board';
+    if (!$('#bList') || $('#bList').dataset.lv !== key){
       el.innerHTML = `<div class="bwrap">
-        <div class="bhead"><div><h2>게시판</h2><p class="dim">청사진을 올리고 공장 이야기를 나누는 곳</p></div><span class="spacer"></span><button class="btn primary" id="bWrite">글쓰기</button></div>
+        ${user ? `<a class="back" href="#board">← 게시판</a><div class="uhead" id="uHead"></div><h3 class="usub">쓴 글</h3>`
+          : `<div class="bhead"><div><h2>게시판</h2><p class="dim">청사진 공유, 공장 이야기, 게임에 대한 질문까지 자유롭게 남기는 곳</p></div><span class="spacer"></span><button class="btn primary" id="bWrite">글쓰기</button></div>`}
         <div class="btool">
           <div class="seg" id="bFilter" role="group" aria-label="글 종류"><button data-f="all">전체</button><button data-f="bp">청사진</button><button data-f="text">일반</button></div>
-          <form class="bsearch" id="bSearch" role="search"><input type="search" id="bQ" placeholder="제목·내용·작성자 검색" aria-label="게시글 검색" maxlength="40"><button class="btn">검색</button></form>
+          ${user ? '<span class="spacer"></span>' : '<form class="bsearch" id="bSearch" role="search"><input type="search" id="bQ" placeholder="제목·내용·작성자 검색" aria-label="게시글 검색" maxlength="40"><button class="btn">검색</button></form>'}
           <select class="sel" id="bSort" aria-label="정렬"><option value="new">최신순</option><option value="like">추천순</option><option value="cmt">댓글순</option></select>
         </div>
-        <div class="blist" id="bList" aria-live="polite"></div>
+        <div class="blist" id="bList" data-lv="${esc(key)}" aria-live="polite"></div>
         <div class="bmore"><button class="btn" id="bMore" hidden>더 보기</button></div>
       </div>`;
-      $('#bWrite').onclick = () => { this.pending = null; location.hash = 'write'; };
-      $('#bFilter').onclick = ev => { const b = ev.target.closest('button'); if (!b) return; this.filter = b.dataset.f; this.list(true, this.seq); };
-      $('#bSearch').onsubmit = ev => { ev.preventDefault(); this.q = $('#bQ').value.trim(); this.list(true, this.seq); };
-      $('#bSort').onchange = ev => { this.sort = ev.target.value; this.list(true, this.seq); };
+      if (!user) $('#bWrite').onclick = () => { this.pending = null; location.hash = 'write'; };
+      $('#bFilter').onclick = ev => { const b = ev.target.closest('button'); if (!b) return; this.lv.filter = b.dataset.f; this.list(true, this.seq); };
+      if (!user) $('#bSearch').onsubmit = ev => { ev.preventDefault(); this.lv.q = $('#bQ').value.trim(); this.list(true, this.seq); };
+      $('#bSort').onchange = ev => { this.lv.sort = ev.target.value; this.list(true, this.seq); };
       $('#bMore').onclick = () => this.list(false, this.seq);
+      if (user) this.renderUserHead();
     }
-    document.querySelectorAll('#bFilter button').forEach(b => b.setAttribute('aria-pressed', b.dataset.f === this.filter));
-    $('#bQ').value = this.q; $('#bSort').value = this.sort;
+    document.querySelectorAll('#bFilter button').forEach(b => b.setAttribute('aria-pressed', b.dataset.f === lv.filter));
+    if ($('#bQ')) $('#bQ').value = lv.q;
+    $('#bSort').value = lv.sort;
     const list = $('#bList');
     $('#bMore').hidden = !(state === 'ok' && this.more);
     if (state === 'loading' && !this.rows.length){ list.innerHTML = '<p class="note bempty">불러오는 중…</p>'; return; }
     if (state === 'error'){ list.innerHTML = '<p class="note bempty">글을 불러오지 못했습니다. 잠시 후 다시 시도하세요.</p>'; return; }
     const rows = this.notices.concat(this.rows);
     if (!rows.length){
-      list.innerHTML = `<p class="note bempty">${this.q ? `"${esc(this.q)}"와 맞는 글이 없습니다.` : '아직 글이 없습니다. 첫 글을 올려 보세요.'}</p>`; return;
+      list.innerHTML = `<p class="note bempty">${lv.q ? `"${esc(lv.q)}"와 맞는 글이 없습니다.` : user ? (lv.filter === 'all' ? '아직 쓴 글이 없습니다.' : '이 종류로 쓴 글이 없습니다.') : '아직 글이 없습니다. 첫 글을 올려 보세요.'}</p>`; return;
     }
     list.innerHTML = rows.map(p => this.rowHTML(p)).join('');
   },
@@ -2370,15 +2470,15 @@ const board = {
     const thumb = p.kind === 'bp' && p.thumb ? `<img src="${esc(p.thumb)}" alt="">` : `<span class="pglyph">${p.kind === 'notice' ? IC_PIN : IC_DOC}</span>`;
     const ex = (p.body || '').replace(/\s+/g, ' ').trim().slice(0, 120);
     const size = p.kind === 'bp' && p.bp_w ? ` · ${p.bp_w}×${p.bp_h} · 설비 ${p.bp_ents}개` : '';
-    return `<a class="prow k-${p.kind}" href="#post/${p.id}">
+    return `<div class="prow k-${p.kind}">
       <span class="pthumb">${thumb}</span>
       <span class="pmain">
-        <span class="ptitle"><span class="kbadge k-${p.kind}">${KIND_KO[p.kind]}</span><b>${esc(p.title)}</b></span>
+        <span class="ptitle"><span class="kbadge k-${p.kind}">${KIND_KO[p.kind]}</span><a class="plink" href="#post/${p.id}"><b>${esc(p.title)}</b></a></span>
         ${ex ? `<span class="pex">${esc(ex)}</span>` : ''}
-        <span class="pmeta">${esc(p.author_name)} · <time datetime="${esc(p.created_at)}" title="${esc(fullDate(p.created_at))}">${ago(p.created_at)}</time>${size}</span>
+        <span class="pmeta">${auLink(p.author_name)} · <time datetime="${esc(p.created_at)}" title="${esc(fullDate(p.created_at))}">${ago(p.created_at)}</time>${size}</span>
       </span>
       <span class="pstat"><span title="추천">${IC_HEART}${p.like_count}</span><span title="댓글">${IC_CMT}${p.comment_count}</span></span>
-    </a>`;
+    </div>`;
   },
 
   // ---- one post ----
@@ -2407,7 +2507,7 @@ const board = {
         <canvas id="bBig" role="img" aria-label="청사진 미리보기: ${esc(p.title)}"></canvas>
         <figcaption><b>${p.bp.w}×${p.bp.h}</b> · 설비 ${f.facs}개${extra ? ' · ' + extra : ''}</figcaption>
         <div class="fchips">${f.list.map(([t, c]) => `<span class="mchip">${esc(TYPES[t].ko)} ×${c}</span>`).join('')}</div>
-        <div class="row"><button class="btn primary" id="bUse">시뮬레이터에 배치</button><button class="btn" id="bSave">내 청사진에 저장</button><button class="btn" id="bCode">청사진 코드</button></div>
+        <div class="row"><button class="btn primary" id="bUse">공장에 배치</button><button class="btn" id="bSave">내 청사진에 저장</button><button class="btn" id="bCode">청사진 코드</button></div>
       </figure>`;
     }
     el.innerHTML = `<article class="bwrap post">
@@ -2415,7 +2515,7 @@ const board = {
       <header class="phead">
         <span class="kbadge k-${p.kind}">${KIND_KO[p.kind]}</span>
         <h2>${esc(p.title)}</h2>
-        <div class="pmeta"><b>${esc(p.author_name)}</b> · <time datetime="${esc(p.created_at)}">${fullDate(p.created_at)}</time>${edited(p) ? ' · 수정됨' : ''}</div>
+        <div class="pmeta">${auLink(p.author_name)} · <time datetime="${esc(p.created_at)}">${fullDate(p.created_at)}</time>${edited(p) ? ' · 수정됨' : ''}</div>
       </header>
       ${bpBlock}
       ${p.body ? `<div class="pbody">${esc(p.body)}</div>` : ''}
@@ -2445,6 +2545,7 @@ const board = {
       if (!btn.dataset.confirm){ btn.dataset.confirm = '1'; btn.textContent = '한 번 더 눌러 삭제'; setTimeout(() => { if (btn.isConnected){ btn.textContent = mine ? '삭제' : '삭제(관리자)'; delete btn.dataset.confirm; } }, 2500); return; }
       const { error } = await this.db().from('posts').delete().eq('id', p.id);
       if (error){ flash(acctError(error)); return; }
+      statsCache.clear();
       flash('글을 지웠습니다'); location.hash = 'board';
     };
     const cl = $('#cLogin'); if (cl) cl.onclick = () => openLogin('in');
@@ -2456,13 +2557,14 @@ const board = {
       const { error } = await this.db().from('comments').insert({ post_id: p.id, body });
       $('#cGo').disabled = false;
       if (error){ $('#cMsg').textContent = acctError(error); return; }
+      statsCache.clear();
       await this.reloadComments();
     };
     this.bindCmtDel();
   },
   cmtHTML(c){
     const me = acct.user ? acct.user.id : null, can = me && (c.author === me || acct.isAdmin());
-    return `<li class="cmt"><div class="cmeta"><b>${esc(c.author_name)}</b>${c.author === this.post.author ? '<span class="kbadge k-op">작성자</span>' : ''} <time datetime="${esc(c.created_at)}" title="${esc(fullDate(c.created_at))}">${ago(c.created_at)}</time>
+    return `<li class="cmt"><div class="cmeta">${auLink(c.author_name)}${c.author === this.post.author ? '<span class="kbadge k-op">작성자</span>' : ''} <time datetime="${esc(c.created_at)}" title="${esc(fullDate(c.created_at))}">${ago(c.created_at)}</time>
       ${can ? `<button class="linkbtn danger" data-del="${c.id}">삭제</button>` : ''}</div><div class="cbody">${esc(c.body)}</div></li>`;
   },
   bindCmtDel(){
@@ -2470,6 +2572,7 @@ const board = {
       if (!b.dataset.confirm){ b.dataset.confirm = '1'; b.textContent = '한 번 더 눌러 삭제'; setTimeout(() => { if (b.isConnected){ b.textContent = '삭제'; delete b.dataset.confirm; } }, 2500); return; }
       const { error } = await this.db().from('comments').delete().eq('id', +b.dataset.del);
       if (error){ flash(acctError(error)); return; }
+      statsCache.clear();
       await this.reloadComments();
     });
   },
@@ -2492,7 +2595,7 @@ const board = {
     const { error } = this.liked
       ? await db.from('likes').delete().eq('post_id', p.id).eq('user_id', acct.user.id)
       : await db.from('likes').insert({ post_id: p.id });
-    if (!error || /duplicate/i.test(error.message || '')) this.liked = !this.liked;
+    if (!error || /duplicate/i.test(error.message || '')){ this.liked = !this.liked; statsCache.clear(); }
     else flash(acctError(error));
     const { data } = await db.from('posts').select('like_count').eq('id', p.id).maybeSingle();
     if (data) p.like_count = data.like_count;
@@ -2522,10 +2625,10 @@ const board = {
     if (p && p.bp) src.push(['keep', '지금 붙어 있는 청사진 그대로', () => ({ name: p.title, bp: p.bp })]);
     if (pend) src.push(['pend', `고른 청사진 · ${pend.name}`, () => pend]);
     const sel = selectionIds().filter(i => !world.pac || i !== world.pac.id);
-    if (sel.length) src.push(['sel', `시뮬레이터에서 선택한 범위 (설비 ${sel.filter(i => !CARRIER.has(K(world.ents.get(i).type))).length}개)`, () => ({ name: '선택한 설비', bp: world.blueprint(sel) })]);
+    if (sel.length) src.push(['sel', `공장에서 선택한 범위 (설비 ${sel.filter(i => !CARRIER.has(K(world.ents.get(i).type))).length}개)`, () => ({ name: '선택한 설비', bp: world.blueprint(sel) })]);
     const all = [...world.ents.keys()].filter(i => !world.pac || i !== world.pac.id);
     const nFac = ids => ids.filter(i => !CARRIER.has(K(world.ents.get(i).type))).length;
-    if (all.length) src.push(['all', `시뮬레이터 공장 전체 (설비 ${nFac(all)}개)`, () => ({ name: '내 공장', bp: world.blueprint(all) })]);
+    if (all.length) src.push(['all', `공장 전체 (설비 ${nFac(all)}개)`, () => ({ name: '내 공장', bp: world.blueprint(all) })]);
     for (const b of acct.mine) src.push(['a' + b.id, `내 계정 · ${b.name}`, async () => b.data ? { name: b.name, bp: b.data } : { name: b.name, bp: (await acct.fetchData(b.id)).data }]);
     for (const b of store.bps) src.push(['l' + b.id, `이 브라우저 · ${b.name}`, () => ({ name: b.name, bp: b.bp })]);
     src.push(['code', '청사진 코드 붙여넣기…', null]);
@@ -2543,7 +2646,7 @@ const board = {
           <canvas id="wPrev" role="img" aria-label="붙일 청사진 미리보기"></canvas>
           <p class="note" id="wPrevNote"></p>
         </div></div>
-      <label class="field"><span class="flabel">내용</span><textarea id="wBody" maxlength="5000" rows="10" placeholder="${kind0 === 'bp' ? '어떤 공장인지, 무엇을 넣으면 무엇이 나오는지, 분당 생산량 같은 설명을 적어 주세요' : '내용 (5000자까지)'}"></textarea></label>
+      <label class="field"><span class="flabel">내용</span><textarea id="wBody" maxlength="5000" rows="10" placeholder="${kind0 === 'bp' ? '어떤 공장인지, 무엇을 넣으면 무엇이 나오는지, 분당 생산량 같은 설명을 적어 주세요' : '공장 이야기, 게임에 대한 질문, 팁 등 자유롭게 적어 주세요 (5000자까지)'}"></textarea></label>
       <div class="msg" id="wMsg" role="alert"></div>
       <div class="acts"><button class="btn primary" type="submit" id="wGo">${p ? '고친 내용 저장' : '올리기'}</button><a class="btn" href="${p ? '#post/' + p.id : '#board'}">취소</a></div>
     </form>`;
@@ -2584,7 +2687,7 @@ const board = {
       const r = p ? await db.from('posts').update(row).eq('id', p.id).select('id').maybeSingle() : await db.from('posts').insert(row).select('id').single();
       $('#wGo').disabled = false;
       if (r.error || !r.data){ msg.textContent = r.error ? acctError(r.error) : '저장하지 못했습니다'; return; }
-      flash(p ? '글을 고쳤습니다' : '글을 올렸습니다');
+      statsCache.clear(); flash(p ? '글을 고쳤습니다' : '글을 올렸습니다');
       location.hash = 'post/' + r.data.id;
     };
     $('#wTitle').focus();
@@ -2613,6 +2716,7 @@ $('#viewSw').onclick = ev => {
   else if (ui.view !== 'sim'){ history.pushState(null, '', location.pathname + location.search); route(); }
 };
 $('#viewSw').hidden = !acct.enabled();
+ucard.init();
 
 // header: login button or "id · logout"
 function renderAcct(){
@@ -2621,8 +2725,8 @@ function renderAcct(){
   el.hidden = false;
   if (acct.down){ el.innerHTML = '<span class="dim" style="font-size:12px">로그인 서버 연결 안 됨</span>'; return; }
   if (!acct.user){ el.innerHTML = '<button class="btn" id="loginBtn">로그인</button>'; $('#loginBtn').onclick = () => openLogin('in'); return; }
-  el.innerHTML = `<span class="who"></span><button class="btn sm" id="logoutBtn">로그아웃</button>`;
-  el.querySelector('.who').textContent = acct.name() + (acct.isAdmin() ? ' · 관리자' : '');
+  el.innerHTML = `<a class="who" title="내 프로필"></a><button class="btn sm" id="logoutBtn">로그아웃</button>`;
+  const who = el.querySelector('.who'); who.textContent = acct.name() + (acct.isAdmin() ? ' · 관리자' : ''); who.href = '#user/' + encodeURIComponent(acct.name());
   $('#logoutBtn').onclick = async () => { await acct.signOut(); flash('로그아웃했습니다'); };
 }
 function openLogin(mode){
