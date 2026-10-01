@@ -1794,11 +1794,15 @@ class World {
   }
   // blueprint of a set of entity ids, positions relative to the bounding box
   blueprint(ids) {
-    const list = [...ids].map(id => this.ents.get(id)).filter(e => e && e.type !== 'pac');
+    const all = [...ids], list = all.map(id => this.ents.get(id)).filter(e => e && e.type !== 'pac');
     if (!list.length) return null;
     let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
     for (const e of list) { x0 = Math.min(x0, e.x); y0 = Math.min(y0, e.y); x1 = Math.max(x1, e.x + e.w); y1 = Math.max(y1, e.y + e.h); }
-    return { v: 2, w: x1 - x0, h: y1 - y0, ents: list.map(e => { const o = this.entCfg(e); o.x -= x0; o.y -= y0; return o; }) };
+    const o = { v: 2, w: x1 - x0, h: y1 - y0, ents: list.map(e => { const c = this.entCfg(e); c.x -= x0; c.y -= y0; return c; }) };
+    // the PAC is never placed from a blueprint, but its position is kept so previews can draw it
+    const pac = this.pac && all.includes(this.pac.id) ? this.pac : null;
+    if (pac) o.pac = { x: pac.x - x0, y: pac.y - y0, f: pac.f, ports: pac.ports.slice() };
+    return o;
   }
   bpCheck(bp, ox, oy) {
     const busRects = bp.ents.filter(s => TYPES[s.t] && (TYPES[s.t].kind === 'bus' || TYPES[s.t].kind === 'busport')).map(s => { const [w, h] = dims(s.t, s.f); return { x: ox + s.x, y: oy + s.y, w, h, s }; });
@@ -2065,7 +2069,11 @@ function cleanBp(bp) {
     && Number.isInteger(s.x) && Number.isInteger(s.y) && s.x >= 0 && s.y >= 0 && s.x < 200 && s.y < 200 && (s.f == null || [0, 1, 2, 3].includes(s.f)));
   if (!ents.length) return null;
   let w = 0, h = 0; for (const s of ents) { const [a, b] = dims(s.t, s.f == null ? 2 : s.f); w = Math.max(w, s.x + a); h = Math.max(h, s.y + b); }
-  return { v: 2, w, h, ents };
+  const out = { v: 2, w, h, ents };
+  const p = bp.pac;   // preview only: where the PAC was (placing ignores it)
+  if (p && Number.isInteger(p.x) && Number.isInteger(p.y) && Math.abs(p.x) < 200 && Math.abs(p.y) < 200 && [0, 1, 2, 3].includes(p.f))
+    out.pac = { x: p.x, y: p.y, f: p.f, ports: Array.isArray(p.ports) ? p.ports.slice(0, 6).map(v => (typeof v === 'string' && ITEMS[v]) ? v : null) : null };
+  return out;
 }
 function deserialize(o) {
   if (o.v >= 4) { const r = buildWorld(o, o.W, o.H, 'keep'); if (r.world) return r.world; }
@@ -2452,8 +2460,13 @@ function bpCat(t){
 // build a small throwaway factory from the blueprint, then render it onto another canvas
 function previewWorld(bp){
   const b = AIC.cleanBp(bp); if (!b) return null;
-  const w = new AIC.World(b.w + 2, b.h + 2);
-  if (!w.bpPlace(b, 1, 1)) for (const q of b.ents){ const e = w.place(q.t, q.x + 1, q.y + 1, q.f == null ? 2 : q.f); if (e) w.applyCfg(e, q); }
+  // include the PAC (if the blueprint remembers it) in the picture
+  let x0 = 0, y0 = 0, x1 = b.w, y1 = b.h;
+  if (b.pac){ const [pw, ph] = AIC.dims('pac', b.pac.f); x0 = Math.min(0, b.pac.x); y0 = Math.min(0, b.pac.y); x1 = Math.max(x1, b.pac.x + pw); y1 = Math.max(y1, b.pac.y + ph); }
+  const ox = 1 - x0, oy = 1 - y0;
+  const w = new AIC.World(x1 - x0 + 2, y1 - y0 + 2);
+  if (b.pac){ const pc = w.place('pac', ox + b.pac.x, oy + b.pac.y, b.pac.f); if (pc && b.pac.ports) b.pac.ports.forEach((v, i) => { if (i < pc.ports.length) pc.ports[i] = v; }); }
+  if (!w.bpPlace(b, ox, oy)) for (const q of b.ents){ const e = w.place(q.t, q.x + ox, q.y + oy, q.f == null ? 2 : q.f); if (e) w.applyCfg(e, q); }
   return w;
 }
 // draw world w into canvas c at css size cw×ch; margin = extra cells shown around the site (outer bus)
@@ -2739,7 +2752,7 @@ const board = {
       const extra = [f.belts ? `벨트 ${f.belts}칸` : '', f.pipes ? `파이프 ${f.pipes}칸` : ''].filter(Boolean).join(' · ');
       bpBlock = `<figure class="bpfig">
         <canvas id="bBig" role="img" aria-label="청사진 미리보기: ${esc(p.title)}"></canvas>
-        <figcaption><b>${p.bp.w}×${p.bp.h}</b> · 설비 ${f.facs}개${extra ? ' · ' + extra : ''}</figcaption>
+        <figcaption><b>${p.bp.w}×${p.bp.h}</b> · 설비 ${f.facs}개${extra ? ' · ' + extra : ''}${p.bp.pac ? ' <span class="dim">· PAC는 미리보기에만 표시되고 배치되지 않습니다</span>' : ''}</figcaption>
         <div class="fchips">${f.list.map(([t, c]) => `<span class="mchip">${esc(TYPES[t].ko)} ×${c}</span>`).join('')}</div>
         <div class="row"><button class="btn primary" id="bUse">공장에 배치</button><button class="btn" id="bSave">내 청사진에 저장</button><button class="btn" id="bCode">청사진 코드</button></div>
       </figure>`;
@@ -2864,10 +2877,10 @@ const board = {
     if (p && p.bp) src.push(['keep', '지금 붙어 있는 청사진 그대로', () => ({ name: p.title, bp: p.bp })]);
     if (pend) src.push(['pend', `고른 청사진 · ${pend.name}`, () => pend]);
     const sel = selectionIds().filter(i => !world.pac || i !== world.pac.id);
-    if (sel.length) src.push(['sel', `공장에서 선택한 범위 (설비 ${sel.filter(i => !CARRIER.has(K(world.ents.get(i).type))).length}개)`, () => ({ name: '선택한 설비', bp: world.blueprint(sel) })]);
+    if (sel.length) src.push(['sel', `공장에서 선택한 범위 (설비 ${sel.filter(i => !CARRIER.has(K(world.ents.get(i).type))).length}개)`, () => ({ name: '선택한 설비', bp: world.blueprint(selectionIds()) })]);
     const all = [...world.ents.keys()].filter(i => !world.pac || i !== world.pac.id);
     const nFac = ids => ids.filter(i => !CARRIER.has(K(world.ents.get(i).type))).length;
-    if (all.length) src.push(['all', `공장 전체 (설비 ${nFac(all)}개)`, () => ({ name: '내 공장', bp: world.blueprint(all) })]);
+    if (all.length) src.push(['all', `공장 전체 (설비 ${nFac(all)}개)`, () => ({ name: '내 공장', bp: world.blueprint([...world.ents.keys()]) })]);
     for (const b of acct.mine) src.push(['a' + b.id, `내 계정 · ${b.name}`, async () => b.data ? { name: b.name, bp: b.data } : { name: b.name, bp: (await acct.fetchData(b.id)).data }]);
     for (const b of store.bps) src.push(['l' + b.id, `이 브라우저 · ${b.name}`, () => ({ name: b.name, bp: b.bp })]);
     src.push(['code', '청사진 코드 붙여넣기…', null]);
