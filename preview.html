@@ -346,6 +346,37 @@ a.btn{color:inherit;text-decoration:none;display:inline-block}
   .pwrite .acts{margin-left:0}
   .bhead{align-items:center}
 }
+
+/* reports */
+.cacts{margin-left:auto;display:inline-flex;gap:10px}
+.linkbtn.danger{margin-left:0}
+.linkbtn.rp{color:var(--muted);font-size:11.5px}
+.rpwhat{margin:0 0 10px;overflow-wrap:anywhere}
+.rpset{border:1px solid var(--line);border-radius:5px;padding:8px 10px 10px;margin:0}
+.rpset legend{font-size:12.5px;font-weight:600;padding:0 4px}
+.rplist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 12px}
+.rpi{display:flex;align-items:center;gap:7px;font-size:12.5px;padding:3px 0;cursor:pointer;min-width:0}
+.rpi input[type=checkbox]{margin:0;flex:none;accent-color:var(--bad)}
+.rpetc{grid-column:1/-1;flex-wrap:wrap}
+.rpetc input[type=text]{flex:1;min-width:160px;border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:4px 7px;font-size:12.5px}
+.rpetc input[type=text]:disabled{opacity:.5}
+.rpdl{display:block;font-size:12.5px;font-weight:600;margin:12px 0 4px}
+#rpDetail{height:auto;min-height:64px;font-family:var(--f-body);width:100%;border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:6px 8px;font-size:12.5px;resize:vertical}
+.rpbadge{font-size:11.5px;font-weight:600;color:var(--muted);text-decoration:none;border:1px solid var(--line);border-radius:99px;padding:1px 8px}
+.rpbadge.hot{background:var(--bad);border-color:var(--bad);color:#fff}
+.seg a.segb{display:inline-block;color:inherit;text-decoration:none;background:var(--panel-2);padding:5px 12px;font-size:12.5px}
+.seg a.segb+a.segb{border-left:1px solid var(--line)}
+.seg a.segb[aria-pressed="true"]{background:var(--ink);color:var(--panel)}
+#rpRows{display:flex;flex-direction:column;gap:10px}
+.rpcard{border:1px solid var(--line);border-left:3px solid var(--bad);border-radius:6px;background:var(--panel);padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.rpcard.st-done,.rpcard.st-dismissed{border-left-color:var(--line)}
+.rphead{display:flex;align-items:center;gap:8px;min-width:0}
+.rphead b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rpst{font-size:11.5px;color:var(--muted);white-space:nowrap}
+.mchip.rpr{border-color:var(--bad);color:var(--bad)}
+.rpline{margin:0;font-size:12.5px;overflow-wrap:anywhere}
+.rpq{margin:0;padding:6px 10px;border-left:2px solid var(--line);background:var(--panel-2);font-size:12.5px;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--muted)}
+@media (max-width: 640px){ .rplist{grid-template-columns:minmax(0,1fr)} }
 @media (prefers-reduced-motion: reduce){ .meter i,.switch input::after, }
 </style>
 
@@ -433,6 +464,18 @@ a.btn{color:inherit;text-decoration:none;display:inline-block}
     <p class="note">이메일은 받지 않아서 비밀번호를 잊으면 찾을 수 없습니다. <b>다른 사이트에서 쓰는 비밀번호는 쓰지 마세요.</b> 저장하는 정보는 아이디, 암호화된 비밀번호, 내가 올린 청사진뿐입니다.</p>
     <div class="msg" id="lgMsg" role="alert"></div>
     <div class="acts"><button class="btn primary" id="lgGo" type="submit">로그인</button><button class="btn" id="lgSwitch" type="button">가입하기</button><span class="spacer"></span><button class="btn" id="lgClose" type="button">닫기</button></div>
+  </form>
+</dialog>
+
+<dialog id="reportDlg" aria-labelledby="rpTitle">
+  <form id="rpForm">
+    <h3 id="rpTitle">신고하기</h3>
+    <p class="note rpwhat" id="rpWhat"></p>
+    <fieldset class="rpset"><legend>어떤 운영 원칙을 어겼나요? <span class="dim">(여러 개 고를 수 있음)</span></legend><div class="rplist" id="rpList"></div></fieldset>
+    <label class="rpdl" for="rpDetail">추가 설명 <span class="dim">(선택)</span></label>
+    <textarea id="rpDetail" maxlength="1000" rows="3" placeholder="운영자가 판단하는 데 도움이 되는 내용을 적어 주세요"></textarea>
+    <div class="msg" id="rpMsg" role="alert"></div>
+    <div class="acts"><button class="btn primary" type="submit" id="rpGo">신고 보내기</button><span class="spacer"></span><button class="btn" type="button" id="rpClose">취소</button></div>
   </form>
 </dialog>
 
@@ -2225,7 +2268,7 @@ function acctCard(b){
 // ---------- board: posts · comments · likes ----------
 // The whole page turns into the board. Addresses: #board (list), #user/NAME (one person's posts), #post/ID, #write, #edit/ID; anything else is the simulator.
 // Reading is open to everyone; writing, comments and likes need a login. Counts, authors and times are set by the server.
-const BOARD_VIEWS = ['board', 'user', 'post', 'write', 'edit'];
+const BOARD_VIEWS = ['board', 'user', 'post', 'write', 'edit', 'reports'];
 const KIND_KO = { bp: '청사진', text: '일반', notice: '공지' };
 const PAGE = 20;
 const LIST_COLS = 'id,kind,title,body,bp_w,bp_h,bp_ents,thumb,like_count,comment_count,author_name,author,created_at,updated_at';
@@ -2391,6 +2434,7 @@ const board = {
     if (v === 'post') return this.open(+arg, my);
     if (v === 'write') return this.write(null, my);
     if (v === 'edit') return this.write(+arg, my);
+    if (v === 'reports') return reports.show(arg || 'open', my);
   },
 
   // ---- list (whole board, or one person's posts) ----
@@ -2414,8 +2458,8 @@ const board = {
     if (lv.sort === 'like') q = q.order('like_count', { ascending: false });
     if (lv.sort === 'cmt') q = q.order('comment_count', { ascending: false });
     q = q.order('created_at', { ascending: false }).range(from, from + PAGE);
-    const wantNotices = !user && reset && !term && lv.filter === 'all';
-    const [res, nres] = await Promise.all([q, wantNotices ? db.from('posts').select(LIST_COLS).eq('kind', 'notice').order('created_at', { ascending: false }).limit(5) : null]);
+    const wantNotices = !user && reset && !term && lv.filter !== 'notice';   // newest notice stays pinned on top
+    const [res, nres] = await Promise.all([q, wantNotices ? db.from('posts').select(LIST_COLS).eq('kind', 'notice').order('created_at', { ascending: false }).limit(1) : null]);
     if ((my != null && my !== this.seq) || this.lv !== lv) return;
     if (res.error){ this.renderList('error'); return; }
     const got = res.data || [];
@@ -2439,7 +2483,7 @@ const board = {
         ${user ? `<a class="back" href="#board">← 게시판</a><div class="uhead" id="uHead"></div><h3 class="usub">쓴 글</h3>`
           : `<div class="bhead"><div><h2>게시판</h2><p class="dim">청사진 공유, 공장 이야기, 게임에 대한 질문까지 자유롭게 남기는 곳</p></div><span class="spacer"></span><button class="btn primary" id="bWrite">글쓰기</button></div>`}
         <div class="btool">
-          <div class="seg" id="bFilter" role="group" aria-label="글 종류"><button data-f="all">전체</button><button data-f="bp">청사진</button><button data-f="text">일반</button></div>
+          <div class="seg" id="bFilter" role="group" aria-label="글 종류"><button data-f="all">전체</button><button data-f="bp">청사진</button><button data-f="text">일반</button><button data-f="notice">공지</button></div>
           ${user ? '<span class="spacer"></span>' : '<form class="bsearch" id="bSearch" role="search"><input type="search" id="bQ" placeholder="제목·내용·작성자 검색" aria-label="게시글 검색" maxlength="40"><button class="btn">검색</button></form>'}
           <select class="sel" id="bSort" aria-label="정렬"><option value="new">최신순</option><option value="like">추천순</option><option value="cmt">댓글순</option></select>
         </div>
@@ -2462,7 +2506,7 @@ const board = {
     if (state === 'error'){ list.innerHTML = '<p class="note bempty">글을 불러오지 못했습니다. 잠시 후 다시 시도하세요.</p>'; return; }
     const rows = this.notices.concat(this.rows);
     if (!rows.length){
-      list.innerHTML = `<p class="note bempty">${lv.q ? `"${esc(lv.q)}"와 맞는 글이 없습니다.` : user ? (lv.filter === 'all' ? '아직 쓴 글이 없습니다.' : '이 종류로 쓴 글이 없습니다.') : '아직 글이 없습니다. 첫 글을 올려 보세요.'}</p>`; return;
+      list.innerHTML = `<p class="note bempty">${lv.q ? `"${esc(lv.q)}"와 맞는 글이 없습니다.` : user ? (lv.filter === 'all' ? '아직 쓴 글이 없습니다.' : '이 종류로 쓴 글이 없습니다.') : lv.filter === 'notice' ? '아직 공지가 없습니다.' : '아직 글이 없습니다. 첫 글을 올려 보세요.'}</p>`; return;
     }
     list.innerHTML = rows.map(p => this.rowHTML(p)).join('');
   },
@@ -2522,6 +2566,7 @@ const board = {
       <div class="pacts">
         <button class="btn likebtn" id="bLike" aria-pressed="${this.liked}">${IC_HEART}<span>추천 ${p.like_count}</span></button>
         <span class="spacer"></span>
+        ${!mine ? '<button class="btn" id="bReport">신고</button>' : ''}
         ${mine ? '<a class="btn" id="bEdit" href="#edit/' + p.id + '">수정</a>' : ''}
         ${mine || acct.isAdmin() ? `<button class="btn danger" id="bDel">${mine ? '삭제' : '삭제(관리자)'}</button>` : ''}
       </div>
@@ -2539,6 +2584,7 @@ const board = {
       $('#bCode').onclick = () => openDialog('bpcode', { name: p.title, bp: p.bp });
     }
     $('#bLike').onclick = () => this.toggleLike();
+    const rb = $('#bReport'); if (rb) rb.onclick = () => openReport('post', p.id, p);
     const del = $('#bDel');
     if (del) del.onclick = async ev => {
       const btn = ev.currentTarget;
@@ -2565,9 +2611,10 @@ const board = {
   cmtHTML(c){
     const me = acct.user ? acct.user.id : null, can = me && (c.author === me || acct.isAdmin());
     return `<li class="cmt"><div class="cmeta">${auLink(c.author_name)}${c.author === this.post.author ? '<span class="kbadge k-op">작성자</span>' : ''} <time datetime="${esc(c.created_at)}" title="${esc(fullDate(c.created_at))}">${ago(c.created_at)}</time>
-      ${can ? `<button class="linkbtn danger" data-del="${c.id}">삭제</button>` : ''}</div><div class="cbody">${esc(c.body)}</div></li>`;
+      <span class="cacts">${me !== c.author ? `<button class="linkbtn rp" data-rep="${c.id}">신고</button>` : ''}${can ? `<button class="linkbtn danger" data-del="${c.id}">삭제</button>` : ''}</span></div><div class="cbody">${esc(c.body)}</div></li>`;
   },
   bindCmtDel(){
+    document.querySelectorAll('.clist [data-rep]').forEach(b => b.onclick = () => { const c = this.comments.find(x => x.id === +b.dataset.rep); if (c) openReport('comment', c.id, this.post, c); });
     document.querySelectorAll('.clist [data-del]').forEach(b => b.onclick = async () => {
       if (!b.dataset.confirm){ b.dataset.confirm = '1'; b.textContent = '한 번 더 눌러 삭제'; setTimeout(() => { if (b.isConnected){ b.textContent = '삭제'; delete b.dataset.confirm; } }, 2500); return; }
       const { error } = await this.db().from('comments').delete().eq('id', +b.dataset.del);
@@ -2632,7 +2679,7 @@ const board = {
     for (const b of acct.mine) src.push(['a' + b.id, `내 계정 · ${b.name}`, async () => b.data ? { name: b.name, bp: b.data } : { name: b.name, bp: (await acct.fetchData(b.id)).data }]);
     for (const b of store.bps) src.push(['l' + b.id, `이 브라우저 · ${b.name}`, () => ({ name: b.name, bp: b.bp })]);
     src.push(['code', '청사진 코드 붙여넣기…', null]);
-    const kind0 = p ? p.kind : (pend || this.filter === 'bp' ? 'bp' : 'text');
+    const kind0 = p ? p.kind : (pend || this.filter === 'bp' ? 'bp' : this.filter === 'notice' && acct.isAdmin() ? 'notice' : 'text');
     el.innerHTML = `<form class="bwrap pwrite" id="wForm" novalidate>
       <a class="back" href="${p ? '#post/' + p.id : '#board'}">← ${p ? '글로 돌아가기' : '목록'}</a>
       <h2>${p ? '글 고치기' : '글쓰기'}</h2>
@@ -2694,6 +2741,101 @@ const board = {
   },
 };
 
+
+// ---------- reports: anyone logged in can report a post or a comment; admins see the list (#reports) ----------
+const REPORT_REASONS = [
+  ['주제와 관계없는 글'], ['욕설·비하·인신공격'], ['차별·혐오 표현'], ['다툼 유도'], ['음란·폭력·불법 내용'],
+  ['도배·의미 없는 글'], ['광고·홍보·피싱 링크'], ['개인정보 노출'], ['계정 거래·대리·핵 관련'], ['정치·종교 등 주제 밖 논쟁'],
+  ['친목 행위'], ['청사진으로 그린 부적절한 그림', 'bp'], ['제목·설명과 다른 청사진 (낚시)', 'bp'], ['남의 청사진 도용', 'bp'],
+  ['부적절한 아이디·사칭'], ['추천 조작'],
+];
+let reportTarget = null;
+function openReport(type, id, post, cmt){
+  if (!acct.user){ openLogin('in'); return; }
+  reportTarget = { type, id };
+  const bp = type === 'post' && post.kind === 'bp';
+  $('#rpWhat').textContent = type === 'post' ? `게시글 "${post.title}" · ${post.author_name}` : `댓글 · ${cmt.author_name}: "${cmt.body.replace(/\s+/g, ' ').slice(0, 60)}${cmt.body.length > 60 ? '…' : ''}"`;
+  $('#rpList').innerHTML = REPORT_REASONS.filter(r => !r[1] || bp).map((r, i) => `<label class="rpi"><input type="checkbox" name="rr" value="${esc(r[0])}"><span>${esc(r[0])}</span></label>`).join('')
+    + `<label class="rpi rpetc"><input type="checkbox" name="rr" value="기타" id="rpEtc"><span>기타</span><input type="text" id="rpOther" maxlength="200" placeholder="어떤 문제인지 적어 주세요" aria-label="기타 내용" disabled></label>`;
+  $('#rpEtc').onchange = ev => { $('#rpOther').disabled = !ev.target.checked; if (ev.target.checked) $('#rpOther').focus(); };
+  $('#rpDetail').value = ''; $('#rpMsg').textContent = ''; $('#rpGo').disabled = false;
+  $('#reportDlg').showModal();
+}
+$('#rpClose').onclick = () => $('#reportDlg').close();
+$('#rpForm').onsubmit = async ev => {
+  ev.preventDefault();
+  const msg = $('#rpMsg'), picked = [...document.querySelectorAll('#rpList input[name=rr]:checked')].map(i => i.value);
+  const other = $('#rpOther').value.trim();
+  if (!picked.length){ msg.textContent = '어긴 원칙을 하나 이상 고르세요'; return; }
+  if (picked.includes('기타') && !other){ msg.textContent = '기타를 골랐다면 내용을 적어 주세요'; $('#rpOther').focus(); return; }
+  const row = { target_type: reportTarget.type, reasons: picked, other: picked.includes('기타') ? other : '', detail: $('#rpDetail').value.trim() };
+  if (reportTarget.type === 'post') row.post_id = reportTarget.id; else row.comment_id = reportTarget.id;
+  $('#rpGo').disabled = true; msg.textContent = '보내는 중…';
+  const { error } = await acct.client.from('reports').insert(row);
+  $('#rpGo').disabled = false;
+  if (error){
+    const m = error.message || '';
+    msg.textContent = /duplicate|reports_once/i.test(m) ? '이미 신고한 내용입니다. 운영자가 확인할 때까지 기다려 주세요.'
+      : /rate limit/i.test(m) ? '신고가 너무 많습니다. 잠시 후 다시 시도하세요.'
+      : /yourself/i.test(m) ? '내가 쓴 글은 신고할 수 없습니다.'
+      : /not found/i.test(m) ? '이미 지워진 글입니다.' : acctError(error);
+    return;
+  }
+  $('#reportDlg').close(); flash('신고했습니다. 운영자가 확인합니다.');
+};
+
+const RP_TABS = [['open', '처리 전'], ['done', '처리 완료'], ['dismissed', '기각'], ['all', '전체']];
+const RP_STATUS = { open: '처리 전', done: '처리 완료', dismissed: '기각' };
+const reports = {
+  rows: [],
+  async badge(){
+    const b = $('#rpBadge'); if (!b || !acct.isAdmin() || !acct.client) return;
+    const { count, error } = await acct.client.from('reports').select('id', { count: 'exact', head: true }).eq('status', 'open');
+    if (error || !$('#rpBadge')) return;
+    b.textContent = '신고 ' + count; b.hidden = false; b.classList.toggle('hot', count > 0);
+    b.title = count ? `처리하지 않은 신고 ${count}건` : '처리할 신고 없음';
+  },
+  async show(tab, my){
+    const el = $('#board');
+    if (!acct.isAdmin()){ el.innerHTML = '<div class="bwrap"><a class="back" href="#board">← 게시판</a><p class="note">관리자만 볼 수 있습니다.</p></div>'; return; }
+    el.innerHTML = `<div class="bwrap">
+      <a class="back" href="#board">← 게시판</a>
+      <div class="bhead"><div><h2>신고 목록</h2><p class="dim">신고 당시의 내용이 함께 저장되어 글이 지워져도 남습니다</p></div></div>
+      <div class="btool"><div class="seg" id="rpTabs" role="group" aria-label="처리 상태">${RP_TABS.map(([k, n]) => `<a class="segb" href="#reports/${k}" aria-pressed="${k === tab}">${n}</a>`).join('')}</div></div>
+      <div id="rpRows" aria-live="polite"><p class="note">불러오는 중…</p></div></div>`;
+    let q = acct.client.from('reports').select('*').order('created_at', { ascending: false }).limit(100);
+    if (tab !== 'all') q = q.eq('status', tab);
+    const { data, error } = await q;
+    if (my !== board.seq) return;
+    if (error){ $('#rpRows').innerHTML = '<p class="note">불러오지 못했습니다. 신고 기능 SQL(report_setup.sql)을 실행했는지 확인하세요.</p>'; return; }
+    this.rows = data || []; this.render(tab);
+  },
+  render(tab){
+    const box = $('#rpRows');
+    if (!this.rows.length){ box.innerHTML = `<p class="note bempty blist">${tab === 'open' ? '처리할 신고가 없습니다.' : '신고가 없습니다.'}</p>`; return; }
+    box.innerHTML = this.rows.map(r => `<article class="rpcard st-${r.status}" data-id="${r.id}">
+      <div class="rphead"><span class="kbadge">${r.target_type === 'comment' ? '댓글' : '게시글'}</span><b>${esc(r.target_title || '(제목 없음)')}</b><span class="spacer"></span><span class="rpst">${RP_STATUS[r.status]}${r.handled_by ? ' · ' + esc(r.handled_by) : ''}</span></div>
+      <div class="pmeta">작성자 ${auLink(r.target_author)} · 신고자 ${auLink(r.reporter_name)} · <time title="${esc(fullDate(r.created_at))}">${ago(r.created_at)}</time></div>
+      <div class="fchips">${r.reasons.map(x => `<span class="mchip rpr">${esc(x)}</span>`).join('')}</div>
+      ${r.other ? `<p class="rpline"><span class="dim">기타:</span> ${esc(r.other)}</p>` : ''}
+      ${r.detail ? `<p class="rpline"><span class="dim">추가 설명:</span> ${esc(r.detail)}</p>` : ''}
+      ${r.target_excerpt ? `<blockquote class="rpq">${esc(r.target_excerpt)}</blockquote>` : ''}
+      <div class="row">${r.post_id ? `<a class="btn sm" href="#post/${r.post_id}">글 보기</a>` : '<span class="dim">글이 지워졌습니다</span>'}<span class="spacer"></span>
+        ${r.status === 'open' ? '<button class="btn sm primary" data-st="done">처리 완료</button><button class="btn sm" data-st="dismissed">기각</button>' : '<button class="btn sm" data-st="open">다시 열기</button>'}</div>
+    </article>`).join('');
+    box.querySelectorAll('[data-st]').forEach(b => b.onclick = async () => {
+      const id = +b.closest('.rpcard').dataset.id; b.disabled = true;
+      const { error } = await acct.client.from('reports').update({ status: b.dataset.st }).eq('id', id);
+      if (error){ b.disabled = false; flash(acctError(error)); return; }
+      flash(b.dataset.st === 'done' ? '처리 완료로 바꿨습니다' : b.dataset.st === 'dismissed' ? '기각했습니다' : '다시 열었습니다');
+      this.rows = this.rows.filter(r => r.id !== id || tab === 'all');
+      if (tab === 'all'){ const r = this.rows.find(x => x.id === id); if (r){ r.status = b.dataset.st; } }
+      this.render(tab); this.badge();
+    });
+  },
+};
+setInterval(() => { if (acct.isAdmin() && document.visibilityState === 'visible') reports.badge(); }, 120000);
+
 // simulator ↔ board: the address decides which one is on screen
 function setView(v){
   const was = ui.view; ui.view = v;
@@ -2727,6 +2869,7 @@ function renderAcct(){
   if (!acct.user){ el.innerHTML = '<button class="btn" id="loginBtn">로그인</button>'; $('#loginBtn').onclick = () => openLogin('in'); return; }
   el.innerHTML = `<a class="who" title="내 프로필"></a><button class="btn sm" id="logoutBtn">로그아웃</button>`;
   const who = el.querySelector('.who'); who.textContent = acct.name() + (acct.isAdmin() ? ' · 관리자' : ''); who.href = '#user/' + encodeURIComponent(acct.name());
+  if (acct.isAdmin()){ const a = document.createElement('a'); a.className = 'rpbadge'; a.id = 'rpBadge'; a.href = '#reports'; a.hidden = true; el.insertBefore(a, who.nextSibling); reports.badge(); }
   $('#logoutBtn').onclick = async () => { await acct.signOut(); flash('로그아웃했습니다'); };
 }
 function openLogin(mode){
