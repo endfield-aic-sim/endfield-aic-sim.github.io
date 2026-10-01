@@ -420,42 +420,47 @@ a.btn{color:inherit;text-decoration:none;display:inline-block}
 @media (max-width: 640px){ .aurow{grid-template-columns:minmax(0,1fr)} .auacts{justify-content:flex-start} }
 .uhead #pwBtn{align-self:center}
 .pwothers{margin:2px 0 4px}
+
+/* header: on the public site the account row sits on top and the factory controls get their own full-width row */
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;flex:1 1 auto;min-width:0}
+.bar.site .acct{margin-left:auto}
+.bar.site .toolbar{flex-basis:100%;margin:0 -16px;padding:8px 16px 0;border-top:1px solid var(--line)}
 @media (prefers-reduced-motion: reduce){ .meter i,.switch input::after, }
 </style>
 
 </head>
 <body>
 <div class="app" id="app">
-  <header class="bar">
+  <header class="bar" id="bar">
     <div class="brand">
       <div class="mark" aria-hidden="true"></div>
       <div><h1>AIC 공장 시뮬레이터</h1><small>Arknights: Endfield · 협곡 IV / 무릉</small></div>
     </div>
     <nav class="seg view" id="viewSw" aria-label="화면" hidden><button data-v="sim" aria-pressed="true">공장</button><button data-v="board" aria-pressed="false">게시판</button><button data-v="admin" aria-pressed="false" hidden>관리자</button></nav>
-    <div class="ctl simonly">
-      <button class="btn primary" id="play">일시정지</button>
-      <div class="seg" id="speed" role="group" aria-label="배속">
-        <button data-s="1" aria-pressed="true">1×</button><button data-s="2" aria-pressed="false">2×</button><button data-s="4" aria-pressed="false">4×</button><button data-s="8" aria-pressed="false">8×</button>
+    <span class="acct" id="acct" hidden></span>
+    <div class="toolbar simonly">
+      <div class="ctl">
+        <button class="btn primary" id="play">일시정지</button>
+        <div class="seg" id="speed" role="group" aria-label="배속">
+          <button data-s="1" aria-pressed="true">1×</button><button data-s="2" aria-pressed="false">2×</button><button data-s="4" aria-pressed="false">4×</button><button data-s="8" aria-pressed="false">8×</button>
+        </div>
+        <span class="clock" id="clock">T+00:00</span>
       </div>
-      <span class="clock" id="clock">T+00:00</span>
-    </div>
-    <div class="pwr simonly" title="전력 사용량 / 공급량">
-      <span class="lbl">전력</span>
-      <div class="meter" id="meter"><i></i></div>
-      <b id="pwrtxt">0 / 200</b>
-    </div>
-    <div class="spacer"></div>
-    <div class="ctl">
-      <span class="ctl simonly">
-      <label class="lbl" for="site" style="font-size:11px;color:var(--muted)">부지</label>
-      <select class="sel" id="site" aria-label="부지 크기"></select>
-      <span class="seg" id="ebus" role="group" aria-label="부지 바깥 창고 입출력 라인" title="부지 바깥 고정 창고 입출력 라인 (협곡 IV 허브 최대 확장)"><button data-d="0" aria-label="위쪽">↑</button><button data-d="1" aria-label="오른쪽">→</button><button data-d="2" aria-label="아래쪽">↓</button><button data-d="3" aria-label="왼쪽">←</button></span>
-      <span class="row" id="siteCustom" hidden style="gap:4px"><input id="sw" type="number" min="12" max="120" aria-label="부지 가로 칸 수" class="num"> × <input id="sh" type="number" min="12" max="120" aria-label="부지 세로 칸 수" class="num"><button class="btn sm primary" id="siteApply">적용</button><button class="btn sm" id="siteCancel">취소</button></span>
-      <select class="sel" id="preset" aria-label="예시 공장 불러오기"><option value="">예시 공장 불러오기…</option></select>
-      <button class="btn" id="io">레이아웃 코드</button>
-      <button class="btn" id="facSave" hidden title="지금 공장을 내 계정에 저장">공장 저장</button>
-      </span>
-      <span class="acct" id="acct" hidden></span>
+      <div class="pwr" title="전력 사용량 / 공급량">
+        <span class="lbl">전력</span>
+        <div class="meter" id="meter"><i></i></div>
+        <b id="pwrtxt">0 / 200</b>
+      </div>
+      <div class="spacer"></div>
+      <div class="ctl">
+        <label class="lbl" for="site" style="font-size:11px;color:var(--muted)">부지</label>
+        <select class="sel" id="site" aria-label="부지 크기"></select>
+        <span class="seg" id="ebus" role="group" aria-label="부지 바깥 창고 입출력 라인" title="부지 바깥 고정 창고 입출력 라인 (협곡 IV 허브 최대 확장)"><button data-d="0" aria-label="위쪽">↑</button><button data-d="1" aria-label="오른쪽">→</button><button data-d="2" aria-label="아래쪽">↓</button><button data-d="3" aria-label="왼쪽">←</button></span>
+        <span class="row" id="siteCustom" hidden style="gap:4px"><input id="sw" type="number" min="12" max="120" aria-label="부지 가로 칸 수" class="num"> × <input id="sh" type="number" min="12" max="120" aria-label="부지 세로 칸 수" class="num"><button class="btn sm primary" id="siteApply">적용</button><button class="btn sm" id="siteCancel">취소</button></span>
+        <select class="sel" id="preset" aria-label="예시 공장 불러오기"><option value="">예시 공장 불러오기…</option></select>
+        <button class="btn" id="io">레이아웃 코드</button>
+        <button class="btn" id="facSave" hidden title="지금 공장을 내 계정에 저장">공장 저장</button>
+      </div>
     </div>
   </header>
 
@@ -2611,10 +2616,10 @@ const board = {
     const [res, nres] = await Promise.all([q, wantNotices ? db.from('posts').select(LIST_COLS).eq('kind', 'notice').order('created_at', { ascending: false }).limit(1) : null]);
     if ((my != null && my !== this.seq) || this.lv !== lv) return;
     if (res.error){ this.renderList('error'); return; }
-    const got = res.data || [];
+    const got = Array.isArray(res.data) ? res.data : [];
     this.more = got.length > PAGE;
     this.rows = this.rows.concat(got.slice(0, PAGE));
-    if (reset) this.notices = nres && !nres.error ? nres.data || [] : [];
+    if (reset) this.notices = nres && !nres.error && Array.isArray(nres.data) ? nres.data : [];
     this.renderList('ok');
   },
   renderUserHead(){
@@ -3205,6 +3210,7 @@ $('#viewSw').onclick = ev => {
   else if (ui.view !== 'sim'){ history.pushState(null, '', location.pathname + location.search); route(); }
 };
 $('#viewSw').hidden = !acct.enabled();
+$('#bar').classList.toggle('site', acct.enabled());
 ucard.init();
 
 // header: login button or "id · logout"
