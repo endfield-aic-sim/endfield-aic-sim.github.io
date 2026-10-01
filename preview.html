@@ -418,6 +418,8 @@ a.btn{color:inherit;text-decoration:none;display:inline-block}
 .fdesc{margin:0;font-size:12.5px;color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .fbody .row{margin-top:auto;gap:5px;padding-top:4px}
 @media (max-width: 640px){ .aurow{grid-template-columns:minmax(0,1fr)} .auacts{justify-content:flex-start} }
+.uhead #pwBtn{align-self:center}
+.pwothers{margin:2px 0 4px}
 @media (prefers-reduced-motion: reduce){ .meter i,.switch input::after, }
 </style>
 
@@ -535,6 +537,22 @@ a.btn{color:inherit;text-decoration:none;display:inline-block}
     </div>
     <div class="msg" id="facMsg" role="alert"></div>
     <div class="acts"><button class="btn primary" type="submit" id="facGo">저장</button><span class="spacer"></span><button class="btn" type="button" id="facClose">취소</button></div>
+  </form>
+</dialog>
+
+<dialog id="pwDlg" aria-labelledby="pwTitle">
+  <form id="pwForm">
+    <h3 id="pwTitle">비밀번호 바꾸기</h3>
+    <input type="text" autocomplete="username" hidden aria-hidden="true" tabindex="-1">
+    <div class="lg">
+      <label for="pwOld">지금 비밀번호</label><input id="pwOld" type="password" autocomplete="current-password">
+      <label for="pwNew">새 비밀번호</label><input id="pwNew" type="password" autocomplete="new-password" minlength="6">
+      <label for="pwNew2">새 비밀번호 확인</label><input id="pwNew2" type="password" autocomplete="new-password">
+    </div>
+    <label class="switch pwothers"><input type="checkbox" id="pwOthers" checked> 다른 기기에서 로그아웃</label>
+    <p class="note">6자 이상이면 되지만, 길수록 안전합니다. 관리자라면 16자 이상, 다른 사이트에서 쓰지 않는 비밀번호를 권합니다. 이메일을 받지 않아서 잊으면 찾을 수 없으니 잘 보관하세요.</p>
+    <div class="msg" id="pwMsg" role="alert"></div>
+    <div class="acts"><button class="btn primary" type="submit" id="pwGo">바꾸기</button><span class="spacer"></span><button class="btn" type="button" id="pwClose">취소</button></div>
   </form>
 </dialog>
 
@@ -2225,6 +2243,8 @@ function acctError(e){
   if (/password/i.test(m) && /least|short|characters/i.test(m)) return '비밀번호는 6자 이상이어야 합니다';
   if (/row-level security/i.test(m)) return acct.ban ? '이용이 제한된 계정이라 할 수 없습니다' : '권한이 없습니다';
   if (/factory limit/i.test(m)) return '공장은 50개까지 저장할 수 있습니다. 안 쓰는 공장을 지워 주세요';
+  if (/different from the old/i.test(m)) return '지금 비밀번호와 다른 비밀번호를 쓰세요';
+  if (/reauthenticat|nonce/i.test(m)) return '보안 설정 때문에 바꿀 수 없습니다. 로그아웃 후 다시 로그인해서 시도하세요';
   if (/rate limit|too many/i.test(m)) return '잠시 후 다시 시도하세요';
   if (/fetch|network/i.test(m)) return '로그인 서버에 연결하지 못했습니다';
   return '문제가 생겼습니다: ' + m;
@@ -2603,7 +2623,9 @@ const board = {
     h.innerHTML = `<span class="avatar" aria-hidden="true">${esc((nm[0] || '?').toUpperCase())}</span>
       <div class="umain"><h2>${esc(nm)}${st && st.role === 'admin' ? ' <span class="kbadge k-notice">관리자</span>' : ''}</h2>
       <p class="dim">${st ? '가입 ' + new Date(st.joined).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) : st === null ? '탈퇴했거나 없는 사용자입니다' : st === false ? '정보를 불러오지 못했습니다' : '불러오는 중…'}</p></div>
-      ${st ? statsHTML(st) : ''}`;
+      ${st ? statsHTML(st) : ''}
+      ${acct.user && acct.name() === nm ? '<button class="btn sm" id="pwBtn" type="button">비밀번호 바꾸기</button>' : ''}`;
+    const pb = $('#pwBtn'); if (pb) pb.onclick = openPwDialog;
   },
   renderList(state){
     const el = this.el(), lv = this.lv, user = lv.mode === 'user', key = user ? 'user:' + lv.name : 'board';
@@ -3129,6 +3151,36 @@ $('#facForm').onsubmit = async ev => {
   $('#facDlg').close(); facs.list = null;
   flash(facDlgMode.edit ? '공장 정보를 고쳤습니다' : `"${name}" 공장을 저장했습니다 · 내 프로필 → 저장한 공장에서 불러올 수 있습니다`);
   if (ui.view === 'board') route();
+};
+
+
+// ---------- change password (own profile) ----------
+function openPwDialog(){
+  if (!acct.user) { openLogin('in'); return; }
+  ['#pwOld', '#pwNew', '#pwNew2'].forEach(k => { $(k).value = ''; });
+  $('#pwOthers').checked = true; $('#pwMsg').textContent = ''; $('#pwGo').disabled = false;
+  $('#pwDlg').showModal(); $('#pwOld').focus();
+}
+$('#pwClose').onclick = () => $('#pwDlg').close();
+$('#pwForm').onsubmit = async ev => {
+  ev.preventDefault();
+  const msg = $('#pwMsg'), oldPw = $('#pwOld').value, pw = $('#pwNew').value;
+  if (!oldPw){ msg.textContent = '지금 비밀번호를 적어 주세요'; $('#pwOld').focus(); return; }
+  if (pw.length < 6){ msg.textContent = '새 비밀번호는 6자 이상이어야 합니다'; $('#pwNew').focus(); return; }
+  if (pw !== $('#pwNew2').value){ msg.textContent = '새 비밀번호 확인이 맞지 않습니다'; $('#pwNew2').focus(); return; }
+  if (pw === oldPw){ msg.textContent = '지금 비밀번호와 다른 비밀번호를 쓰세요'; return; }
+  $('#pwGo').disabled = true; msg.textContent = '확인하는 중…';
+  try {
+    // confirm it's really the owner: sign in again with the current password
+    const chk = await acct.client.auth.signInWithPassword({ email: acct.email(acct.name()), password: oldPw });
+    if (chk.error){ msg.textContent = /invalid login credentials/i.test(chk.error.message || '') ? '지금 비밀번호가 맞지 않습니다' : acctError(chk.error); return; }
+    msg.textContent = '바꾸는 중…';
+    const { error } = await acct.client.auth.updateUser({ password: pw });
+    if (error){ msg.textContent = acctError(error); return; }
+    if ($('#pwOthers').checked){ try { await acct.client.auth.signOut({ scope: 'others' }); } catch(e){} }
+    $('#pwDlg').close();
+    flash($('#pwOthers').checked ? '비밀번호를 바꿨습니다 · 다른 기기에서는 로그아웃됐습니다' : '비밀번호를 바꿨습니다');
+  } finally { $('#pwGo').disabled = false; }
 };
 
 // simulator ↔ board: the address decides which one is on screen
