@@ -265,6 +265,7 @@ dialog textarea{width:100%;height:200px;font-family:var(--f-mono);font-size:11px
 .prow.k-notice{background:color-mix(in srgb,var(--accent) 9%,var(--panel))}
 .pthumb{width:128px;height:80px;border-radius:4px;overflow:hidden;background:var(--panel-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--muted)}
 .pthumb img{width:100%;height:100%;object-fit:cover;display:block}
+.pthumb canvas{width:100%;height:100%;display:block}
 .pmain{display:flex;flex-direction:column;gap:3px;min-width:0}
 .ptitle{display:flex;align-items:center;gap:7px;min-width:0}
 .ptitle b{font-weight:600;font-size:14px}
@@ -1793,11 +1794,15 @@ class World {
   }
   // blueprint of a set of entity ids, positions relative to the bounding box
   blueprint(ids) {
-    const list = [...ids].map(id => this.ents.get(id)).filter(e => e && e.type !== 'pac');
+    const all = [...ids], list = all.map(id => this.ents.get(id)).filter(e => e && e.type !== 'pac');
     if (!list.length) return null;
     let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
     for (const e of list) { x0 = Math.min(x0, e.x); y0 = Math.min(y0, e.y); x1 = Math.max(x1, e.x + e.w); y1 = Math.max(y1, e.y + e.h); }
-    return { v: 2, w: x1 - x0, h: y1 - y0, ents: list.map(e => { const o = this.entCfg(e); o.x -= x0; o.y -= y0; return o; }) };
+    const o = { v: 2, w: x1 - x0, h: y1 - y0, ents: list.map(e => { const c = this.entCfg(e); c.x -= x0; c.y -= y0; return c; }) };
+    // the PAC is never placed from a blueprint, but its position is kept so previews can draw it
+    const pac = this.pac && all.includes(this.pac.id) ? this.pac : null;
+    if (pac) o.pac = { x: pac.x - x0, y: pac.y - y0, f: pac.f, ports: pac.ports.slice() };
+    return o;
   }
   bpCheck(bp, ox, oy) {
     const busRects = bp.ents.filter(s => TYPES[s.t] && (TYPES[s.t].kind === 'bus' || TYPES[s.t].kind === 'busport')).map(s => { const [w, h] = dims(s.t, s.f); return { x: ox + s.x, y: oy + s.y, w, h, s }; });
@@ -2064,7 +2069,11 @@ function cleanBp(bp) {
     && Number.isInteger(s.x) && Number.isInteger(s.y) && s.x >= 0 && s.y >= 0 && s.x < 200 && s.y < 200 && (s.f == null || [0, 1, 2, 3].includes(s.f)));
   if (!ents.length) return null;
   let w = 0, h = 0; for (const s of ents) { const [a, b] = dims(s.t, s.f == null ? 2 : s.f); w = Math.max(w, s.x + a); h = Math.max(h, s.y + b); }
-  return { v: 2, w, h, ents };
+  const out = { v: 2, w, h, ents };
+  const p = bp.pac;   // preview only: where the PAC was (placing ignores it)
+  if (p && Number.isInteger(p.x) && Number.isInteger(p.y) && Math.abs(p.x) < 200 && Math.abs(p.y) < 200 && [0, 1, 2, 3].includes(p.f))
+    out.pac = { x: p.x, y: p.y, f: p.f, ports: Array.isArray(p.ports) ? p.ports.slice(0, 6).map(v => (typeof v === 'string' && ITEMS[v]) ? v : null) : null };
+  return out;
 }
 function deserialize(o) {
   if (o.v >= 4) { const r = buildWorld(o, o.W, o.H, 'keep'); if (r.world) return r.world; }
@@ -2109,7 +2118,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = AIC; else 
 const {DX,DY,opp,ITEMS,RECIPES,RECIPES_BY_M,TYPES,GROUPS,FUEL,IN_CAP,OUT_CAP,PYLON_R,PYLON_LINK,RELAY_LINK,BELT_CELL_T,PRESETS,TOGGLABLE} = AIC;
 const S = 24;
 const $ = s => document.querySelector(s);
-const cv = $('#cv'), ctx = cv.getContext('2d');
+const cv = $('#cv'); let ctx = cv.getContext('2d');
 const K = t => TYPES[t].kind;
 const CARRIER = new Set(['belt','splitter','converger','bridge','control']);
 
@@ -2421,7 +2430,7 @@ function acctCard(b){
 const BOARD_VIEWS = ['board', 'user', 'post', 'write', 'edit', 'reports', 'admin'];
 const KIND_KO = { bp: '청사진', text: '일반', notice: '공지' };
 const PAGE = 20;
-const LIST_COLS = 'id,kind,title,body,bp_w,bp_h,bp_ents,thumb,like_count,comment_count,author_name,author,created_at,updated_at';
+const LIST_COLS = 'id,kind,title,body,bp,bp_w,bp_h,bp_ents,thumb,like_count,comment_count,author_name,author,created_at,updated_at';
 const IC_HEART = '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M8 13.6C8 13.6 1.8 9.9 1.8 5.9A3.1 3.1 0 0 1 8 4.6a3.1 3.1 0 0 1 6.2 1.3C14.2 9.9 8 13.6 8 13.6z" fill="currentColor"/></svg>';
 const IC_CMT = '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M2.5 3h11v7.5H8l-3.2 2.6v-2.6H2.5z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>';
 const IC_DOC = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 3h8l4 4v14H6z M14 3v4h4 M9 12h6 M9 15.5h6 M9 19h4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>';
@@ -2447,59 +2456,45 @@ function bpCat(t){
   if (k === 'stash' || k === 'tank' || k === 'sink') return 'store';
   return 'mach';
 }
-const THUMB_PAL = { bg: '#121615', floor: '#1C2220', belt: '#7A8480', pipe: '#3AA3A6', mach: '#DCE0DA', store: '#A9B2AD', edge: '#0B0E0D', power: '#2DB3A0', depot: '#F2D300', ink: '#15191A' };
-const themePal = () => ({ bg: C['panel-2'], floor: C['cv-bg'], belt: C['cv-belt'], pipe: C['cv-pipe'], mach: C['cv-mach'], store: C['panel-2'], edge: C['cv-mach-ink'], power: C.power, depot: C.accent, ink: C['cv-mach-ink'] });
-function drawBp(g, bp, W, H, pal, labels){
-  g.fillStyle = pal.bg; g.fillRect(0, 0, W, H);
-  if (!bp || !bp.w || !bp.h || !Array.isArray(bp.ents)) return;
-  const pad = Math.max(4, Math.min(W, H) * 0.05);
-  const s = Math.min((W - 2 * pad) / bp.w, (H - 2 * pad) / bp.h);
-  const ox = (W - s * bp.w) / 2, oy = (H - s * bp.h) / 2;
-  g.fillStyle = pal.floor; g.fillRect(ox, oy, s * bp.w, s * bp.h);
-  const ents = bp.ents.filter(e => TYPES[e.t]);
-  const rect = e => { const [w, h] = AIC.dims(e.t, e.f); return [ox + e.x * s, oy + e.y * s, w * s, h * s]; };
-  // depot bus underneath, then belts and pipes, then facilities on top
-  g.globalAlpha = .45; g.fillStyle = pal.depot;
-  for (const e of ents) if (bpCat(e.t) === 'depot' && TYPES[e.t].kind === 'bus'){ const [x, y, w, h] = rect(e); g.fillRect(x, y, w, h); }
-  g.globalAlpha = 1;
-  const thin = s * 0.22;
-  for (const L of ['belt', 'pipe']){
-    g.fillStyle = pal[L];
-    for (const e of ents){
-      if (bpCat(e.t) !== L) continue;
-      const [x, y, w, h] = rect(e), K2 = TYPES[e.t].kind;
-      if (K2 !== 'belt') g.fillRect(x + thin * .5, y + thin * .5, w - thin, h - thin);       // bridges, splitters, convergers, control ports
-      else if (e.f === 1 || e.f === 3) g.fillRect(x, y + thin, w, h - 2 * thin);           // runs east-west
-      else g.fillRect(x + thin, y, w - 2 * thin, h);                                          // runs north-south
-    }
-  }
-  const lw = Math.max(1, Math.min(2.5, s * 0.1));
-  for (const e of ents){
-    const c = bpCat(e.t); if (c === 'belt' || c === 'pipe' || (c === 'depot' && TYPES[e.t].kind === 'bus')) continue;
-    const [x, y, w, h] = rect(e), i = lw / 2;
-    g.fillStyle = c === 'store' ? pal.store : c === 'depot' ? pal.depot : pal.mach; g.fillRect(x + i, y + i, w - lw, h - lw);
-    g.lineWidth = c === 'power' ? lw * 2 : lw; g.strokeStyle = c === 'power' ? pal.power : pal.edge; g.strokeRect(x + i, y + i, w - lw, h - lw);
-    if (!labels || w < 26 || h < 14) continue;
-    const name = TYPES[e.t].short || TYPES[e.t].ko;
-    let fs = Math.min(13, h * 0.32, s * 0.9);
-    g.font = `600 ${fs}px ${C.fBody || 'sans-serif'}`;
-    let tw = g.measureText(name).width;
-    if (tw > w - 6){ fs = fs * (w - 6) / tw; if (fs < 8) continue; g.font = `600 ${fs}px ${C.fBody || 'sans-serif'}`; }
-    g.fillStyle = c === 'depot' ? '#15191A' : pal.ink; g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.fillText(name, x + w / 2, y + h / 2);
+// blueprint pictures use the same drawing code as the factory screen:
+// build a small throwaway factory from the blueprint, then render it onto another canvas
+function previewWorld(bp){
+  const b = AIC.cleanBp(bp); if (!b) return null;
+  // include the PAC (if the blueprint remembers it) in the picture
+  let x0 = 0, y0 = 0, x1 = b.w, y1 = b.h;
+  if (b.pac){ const [pw, ph] = AIC.dims('pac', b.pac.f); x0 = Math.min(0, b.pac.x); y0 = Math.min(0, b.pac.y); x1 = Math.max(x1, b.pac.x + pw); y1 = Math.max(y1, b.pac.y + ph); }
+  const ox = 1 - x0, oy = 1 - y0;
+  const w = new AIC.World(x1 - x0 + 2, y1 - y0 + 2);
+  if (b.pac){ const pc = w.place('pac', ox + b.pac.x, oy + b.pac.y, b.pac.f); if (pc && b.pac.ports) b.pac.ports.forEach((v, i) => { if (i < pc.ports.length) pc.ports[i] = v; }); }
+  if (!w.bpPlace(b, ox, oy)) for (const q of b.ents){ const e = w.place(q.t, q.x + ox, q.y + oy, q.f == null ? 2 : q.f); if (e) w.applyCfg(e, q); }
+  return w;
+}
+// draw world w into canvas c at css size cw×ch; margin = extra cells shown around the site (outer bus)
+function paintWorld(c, w, cw, ch, margin){
+  const save = { world, ctx, dpr, vw, vh, cam: ui.cam, sel: ui.sel, multi: ui.multi, drag: ui.drag, paste: ui.paste, hover: ui.hover, tool: ui.tool, move: ui.move };
+  const d = window.devicePixelRatio || 1, m = margin || 0;
+  c.width = Math.max(1, Math.round(cw * d)); c.height = Math.max(1, Math.round(ch * d));
+  const pad = Math.min(cw, ch) * 0.04;
+  const z = Math.min((cw - 2 * pad) / ((w.W + 2 * m) * S), (ch - 2 * pad) / ((w.H + 2 * m) * S));
+  try {
+    world = w; ctx = c.getContext('2d'); dpr = d; vw = cw; vh = ch;
+    ui.cam = { z, x: (w.W * S - cw / z) / 2, y: (w.H * S - ch / z) / 2 };
+    ui.sel = null; ui.multi = new Set(); ui.drag = null; ui.paste = null; ui.hover = null; ui.tool = 'select'; ui.move = null;
+    render();
+  } finally {
+    world = save.world; ctx = save.ctx; dpr = save.dpr; vw = save.vw; vh = save.vh; ui.cam = save.cam;
+    ui.sel = save.sel; ui.multi = save.multi; ui.drag = save.drag; ui.paste = save.paste; ui.hover = save.hover; ui.tool = save.tool; ui.move = save.move;
   }
 }
-// draw into a canvas at its on-screen size (sharp on high-DPI screens)
-function paintBp(cv, bp, pal, labels){
-  const r = cv.getBoundingClientRect(); if (!r.width) return;
-  const d = window.devicePixelRatio || 1;
-  cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d);
-  const g = cv.getContext('2d'); g.setTransform(d, 0, 0, d, 0, 0);
-  drawBp(g, bp, r.width, r.height, pal, labels);
+// draw a blueprint into a canvas at its on-screen size
+function paintBp(c, bp){
+  const r = c.getBoundingClientRect(); if (!r.width) return;
+  const w = previewWorld(bp); if (!w) return;
+  paintWorld(c, w, r.width, r.height, 0);
 }
 function thumbURL(bp){
-  const c = document.createElement('canvas'); c.width = 320; c.height = 200;
-  drawBp(c.getContext('2d'), bp, 320, 200, THUMB_PAL, false);
+  const w = previewWorld(bp); if (!w) return null;
+  const c = document.createElement('canvas'); paintWorld(c, w, 320, 200, 0);
   return c.toDataURL('image/png');
 }
 function bpFacts(bp){
@@ -2569,8 +2564,9 @@ const board = {
   compose(name, bp){ this.pending = { name, bp }; location.hash = 'write'; },
   redraw(){
     if (ui.view !== 'board') return;
-    const big = $('#bBig'); if (big && this.post && this.post.bp) paintBp(big, this.post.bp, themePal(), true);
-    const pv = $('#wPrev'); if (pv && this.wbp) paintBp(pv, this.wbp.bp, themePal(), true);
+    const big = $('#bBig'); if (big && this.post && this.post.bp) paintBp(big, this.post.bp);
+    if ($('#bList')) this.paintThumbs();
+    const pv = $('#wPrev'); if (pv && this.wbp) paintBp(pv, this.wbp.bp);
   },
   async show(v, arg, arg2){
     const my = ++this.seq;
@@ -2710,9 +2706,14 @@ const board = {
       list.innerHTML = `<p class="note bempty">${lv.q ? `"${esc(lv.q)}"와 맞는 글이 없습니다.` : user ? (lv.filter === 'all' ? '아직 쓴 글이 없습니다.' : '이 종류로 쓴 글이 없습니다.') : lv.filter === 'notice' ? '아직 공지가 없습니다.' : '아직 글이 없습니다. 첫 글을 올려 보세요.'}</p>`; return;
     }
     list.innerHTML = rows.map(p => this.rowHTML(p)).join('');
+    this.paintThumbs();
+  },
+  paintThumbs(){
+    const all = this.notices.concat(this.rows);
+    document.querySelectorAll('#bList canvas[data-bp]').forEach(c => { const p = all.find(x => x.id === +c.dataset.bp); if (p && p.bp) paintBp(c, p.bp); });
   },
   rowHTML(p){
-    const thumb = p.kind === 'bp' && p.thumb ? `<img src="${esc(p.thumb)}" alt="">` : `<span class="pglyph">${p.kind === 'notice' ? IC_PIN : IC_DOC}</span>`;
+    const thumb = p.kind === 'bp' && p.bp ? `<canvas data-bp="${p.id}" aria-hidden="true"></canvas>` : p.kind === 'bp' && p.thumb ? `<img src="${esc(p.thumb)}" alt="">` : `<span class="pglyph">${p.kind === 'notice' ? IC_PIN : IC_DOC}</span>`;
     const ex = (p.body || '').replace(/\s+/g, ' ').trim().slice(0, 120);
     const size = p.kind === 'bp' && p.bp_w ? ` · ${p.bp_w}×${p.bp_h} · 설비 ${p.bp_ents}개` : '';
     return `<div class="prow k-${p.kind}">
@@ -2751,7 +2752,7 @@ const board = {
       const extra = [f.belts ? `벨트 ${f.belts}칸` : '', f.pipes ? `파이프 ${f.pipes}칸` : ''].filter(Boolean).join(' · ');
       bpBlock = `<figure class="bpfig">
         <canvas id="bBig" role="img" aria-label="청사진 미리보기: ${esc(p.title)}"></canvas>
-        <figcaption><b>${p.bp.w}×${p.bp.h}</b> · 설비 ${f.facs}개${extra ? ' · ' + extra : ''}</figcaption>
+        <figcaption><b>${p.bp.w}×${p.bp.h}</b> · 설비 ${f.facs}개${extra ? ' · ' + extra : ''}${p.bp.pac ? ' <span class="dim">· PAC는 미리보기에만 표시되고 배치되지 않습니다</span>' : ''}</figcaption>
         <div class="fchips">${f.list.map(([t, c]) => `<span class="mchip">${esc(TYPES[t].ko)} ×${c}</span>`).join('')}</div>
         <div class="row"><button class="btn primary" id="bUse">공장에 배치</button><button class="btn" id="bSave">내 청사진에 저장</button><button class="btn" id="bCode">청사진 코드</button></div>
       </figure>`;
@@ -2780,7 +2781,7 @@ const board = {
       </section>
     </article>`;
     if (p.bp && p.bp.ents){
-      paintBp($('#bBig'), p.bp, themePal(), true);
+      paintBp($('#bBig'), p.bp);
       $('#bUse').onclick = () => { history.pushState(null, '', location.pathname + location.search); route(); startPaste(p.bp, p.title); flash('놓을 곳을 클릭하세요 · R 회전 · Esc 취소'); };
       $('#bSave').onclick = async () => { const where = await saveBp(p.title, p.bp); flash(where === 'account' ? '내 계정 청사진에 저장했습니다' : '이 브라우저 청사진에 저장했습니다'); };
       $('#bCode').onclick = () => openDialog('bpcode', { name: p.title, bp: p.bp });
@@ -2876,10 +2877,10 @@ const board = {
     if (p && p.bp) src.push(['keep', '지금 붙어 있는 청사진 그대로', () => ({ name: p.title, bp: p.bp })]);
     if (pend) src.push(['pend', `고른 청사진 · ${pend.name}`, () => pend]);
     const sel = selectionIds().filter(i => !world.pac || i !== world.pac.id);
-    if (sel.length) src.push(['sel', `공장에서 선택한 범위 (설비 ${sel.filter(i => !CARRIER.has(K(world.ents.get(i).type))).length}개)`, () => ({ name: '선택한 설비', bp: world.blueprint(sel) })]);
+    if (sel.length) src.push(['sel', `공장에서 선택한 범위 (설비 ${sel.filter(i => !CARRIER.has(K(world.ents.get(i).type))).length}개)`, () => ({ name: '선택한 설비', bp: world.blueprint(selectionIds()) })]);
     const all = [...world.ents.keys()].filter(i => !world.pac || i !== world.pac.id);
     const nFac = ids => ids.filter(i => !CARRIER.has(K(world.ents.get(i).type))).length;
-    if (all.length) src.push(['all', `공장 전체 (설비 ${nFac(all)}개)`, () => ({ name: '내 공장', bp: world.blueprint(all) })]);
+    if (all.length) src.push(['all', `공장 전체 (설비 ${nFac(all)}개)`, () => ({ name: '내 공장', bp: world.blueprint([...world.ents.keys()]) })]);
     for (const b of acct.mine) src.push(['a' + b.id, `내 계정 · ${b.name}`, async () => b.data ? { name: b.name, bp: b.data } : { name: b.name, bp: (await acct.fetchData(b.id)).data }]);
     for (const b of store.bps) src.push(['l' + b.id, `이 브라우저 · ${b.name}`, () => ({ name: b.name, bp: b.bp })]);
     src.push(['code', '청사진 코드 붙여넣기…', null]);
@@ -2915,7 +2916,7 @@ const board = {
         else this.wbp = await s[2]();
       } catch(e){ this.wbp = null; note.textContent = '읽을 수 없는 청사진 코드입니다.'; }
       const cv = $('#wPrev');
-      if (this.wbp && this.wbp.bp){ const f = bpFacts(this.wbp.bp); note.textContent = `${this.wbp.bp.w}×${this.wbp.bp.h} · 설비 ${f.facs}개${f.belts ? ' · 벨트 ' + f.belts + '칸' : ''}${f.pipes ? ' · 파이프 ' + f.pipes + '칸' : ''}`; cv.hidden = false; paintBp(cv, this.wbp.bp, themePal(), true); }
+      if (this.wbp && this.wbp.bp){ const f = bpFacts(this.wbp.bp); note.textContent = `${this.wbp.bp.w}×${this.wbp.bp.h} · 설비 ${f.facs}개${f.belts ? ' · 벨트 ' + f.belts + '칸' : ''}${f.pipes ? ' · 파이프 ' + f.pipes + '칸' : ''}`; cv.hidden = false; paintBp(cv, this.wbp.bp); }
       else cv.hidden = true;
     };
     $('#wSrc').onchange = pick; $('#wCode').oninput = pick;
@@ -2927,7 +2928,8 @@ const board = {
       const row = { kind, title: title.slice(0, 80), body: body.slice(0, 5000) };
       if (kind === 'bp'){
         if (!this.wbp || !this.wbp.bp || !this.wbp.bp.ents || !this.wbp.bp.ents.length){ msg.textContent = '붙일 청사진을 고르세요'; return; }
-        if ($('#wSrc').value !== 'keep'){
+        if ($('#wSrc').value === 'keep') row.thumb = thumbURL(this.wbp.bp);
+        else {
           const bp = this.wbp.bp;
           if (JSON.stringify(bp).length > 380000){ msg.textContent = '청사진이 너무 큽니다. 범위를 나눠서 올려 주세요.'; return; }
           Object.assign(row, { bp, bp_w: bp.w, bp_h: bp.h, bp_ents: bpFacts(bp).facs, thumb: thumbURL(bp) });
@@ -3151,8 +3153,7 @@ const facs = {
     const data = world.serialize();
     const ents = data.ents.filter(e => TYPES[e.t]);
     const n = ents.filter(e => !CARRIER.has(TYPES[e.t].kind) && e.t !== 'pac').length;
-    const c = document.createElement('canvas'); c.width = 320; c.height = 200;
-    drawBp(c.getContext('2d'), { w: data.W, h: data.H, ents }, 320, 200, THUMB_PAL, false);
+    const c = document.createElement('canvas'); paintWorld(c, world, 320, 200, (world.edgeBus || []).length ? 5 : 1);
     return { data, site_w: data.W, site_h: data.H, ent_count: n, thumb: c.toDataURL('image/png') };
   },
   async load(){
@@ -3531,7 +3532,7 @@ function carrierPos(e, inDir, outDir, p){ // entry edge → center → exit edge
 function render(){
   const z = ui.cam.z;
   ctx.setTransform(1,0,0,1,0,0);
-  ctx.fillStyle = C['cv-bg']; ctx.fillRect(0,0,cv.width,cv.height);
+  ctx.fillStyle = C['cv-bg']; ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);
   ctx.setTransform(dpr*z,0,0,dpr*z,-ui.cam.x*dpr*z,-ui.cam.y*dpr*z);
   const x0 = Math.max(0, Math.floor(ui.cam.x/S)), y0 = Math.max(0, Math.floor(ui.cam.y/S));
   const x1 = Math.min(world.W-1, Math.ceil((ui.cam.x + vw/z)/S)), y1 = Math.min(world.H-1, Math.ceil((ui.cam.y + vh/z)/S));
