@@ -4031,13 +4031,17 @@ for (const k in PRESETS){ if (k === 'empty') continue; const o = document.create
 presetSel.onchange = () => {
   const k = presetSel.value; if (!k) return; presetSel.value = '';
   let W = world.W, H = world.H, r = AIC.loadPreset(k, W, H);
+  // keep the site's fixed outer depot bus (and core) when the example lands on the same site
+  let eb = (world.edgeBus || []).slice(), ec = world.edgeCore;
   if (!r.world){
     const need = AIC.presetSize(k);
     const site = AIC.SITES.find(s => s.w >= need.w && s.h >= need.h);
     W = site ? site.w : Math.max(W, need.w); H = site ? site.h : Math.max(H, need.h);
     r = AIC.loadPreset(k, W, H);
+    eb = site && site.edgeBus ? site.edgeBus.slice() : []; ec = site ? site.edgeCore !== false : true;
     flash(`이 예시는 ${need.w}×${need.h}칸이 필요해서 부지를 ${W}×${H}로 넓혔습니다`);
   }
+  if (eb.length){ r.world.edgeBus = eb.sort(); if (ec === false) r.world.edgeCore = false; r.world.dirtyPower = true; }
   ui.presetNote = k; loadWorld(r.world); setTool('select'); markTouched();
 };
 
