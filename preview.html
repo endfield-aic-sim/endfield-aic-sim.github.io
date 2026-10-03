@@ -118,7 +118,16 @@ main.stage{grid-column:1;grid-row:2;position:relative;min-width:0;min-height:0;b
 #cv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
 .float{position:absolute;right:12px;top:12px;display:flex;gap:6px}
 .float .btn{background:var(--panel)}
-.selbar{position:absolute;left:12px;top:12px;right:190px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 8px;box-shadow:0 2px 0 rgba(0,0,0,.06);max-width:760px}
+.sites{position:absolute;left:12px;top:12px;right:290px;display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start;pointer-events:none}
+.sites .rg{display:flex;align-items:center;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:3px;pointer-events:auto;max-width:100%;overflow-x:auto}
+.sites .rg>b{font-size:11px;color:var(--muted);padding:0 6px 0 5px;font-weight:600;white-space:nowrap}
+.sites .rg button{border:0;background:transparent;border-radius:4px;padding:4px 8px;font-size:12px;color:var(--ink);white-space:nowrap;line-height:1.2}
+.sites .rg button:hover{background:var(--panel-2)}
+.sites .rg button[aria-pressed="true"]{background:var(--ink);color:var(--panel);font-weight:600}
+.sites .rg button small{opacity:.65;font-family:var(--f-mono);font-size:10.5px;margin-left:5px;font-weight:400}
+.sites .rg button i{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--accent);margin-left:5px;vertical-align:middle}
+.sites .rg input{width:90px;font-size:12px;padding:3px 6px;border:1px solid var(--accent);border-radius:4px;background:var(--panel-2);color:var(--ink)}
+.selbar{position:absolute;left:12px;top:calc(var(--sites-h, 0px) + 20px);right:190px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 8px;box-shadow:0 2px 0 rgba(0,0,0,.06);max-width:760px}
 .selbar b{font-weight:600;font-size:12.5px;margin-right:4px}
 .selbar input{border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:3px 7px;font-size:12px;width:160px}
 .hud{position:absolute;left:12px;bottom:12px;right:12px;display:flex;gap:8px;align-items:flex-end;pointer-events:none;flex-wrap:wrap}
@@ -169,6 +178,8 @@ aside.side{grid-column:2;grid-row:2/4;border-left:1px solid var(--line);backgrou
 .pane h4{font-family:var(--f-display);font-size:12px;font-weight:600;letter-spacing:.06em;margin:14px 0 4px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
 .pane h4 small{font-family:var(--f-body);font-weight:400;letter-spacing:0;color:var(--muted);font-size:11px}
 .tscroll{overflow-x:auto}
+button.linkish{border:0;background:transparent;padding:0;font:inherit;color:inherit;cursor:pointer;border-bottom:1px dashed var(--muted)}
+table.depl td:last-child{width:40px}
 table.dep{width:100%;border-collapse:collapse;font-size:12px}
 table.dep th{font-weight:500;color:var(--muted);font-size:11px;text-align:right;padding:3px 4px;border-bottom:1px solid var(--line);white-space:nowrap}
 table.dep th:first-child{text-align:left}
@@ -232,6 +243,8 @@ dialog textarea{width:100%;height:200px;font-family:var(--f-mono);font-size:11px
   .keys{display:none}
   main.stage{height:62vh;min-height:360px}
   .selbar{right:12px;top:auto;bottom:48px}
+  .sites{right:12px}
+  .float{top:calc(var(--sites-h, 0px) + 20px)}
   aside.side{border-left:0;border-top:1px solid var(--line)}
   .insp{max-height:none;padding-inline:16px}
   .pane{max-height:none;overflow:visible;padding-inline:16px}
@@ -495,6 +508,7 @@ header.bar{gap:8px 12px}
 
   <main class="stage" id="stage">
     <canvas id="cv" aria-label="공장 부지. 설비를 골라 클릭해서 배치합니다."></canvas>
+    <nav class="sites" id="sites" aria-label="부지 (지역마다 창고를 함께 씀)"></nav>
     <div class="selbar" id="selbar" hidden></div>
     <div class="float">
       <button class="btn" id="rotBtn" title="회전 (R)">회전</button>
@@ -519,11 +533,13 @@ header.bar{gap:8px 12px}
     <div class="tabs" role="tablist">
       <button role="tab" aria-selected="true" data-tab="stats">생산 현황</button>
       <button role="tab" aria-selected="false" data-tab="facs">설비</button>
+      <button role="tab" aria-selected="false" data-tab="depot">창고</button>
       <button role="tab" aria-selected="false" data-tab="recipes">레시피</button>
       <button role="tab" aria-selected="false" data-tab="plan">생산 계획</button>
     </div>
     <div class="pane" id="pane-stats"></div>
     <div class="pane" id="pane-facs" hidden></div>
+    <div class="pane" id="pane-depot" hidden></div>
     <div class="pane" id="pane-recipes" hidden></div>
     <div class="pane" id="pane-plan" hidden></div>
   </aside>
@@ -1024,6 +1040,16 @@ for (const m in RECIPES_BY_M) {
   }
 }
 const RAW = new Set(['burdo_muck', 'reed_rye', 'tartpepper', 'redjade_ginseng', 'amber_rice', 'originium_ore', 'amethyst_ore', 'ferrium_ore', 'cuprium_ore', 'wood', 'buckflower', 'citrome', 'sandleaf', 'aketine', 'jincao', 'yazhen', 'clean_water', 'precipitation_acid', 'inergen', 'xiragen']);
+// on by default in the region depot list: what mining rigs, pumps and gas extractors bring in (plants are picked, not mined)
+const RAW_DEFAULT = ['originium_ore', 'amethyst_ore', 'ferrium_ore', 'cuprium_ore', 'clean_water', 'precipitation_acid', 'inergen', 'xiragen'];
+// extraction rates per facility (namu.wiki 천연자원; arca.live cross-check): ore rigs 3 s high purity / 6 s low,
+// fluid pumps 1 s, gas extractors 3 s high concentration / 6 s low. Cuprium ore takes 1 clean water per ore.
+const EXTRACT = {
+  originium_ore: { by: '광물 채굴기', hi: 20, lo: 10 }, amethyst_ore: { by: '광물 채굴기', hi: 20, lo: 10 },
+  ferrium_ore: { by: '광물 채굴기', hi: 20, lo: 10 }, cuprium_ore: { by: '광물 채굴기', hi: 20, lo: 10, water: 1 },
+  clean_water: { by: '양수기', hi: 60 }, precipitation_acid: { by: '내산성 양수기', hi: 60 },
+  inergen: { by: '기체 수집기', hi: 20, lo: 10 }, xiragen: { by: '기체 수집기', hi: 20, lo: 10 },
+};
 
 function dims(type, f) { const t = TYPES[type]; return (f === 1 || f === 3) ? [t.h, t.w] : [t.w, t.h]; }
 function edgeCells(e, f) {
@@ -1098,7 +1124,7 @@ class World {
     this.nextId = 1;
     this.time = 0; this.tick = 0;
     this.depot = {};
-    this.infinite = true;
+    this.inf = new Set(RAW_DEFAULT);   // items the depot never runs out of (a Space shares one set per region)
     this.stats = { buckets: [], cur: { in: {}, out: {}, made: {}, port: {} }, sec: 0, total: { in: {}, out: {}, made: {}, port: {} }, since: 0 };
     this.power = { supply: PAC_POWER, demand: 0, ratio: 1 };
     this.dirtyPower = true;
@@ -1123,7 +1149,7 @@ class World {
       if (L !== 'belt' && (id || this.occP[k] === e.id)) this.occP[k] = id;
     }
   }
-  isInf(item) { return this.infinite && RAW.has(item); }
+  isInf(item) { return this.inf.has(item); }
   stock(item) { return this.isInf(item) ? Infinity : (this.depot[item] || 0); }
 
   tileUnder(x, y, w, h, allow) {
@@ -1625,8 +1651,8 @@ class World {
       return;
     }
     if (e.off) return;
-    // an outlet set to a liquid or gas is an endless source; otherwise it passes on what its inlet sent
-    if (e.src) { this.emit(e, portCells(e, 'out'), () => [e.src], k => { this.noteOut(k); e.moved++; }); return; }
+    // an outlet set to a liquid or gas feeds it from the region depot (endless when that item is infinite); otherwise it passes on what its inlet sent
+    if (e.src) { this.emit(e, portCells(e, 'out'), () => (this.stock(e.src) > 0 ? [e.src] : []), k => { this.takeDepot(k); e.moved++; }); return; }
     this.emit(e, portCells(e, 'out'), () => (e.q.length ? [e.q[0]] : []), () => { e.q.shift(); });
   }
   // ----- conduit channels: strictly one inlet to one outlet of the same kind (single or manifold) -----
@@ -1873,16 +1899,21 @@ function bpRotate(bp) { // 90° clockwise
 // Outpost (Sub-PAC) area sizes from the AIC Steward expansion data on the Endfield Talos Wiki.
 // The main Core AIC areas (The Hub, Wuling City) have no published size, so they use a custom size.
 const SITES = [
-  { id: 'v4-0', region: '협곡 IV 거점 (Infra-Station · Reconstruction HQ)', ko: '기본', w: 24, h: 27 },
-  { id: 'v4-1', region: '협곡 IV 거점 (Infra-Station · Reconstruction HQ)', ko: '구역 확장 I', w: 32, h: 32 },
-  { id: 'v4-2', region: '협곡 IV 거점 (Infra-Station · Reconstruction HQ)', ko: '구역 확장 II', w: 40, h: 40, edgeBus: [0], edgeCore: false }, // outposts: fixed bus sections along one side, no bus core (which side: to confirm)
-  { id: 'wl-0', region: '무릉 거점 (천왕 평지 · Cardiac Remediation · Xiranflow Cloudseeder)', ko: '기본', w: 30, h: 30 },
-  { id: 'wl-1', region: '무릉 거점 (천왕 평지 · Cardiac Remediation · Xiranflow Cloudseeder)', ko: '구역 확장 I', w: 40, h: 40 },
-  { id: 'wl-2', region: '무릉 거점 (천왕 평지 · Cardiac Remediation · Xiranflow Cloudseeder)', ko: '구역 확장 II', w: 50, h: 50 },
+  { id: 'v4-0', rg: 'valley', kind: 'out', region: '협곡 IV 거점', ko: '기본', w: 24, h: 27 },
+  { id: 'v4-1', rg: 'valley', kind: 'out', region: '협곡 IV 거점', ko: '구역 확장 I', w: 32, h: 32 },
+  { id: 'v4-2', rg: 'valley', kind: 'out', region: '협곡 IV 거점', ko: '구역 확장 II', w: 40, h: 40, edgeBus: [0], edgeCore: false }, // outposts: fixed bus sections along one side, no bus core
+  { id: 'wl-0', rg: 'wuling', kind: 'out', region: '무릉 거점', ko: '기본', w: 30, h: 30 },
+  { id: 'wl-1', rg: 'wuling', kind: 'out', region: '무릉 거점', ko: '구역 확장 I', w: 40, h: 40 },
+  { id: 'wl-2', rg: 'wuling', kind: 'out', region: '무릉 거점', ko: '구역 확장 II', w: 50, h: 50 },
   // main Core AIC areas at full expansion (Valley IV Hub 70×70, Wuling City 80×80 — confirmed by the user). The Hub has a fixed depot bus
-  // just outside its top and left edges with the bus core at the top-left corner (user screenshot).
-  { id: 'hub-max', region: '메인 코어 구역', ko: '협곡 IV 허브 · 최대 확장', w: 70, h: 70, edgeBus: [0, 3] },
-  { id: 'wl-max', region: '메인 코어 구역', ko: '무릉 시 · 최대 확장', w: 80, h: 80 },
+  // just outside its top and left edges with the bus core at the top-left corner (user screenshot). Smaller stages: custom size.
+  { id: 'hub-max', rg: 'valley', kind: 'main', region: '협곡 IV 메인 코어', ko: '최대 확장', w: 70, h: 70, edgeBus: [0, 3] },
+  { id: 'wl-max', rg: 'wuling', kind: 'main', region: '무릉 메인 코어', ko: '최대 확장', w: 80, h: 80 },
+];
+// the Endfield space: each region has one main Core AIC and three outposts; sites of a region share one depot
+const REGIONS = [
+  { id: 'valley', ko: '협곡 IV', sites: [['메인 코어', 'main', 'hub-max'], ['거점 1', 'out', 'v4-2'], ['거점 2', 'out', 'v4-2'], ['거점 3', 'out', 'v4-2']] },
+  { id: 'wuling', ko: '무릉', sites: [['메인 코어', 'main', 'wl-max'], ['거점 1', 'out', 'wl-2'], ['거점 2', 'out', 'wl-2'], ['거점 3', 'out', 'wl-2']] },
 ];
 const SITE_MIN = 12, SITE_MAX = 80;
 function newWorld(W, H, px, py, pf) {
@@ -2087,6 +2118,98 @@ function resizeWorld(w, W, H) {
   return r;
 }
 
+// ---------- the whole Endfield space ----------
+const XFER_MAX = 100000; // metastorage amount per hour per item (the game caps it by transfer value; that cap is not modelled)
+class Space {
+  constructor() {
+    this.regions = REGIONS.map(R => ({ id: R.id, ko: R.ko, depot: {}, inf: new Set(RAW_DEFAULT), xfer: {}, xacc: {}, names: R.sites.map(x => x[0]), sites: [] }));
+  }
+  region(id) { return this.regions.find(r => r.id === id) || null; }
+  static key(rid, i) { return rid + ':' + i; }
+  keys() { const out = []; for (const r of this.regions) r.sites.forEach((w, i) => out.push(Space.key(r.id, i))); return out; }
+  parse(key) { const [rid, i] = String(key || '').split(':'); const r = this.region(rid); const n = +i; return r && Number.isInteger(n) && n >= 0 && n < r.sites.length ? { r, i: n } : null; }
+  get(key) { const p = this.parse(key); return p ? p.r.sites[p.i] : null; }
+  regionOf(key) { const p = this.parse(key); return p ? p.r : null; }
+  siteDef(key) { const p = this.parse(key); if (!p) return null; const R = REGIONS.find(x => x.id === p.r.id); const d = R.sites[p.i]; return { name: p.r.names[p.i], kind: d[1], def: d[2], rg: p.r.id }; }
+  attach(w, r) { w.depot = r.depot; w.inf = r.inf; w.region = r.id; return w; }
+  set(key, w) { const p = this.parse(key); if (!p) return null; p.r.sites[p.i] = this.attach(w, p.r); return w; }
+  worlds() { const out = []; for (const r of this.regions) for (const w of r.sites) out.push(w); return out; }
+  static fresh() {
+    const sp = new Space();
+    for (const r of sp.regions) {
+      const R = REGIONS.find(x => x.id === r.id);
+      R.sites.forEach(([nm, kind, def], i) => {
+        const st = SITES.find(x => x.id === def);
+        const w = newWorld(st.w, st.h);
+        if (st.edgeBus) { w.edgeBus = st.edgeBus.slice(); if (st.edgeCore === false) w.edgeCore = false; }
+        w.computeCoverage();
+        r.sites[i] = sp.attach(w, r);
+      });
+    }
+    return sp;
+  }
+  setXfer(rid, item, perHour) {
+    const r = this.region(rid); if (!r || !ITEMS[item]) return;
+    const n = Math.max(0, Math.min(XFER_MAX, Math.floor(+perHour || 0)));
+    if (n) r.xfer[item] = n; else { delete r.xfer[item]; delete r.xacc[item]; }
+  }
+  step(dt) {
+    for (const r of this.regions) {
+      // metastorage: the amount set per hour arrives spread over the hour (amount / 60 per minute), made from nothing
+      for (const k in r.xfer) {
+        r.xacc[k] = (r.xacc[k] || 0) + r.xfer[k] * dt / 3600;
+        const n = Math.floor(r.xacc[k] + 1e-9);
+        if (n > 0) { r.xacc[k] -= n; if (!r.inf.has(k)) r.depot[k] = (r.depot[k] || 0) + n; }
+      }
+      for (const w of r.sites) w.step(dt);
+    }
+  }
+  serialize(active) {
+    const sites = {};
+    for (const r of this.regions) r.sites.forEach((w, i) => { const o = w.serialize(); delete o.depot; sites[Space.key(r.id, i)] = o; });
+    return { v: 5, space: true, active: active || null,
+      regions: this.regions.map(r => ({ id: r.id, depot: r.depot, inf: [...r.inf], xfer: r.xfer, names: r.names.slice() })), sites };
+  }
+  static deserialize(o) {
+    const sp = Space.fresh();
+    for (const ro of Array.isArray(o.regions) ? o.regions : []) {
+      const r = sp.region(ro && ro.id); if (!r) continue;
+      for (const k in (ro.depot || {})) if (ITEMS[k] && +ro.depot[k] > 0) r.depot[k] = Math.floor(+ro.depot[k]);
+      if (Array.isArray(ro.inf)) { r.inf.clear(); for (const k of ro.inf) if (ITEMS[k]) r.inf.add(k); }
+      for (const k in (ro.xfer || {})) sp.setXfer(r.id, k, ro.xfer[k]);
+      if (Array.isArray(ro.names)) ro.names.slice(0, r.names.length).forEach((n, i) => { if (typeof n === 'string' && n.trim()) r.names[i] = n.trim().slice(0, 20); });
+    }
+    for (const key in (o.sites || {})) {
+      const p = sp.parse(key); if (!p) continue;
+      const d = o.sites[key]; if (!d || !Array.isArray(d.ents)) continue;
+      const W = Math.max(SITE_MIN, Math.min(SITE_MAX, Math.floor(+d.W || 40))), H = Math.max(SITE_MIN, Math.min(SITE_MAX, Math.floor(+d.H || 40)));
+      const b = buildWorld(d, W, H, 'keep');
+      if (b.world) { b.world.time = +d.time || 0; sp.set(key, b.world); }
+    }
+    return sp;
+  }
+}
+// which site an older single-site save belongs to (by its size)
+function legacyKey(w) {
+  const eb = (w.edgeBus || []).slice().sort().join();
+  const st = SITES.find(s => s.w === w.W && s.h === w.H && (s.edgeBus || []).slice().sort().join() === eb) || SITES.find(s => s.w === w.W && s.h === w.H);
+  if (!st) return 'valley:0';
+  return Space.key(st.rg, st.kind === 'main' ? 0 : 1);
+}
+// items a layout takes out of the depot that used to be endless (plants, liquids and gases set on conduit outlets):
+// switch them on so an older factory or an example keeps running. Returns the items newly switched on.
+function ensureInf(w) {
+  const want = new Set(), added = [];
+  for (const e of w.ents.values()) {
+    const k = TYPES[e.type].kind;
+    if (k === 'pac') for (const it of e.ports || []) { if (it && RAW.has(it)) want.add(it); }
+    if (k === 'unloader' && e.item && RAW.has(e.item)) want.add(e.item);
+    if (k === 'conduit' && e.src) want.add(e.src);
+  }
+  for (const it of want) if (!w.inf.has(it)) { w.inf.add(it); added.push(it); }
+  return added;
+}
+
 // ---------- planner ----------
 function producerOf(item) {
   if (RAW.has(item)) return null;
@@ -2105,7 +2228,7 @@ function plan(item, perMin, depth) {
   return node;
 }
 
-const AIC = { cleanBp, supplyR, kindFits, FSLOT, layerOf, SITES, SITE_MIN, SITE_MAX, resizeWorld, presetSize, bbox, DX, DY, opp, ITEMS, RECIPES, RECIPES_BY_M, TYPES, GROUPS, FUEL, TILE, TILE_KO, World, newWorld, loadPreset, deserialize, PRESETS,
+const AIC = { Space, REGIONS, RAW_DEFAULT, EXTRACT, XFER_MAX, legacyKey, ensureInf, buildWorld, cleanBp, supplyR, kindFits, FSLOT, layerOf, SITES, SITE_MIN, SITE_MAX, resizeWorld, presetSize, bbox, DX, DY, opp, ITEMS, RECIPES, RECIPES_BY_M, TYPES, GROUPS, FUEL, TILE, TILE_KO, World, newWorld, loadPreset, deserialize, PRESETS,
   dims, edgeCells, portCells, isPort, rectDist, plan, producerOf, RAW, IN_CAP, OUT_CAP, bpRotate, isFluid, TOGGLABLE,
   BELT_CELL_T, BELT_GAP, PIPE_CELL_T, PIPE_GAP, cellTOf, M_PER_CELL, PORT_GAP, PYLON_R, PYLON_LINK, RELAY_LINK, PAC_POWER };
 if (typeof module !== 'undefined' && module.exports) module.exports = AIC; else root.AIC = AIC;
@@ -2168,8 +2291,8 @@ const icS = (id, n) => `<span class="ic" title="${esc(ITEMS[id].ko)} · ${esc(IT
 const fmt = n => { if (!isFinite(n)) return '∞'; const a = Math.abs(n); return a >= 1000 ? Math.round(n).toLocaleString('ko-KR') : (Math.round(n*10)/10).toString(); };
 
 // ---------- state ----------
-let world;
-const ui = { tool:'select', rot:2, sel:null, multi:new Set(), paste:null, clip:null, playing:true, speed:1, cam:{x:0,y:0,z:1}, hover:null, drag:null, tab:'stats', cat:'prod1', q:'', acc:0, touched:false, presetNote:null, view:'sim' };
+let space, world;   // the whole Endfield space, and the site on screen (one of its worlds)
+const ui = { site:'valley:0', tool:'select', rot:2, sel:null, multi:new Set(), paste:null, clip:null, playing:true, speed:1, cam:{x:0,y:0,z:1}, hover:null, drag:null, tab:'stats', cat:'prod1', q:'', acc:0, touched:false, presetNote:null, view:'sim' };
 
 // ---------- persistence: account storage when the page has it, browser storage otherwise ----------
 const LS_LAYOUT = 'aic-sim-v2', LS_BP = 'aic-bp-v2';
@@ -2198,13 +2321,13 @@ const store = {
       const snap = await db.doc('data/users/' + uid + '/layout').get();
       if (snap.exists && !ui.touched){
         const d = snap.data(), local = this.lsGet(LS_LAYOUT);
-        if (d && d.world && d.world.v >= 3 && (!local || (d.ts||0) > (local.ts||0))) { ui.presetNote = null; loadWorld(AIC.deserialize(d.world)); flash('저장해 둔 공장을 불러왔습니다'); }
+        if (d && d.world && d.world.v >= 3 && (!local || (d.ts||0) > (local.ts||0))) { ui.presetNote = null; loadData(d.world); flash('저장해 둔 공장을 불러왔습니다'); }
       }
       renderPalette();
     } catch(e){ /* keep using browser storage */ }
   },
   saveLayout(){
-    const w = world.serialize(), str = JSON.stringify(w);
+    const w = space.serialize(ui.site), str = JSON.stringify(w);
     if (str === this.lastStr) return; this.lastStr = str;
     const ts = Date.now();
     this.lsSet(LS_LAYOUT, { ts, world: w });
@@ -2221,7 +2344,28 @@ const store = {
     if (this.db){ try { await this.db.collection('data/users/' + this.uid).doc(id).delete(); } catch(e){} }
   },
 };
-function loadWorld(w){ world = w; ui.fac = null; ui.sel = null; ui.multi.clear(); ui.paste = null; if (ui.tool==='paste' || ui.tool==='movepac') ui.tool='select'; syncSite(); fitView(); renderInspector(true); renderSelbar(); renderStats(); renderFacs(); }
+// put a single site's layout into the site on screen (examples, resizing, older one-site saves and codes)
+function loadWorld(w){
+  space.set(ui.site, w);
+  const added = AIC.ensureInf(w);
+  showSite();
+  if (added.length){ const names = added.map(k => ITEMS[k].ko).join(', '); setTimeout(() => flash(`이 공장이 쓰는 ${names}${josa(names, '을', '를')} ${space.regionOf(ui.site).ko} 창고에서 무한으로 켰습니다 (창고 탭)`), 2500); }
+}
+// 을/를, 이/가 … after a Korean word (final consonant check); non-Hangul endings take the vowel form
+function josa(w, withF, without){ const c = String(w).trim().slice(-1).charCodeAt(0); return (c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28) ? withF : without; }
+// replace the whole space (saves and codes made with all eight sites)
+function loadSpace(sp, active){ space = sp; ui.site = sp.get(active) ? active : 'valley:0'; ui.fac = null; showSite(); }
+function loadData(o){ if (o && o.space) loadSpace(AIC.Space.deserialize(o), o.active); else loadWorld(AIC.deserialize(o)); }
+function showSite(){
+  world = space.get(ui.site); ui.sel = null; ui.multi.clear(); ui.paste = null; ui.move = null;
+  if (ui.tool==='paste' || ui.tool==='movepac') ui.tool='select';
+  syncSite(); renderSites(); fitView(); renderInspector(true); renderSelbar(); renderStats(); renderFacs(); renderDepot(true);
+}
+function switchSite(key){
+  if (key === ui.site || !space.get(key)) return;
+  if (ui.move) cancelMove();
+  ui.site = key; ui.presetNote = null; dep.rg = null; dep.edit = null; showSite(); setTool(ui.tool.startsWith('build:') ? ui.tool : 'select');
+}
 // the site moved from rlawnstjr0611.github.io/endfield_AIC_simulation; that address's redirect page passes along
 // what the visitor had saved in that browser as #migrate=<base64url JSON {bps, layout, hash}>
 function importFromOldSite(){
@@ -2244,11 +2388,18 @@ function importFromOldSite(){
 }
 function boot(){
   importFromOldSite();
-  let w = null;
   const saved = store.lsGet(LS_LAYOUT);
-  try { if (saved && saved.world && saved.world.v >= 3) w = AIC.deserialize(saved.world); else if (saved) ui.oldSave = true; } catch(e){ w = null; }
-  world = w || AIC.loadPreset('capsule', 40, 40).world;
-  if (!w) ui.presetNote = 'capsule';
+  try {
+    if (saved && saved.world && saved.world.space){ space = AIC.Space.deserialize(saved.world); if (space.get(saved.world.active)) ui.site = saved.world.active; }
+    else if (saved && saved.world && saved.world.v >= 3){ const w = AIC.deserialize(saved.world); space = AIC.Space.fresh(); ui.site = AIC.legacyKey(w); space.set(ui.site, w); AIC.ensureInf(w); }
+    else if (saved) ui.oldSave = true;
+  } catch(e){ space = null; }
+  if (!space){
+    space = AIC.Space.fresh(); ui.site = 'valley:0';
+    const r = AIC.loadPreset('capsule', 70, 70); r.world.edgeBus = [0, 3]; r.world.dirtyPower = true;
+    space.set(ui.site, r.world); AIC.ensureInf(r.world); ui.presetNote = 'capsule';
+  }
+  world = space.get(ui.site);
 }
 
 // ---------- accounts & shared blueprints ----------
@@ -2627,7 +2778,7 @@ const board = {
       <div class="fbody">
         <b class="fname">${esc(f.name)}</b>${ui.fac && ui.fac.id === f.id ? '<span class="kbadge k-bp">지금 열려 있음</span>' : ''}
         ${f.description ? `<p class="fdesc">${esc(f.description)}</p>` : ''}
-        <span class="pmeta">부지 ${f.site_w}×${f.site_h} · 설비 ${f.ent_count}개 · <time title="${esc(fullDate(f.updated_at))}">${ago(f.updated_at)} 저장</time></span>
+        <span class="pmeta">${f.site_w ? `부지 ${f.site_w}×${f.site_h}` : '협곡 IV·무릉 전체'} · 설비 ${f.ent_count}개 · <time title="${esc(fullDate(f.updated_at))}">${ago(f.updated_at)} 저장</time></span>
         <div class="row"><button class="btn sm primary" data-a="open">불러오기</button><button class="btn sm" data-a="over">지금 공장으로 덮어쓰기</button><button class="btn sm" data-a="edit">이름·설명</button><button class="btn sm danger" data-a="del">삭제</button></div>
       </div></article>`).join('');
     const twice = (btn, label, fn) => { if (!btn.dataset.confirm){ const t = btn.textContent; btn.dataset.confirm = '1'; btn.textContent = label; setTimeout(() => { if (btn.isConnected){ btn.textContent = t; delete btn.dataset.confirm; } }, 3000); return; } fn(); };
@@ -3171,11 +3322,11 @@ function ownSubtabs(name, sub){
 const facs = {
   list: null,
   snapshot(){
-    const data = world.serialize();
-    const ents = data.ents.filter(e => TYPES[e.t]);
-    const n = ents.filter(e => !CARRIER.has(TYPES[e.t].kind) && e.t !== 'pac').length;
+    const data = space.serialize(ui.site);
+    let n = 0;
+    for (const k in data.sites) n += data.sites[k].ents.filter(e => TYPES[e.t] && !CARRIER.has(TYPES[e.t].kind) && e.t !== 'pac').length;
     const c = document.createElement('canvas'); paintWorld(c, world, 320, 200, (world.edgeBus || []).length ? 5 : 1);
-    return { data, site_w: data.W, site_h: data.H, ent_count: n, thumb: c.toDataURL('image/png') };
+    return { data, site_w: null, site_h: null, ent_count: n, thumb: c.toDataURL('image/png') };
   },
   async load(){
     const { data, error } = await acct.client.from('factories').select('id,name,description,site_w,site_h,ent_count,thumb,created_at,updated_at').order('updated_at', { ascending: false });
@@ -3186,7 +3337,7 @@ const facs = {
     const { data, error } = await acct.client.from('factories').select('id,name,data').eq('id', id).single();
     if (error) throw error;
     history.pushState(null, '', location.pathname + location.search); route();
-    ui.presetNote = null; loadWorld(AIC.deserialize(data.data)); ui.fac = { id: data.id, name: data.name }; markTouched(); setTool('select');
+    ui.presetNote = null; loadData(data.data); ui.fac = { id: data.id, name: data.name }; markTouched(); setTool('select');
     flash(`"${data.name}" 공장을 불러왔습니다`);
   },
 };
@@ -3200,7 +3351,7 @@ function openFacDialog(edit){
   $('#facDesc').value = edit ? edit.description || '' : '';
   $('#facMode').hidden = !!edit || !ui.fac;
   if (ui.fac && !edit){ $('#facOverName').textContent = ui.fac.name; $('#facModeOver').checked = true; }
-  $('#facNote').textContent = edit ? '' : `지금 부지(${world.W}×${world.H})의 설비 배치와 설정을 통째로 저장합니다. 저장한 공장은 나만 볼 수 있고, 내 프로필 → "저장한 공장"에서 불러옵니다.`;
+  $('#facNote').textContent = edit ? '' : `협곡 IV·무릉의 부지 8곳과 지역 창고(재고·무한 설정·무재고 전송)를 통째로 저장합니다. 저장한 공장은 나만 볼 수 있고, 내 프로필 → "저장한 공장"에서 불러옵니다.`;
   $('#facMsg').textContent = ''; $('#facGo').disabled = false; $('#facGo').textContent = edit ? '고치기' : '저장';
   d.showModal(); $('#facName').focus();
 }
@@ -3288,7 +3439,7 @@ $('#bugForm').onsubmit = async ev => {
     errors: recentErrors.join(' | ').slice(0, 1200),
   };
   const row = { category: $('#bugCat').value, title: title.slice(0, 100), body: body.slice(0, 3000), context };
-  if ($('#bugLayout').checked){ const l = world.serialize(); if (JSON.stringify(l).length < 1400000) row.layout = l; }
+  if ($('#bugLayout').checked){ const l = space.serialize(ui.site); if (JSON.stringify(l).length < 1400000) row.layout = l; }
   $('#bugGo').disabled = true; msg.textContent = '보내는 중…';
   const { error } = await acct.client.from('bugs').insert(row);
   $('#bugGo').disabled = false;
@@ -3345,7 +3496,7 @@ const bugs = {
         const { data, error } = await acct.client.from('bugs').select('layout,title').eq('id', id).single();
         if (error || !data.layout){ flash(error ? acctError(error) : '첨부된 공장이 없습니다'); return; }
         history.pushState(null, '', location.pathname + location.search); route();
-        ui.presetNote = null; loadWorld(AIC.deserialize(data.layout)); setTool('select');
+        ui.presetNote = null; loadData(data.layout); setTool('select');
         flash(`버그 제보 "${data.title}"에 첨부된 공장을 불러왔습니다`);
       };
       const del = card.querySelector('[data-a=del]');
@@ -3508,8 +3659,10 @@ function fitView(){
   resize(); const eb = world.edgeBus || [], B = AIC.TYPES.bussection.w;
   let x0 = eb.includes(3) ? -B : 0, y0 = eb.includes(0) ? -B : 0, x1 = world.W + (eb.includes(1) ? B : 0), y1 = world.H + (eb.includes(2) ? B : 0);
   if (eb.length && world.edgeCore !== false){ const [cx, cy] = outerBusCore(); x0 = Math.min(x0, cx); y0 = Math.min(y0, cy); x1 = Math.max(x1, cx + B); y1 = Math.max(y1, cy + B); }
-  const mw = (x1-x0)*S, mh = (y1-y0)*S; const z = Math.min(vw/(mw+24), vh/(mh+24));
-  ui.cam.z = Math.max(.15, Math.min(2.5, z)); ui.cam.x = x0*S + mw/2 - vw/2/ui.cam.z; ui.cam.y = y0*S + mh/2 - vh/2/ui.cam.z;
+  // keep clear of the site tabs along the top of the canvas
+  const nav = $('#sites'), T = nav && nav.offsetHeight ? Math.min(vh * .4, nav.offsetHeight + 12) : 0;
+  const mw = (x1-x0)*S, mh = (y1-y0)*S; const z = Math.min(vw/(mw+24), (vh-T)/(mh+24));
+  ui.cam.z = Math.max(.15, Math.min(2.5, z)); ui.cam.x = x0*S + mw/2 - vw/2/ui.cam.z; ui.cam.y = y0*S + mh/2 - (T + (vh-T)/2)/ui.cam.z;
 }
 function focusOn(cx, cy, z){ resize(); ui.cam.z = z; ui.cam.x = cx*S - vw/2/z; ui.cam.y = cy*S - vh/2/z; }
 function frameFactory(){
@@ -4189,7 +4342,7 @@ presetSel.onchange = () => {
   let eb = (world.edgeBus || []).slice(), ec = world.edgeCore;
   if (!r.world){
     const need = AIC.presetSize(k);
-    const site = AIC.SITES.find(s => s.w >= need.w && s.h >= need.h);
+    const site = siteChoices().find(s => s.w >= need.w && s.h >= need.h);
     W = site ? site.w : Math.max(W, need.w); H = site ? site.h : Math.max(H, need.h);
     r = AIC.loadPreset(k, W, H);
     eb = site && site.edgeBus ? site.edgeBus.slice() : []; ec = site ? site.edgeCore !== false : true;
@@ -4201,21 +4354,43 @@ presetSel.onchange = () => {
 
 // ---------- site size ----------
 const siteSel = $('#site');
-(function buildSiteOptions(){
-  const regions = [...new Set(AIC.SITES.map(s => s.region))];
-  let h = '';
-  for (const rg of regions) h += `<optgroup label="${esc(rg)}">${AIC.SITES.filter(s => s.region===rg).map(s => `<option value="${s.id}">${esc(s.ko)} · ${s.w}×${s.h}</option>`).join('')}</optgroup>`;
-  h += `<optgroup label="기타"><option value="custom" id="siteCustomOpt">직접 입력…</option></optgroup>`;
-  siteSel.innerHTML = h;
-})();
+// ---------- the eight sites (two regions × main core + three outposts) ----------
+function siteFacCount(w){ let n = 0; for (const e of w.ents.values()) if (!CARRIER.has(K(e.type)) && K(e.type) !== 'bus' && e.type !== 'pac') n++; return n; }
+function renderSites(){
+  const nav = $('#sites'); if (!nav || !space) return;
+  nav.innerHTML = space.regions.map(r => `<div class="rg" role="group" aria-label="${esc(r.ko)}"><b>${esc(r.ko)}</b>${r.sites.map((w, i) => {
+    const key = AIC.Space.key(r.id, i), n = siteFacCount(w);
+    return `<button data-site="${key}" aria-pressed="${key === ui.site}" title="${esc(r.ko + ' ' + r.names[i])} · ${w.W}×${w.H} · 설비 ${n}개 (두 번 누르면 이름 바꾸기)">${esc(r.names[i])}<small>${w.W}×${w.H}</small>${n ? '<i aria-hidden="true"></i>' : ''}</button>`;
+  }).join('')}</div>`).join('');
+  nav.querySelectorAll('button[data-site]').forEach(b => {
+    b.onclick = () => switchSite(b.dataset.site);
+    b.ondblclick = () => renameSite(b);
+  });
+  syncSitesH();
+}
+function syncSitesH(){ const nav = $('#sites'); if (nav) $('#stage').style.setProperty('--sites-h', nav.offsetHeight + 'px'); }
+function renameSite(b){
+  const key = b.dataset.site, p = space.parse(key); if (!p) return;
+  const inp = document.createElement('input'); inp.value = p.r.names[p.i]; inp.maxLength = 20; inp.setAttribute('aria-label', '부지 이름');
+  b.replaceWith(inp); inp.focus(); inp.select();
+  let done = false;
+  const finish = ok => { if (done) return; done = true; const v = inp.value.trim(); if (ok && v){ p.r.names[p.i] = v.slice(0, 20); markTouched(); } renderSites(); syncSite(); };
+  inp.onkeydown = ev => { if (ev.key === 'Enter') finish(true); if (ev.key === 'Escape') finish(false); ev.stopPropagation(); };
+  inp.onblur = () => finish(true);
+}
+// size choices for the site on screen: the stages of that kind of site in that region, or a custom size
+function siteChoices(){ const d = space.siteDef(ui.site); return AIC.SITES.filter(s => s.rg === d.rg && s.kind === d.kind); }
 function syncSite(){
-  const eb = (world.edgeBus || []).slice().sort().join(), same = AIC.SITES.filter(s => s.w === world.W && s.h === world.H);
+  const d = space.siteDef(ui.site), list = siteChoices();
+  const eb = (world.edgeBus || []).slice().sort().join(), same = list.filter(s => s.w === world.W && s.h === world.H);
   const m = same.find(s => (s.edgeBus || []).slice().sort().join() === eb) || same[0];
+  siteSel.innerHTML = `<optgroup label="${esc(list[0] ? list[0].region : '')}">${list.map(s => `<option value="${s.id}">${esc(s.ko)} · ${s.w}×${s.h}</option>`).join('')}</optgroup>`
+    + `<optgroup label="기타"><option value="custom" id="siteCustomOpt">${m ? '직접 입력…' : `직접 입력 · ${world.W}×${world.H}`}</option></optgroup>`;
   siteSel.value = m ? m.id : 'custom';
-  $('#siteCustomOpt').textContent = m ? '직접 입력…' : `직접 입력 · ${world.W}×${world.H}`;
+  siteSel.title = `${space.regionOf(ui.site).ko} ${d.name} 부지 크기 (업그레이드 단계에 맞춰 고르세요)`;
   $('#sw').value = world.W; $('#sh').value = world.H;
   $('#siteCustom').hidden = true;
-  $('#siteInfo').textContent = `부지 ${world.W}×${world.H}`;
+  $('#siteInfo').textContent = `${space.regionOf(ui.site).ko} · ${d.name} · 부지 ${world.W}×${world.H}`;
   syncEdgeBus();
 }
 function applySite(W, H){
@@ -4248,7 +4423,7 @@ const enc = o => 'AIC2:' + btoa(unescape(encodeURIComponent(JSON.stringify(o))))
 const dec = s => { s = s.trim(); if (s.startsWith('AIC2:')) s = decodeURIComponent(escape(atob(s.slice(5)))); return JSON.parse(s); };
 function openDialog(mode, bp){
   dlgMode = mode; $('#dlgMsg').textContent = '';
-  if (mode==='layout'){ $('#dlgTitle').textContent = '레이아웃 코드'; $('#dlgNote').textContent = '공장 전체를 코드로 옮깁니다. 복사해 두었다가 붙여넣고 불러오면 같은 공장이 됩니다. 작업 내용은 자동으로도 저장됩니다.'; $('#dlgText').value = enc(world.serialize()); $('#dlgLoad').textContent = '붙여넣은 코드 불러오기'; $('#dlgLoad').hidden = false; }
+  if (mode==='layout'){ $('#dlgTitle').textContent = '레이아웃 코드'; $('#dlgNote').textContent = '협곡 IV·무릉의 부지 8곳과 지역 창고를 통째로 코드로 옮깁니다. 복사해 두었다가 붙여넣고 불러오면 같은 공장이 됩니다. 예전의 부지 하나짜리 코드는 지금 보는 부지에 불러옵니다. 작업 내용은 자동으로도 저장됩니다.'; $('#dlgText').value = enc(space.serialize(ui.site)); $('#dlgLoad').textContent = '붙여넣은 코드 불러오기'; $('#dlgLoad').hidden = false; }
   else if (mode==='bpcode'){ $('#dlgTitle').textContent = `청사진 코드 · ${bp.name}`; $('#dlgNote').textContent = '이 코드를 다른 기기로 옮기거나 친구에게 보내면 "코드로 가져오기"로 같은 청사진을 쓸 수 있습니다.'; $('#dlgText').value = enc({ name: bp.name, bp: bp.bp }); $('#dlgLoad').hidden = true; }
   else { $('#dlgTitle').textContent = '청사진 가져오기'; $('#dlgNote').textContent = '청사진 코드를 붙여넣으세요.'; $('#dlgText').value = ''; $('#dlgLoad').textContent = '청사진으로 저장'; $('#dlgLoad').hidden = false; }
   dlg.showModal();
@@ -4262,7 +4437,7 @@ $('#dlgCopy').onclick = () => {
 $('#dlgLoad').onclick = async () => {
   try {
     const o = dec($('#dlgText').value);
-    if (dlgMode==='layout'){ const wo = o.ents ? o : o.world; if (!wo || !wo.ents) throw 0; ui.presetNote = null; loadWorld(AIC.deserialize(wo)); markTouched(); dlg.close(); }
+    if (dlgMode==='layout'){ const wo = (o.ents || o.space) ? o : o.world; if (!wo || !(wo.ents || wo.space)) throw 0; ui.presetNote = null; loadData(wo); markTouched(); dlg.close(); }
     else { const bp = o.bp || o; if (!bp.ents) throw 0; await saveBp(o.name || '가져온 청사진', bp); dlg.close(); setCat('bp'); flash('청사진을 가져왔습니다'); }
   } catch(e){ $('#dlgMsg').textContent = '읽을 수 없는 코드입니다. 복사한 코드 전체를 붙여넣었는지 확인하세요.'; }
 };
@@ -4359,7 +4534,7 @@ function renderInspector(force){
   } else if (k==='conduit'){
     h += `<p>${t.dirn==='in' ? '뒤쪽 파이프로 들어온 액체·기체를 같은 채널의 출구로 땅속으로 보냅니다.' : '같은 채널의 입구에서 온 액체·기체를 앞쪽 파이프로 내보냅니다.'} 입구와 출구는 1:1로 짝지어지고 양 끝에 500씩 담깁니다. 게임에서는 최단 거리 300m 안이어야 합니다.${t.multi ? ' 다중 암관은 파이프 2줄을 한꺼번에 받아 보냅니다.' : ''}</p>
       <div class="ports">${t.dirn==='out' ? `<label for="isrc">나오는 재료</label><select id="isrc"><option value="">— 없음 (입구와 짝) —</option>${fluidOptions(e.src)}</select>` : ''}${e.src ? '' : `<label for="ich">채널</label><select id="ich">${world.channelChoices(e).map(n => `<option value="${n}"${e.ch===n?' selected':''}>${n}</option>`).join('')}</select>`}</div>
-      <p class="note">${e.src ? `고른 ${ITEMS[e.src].cat==='gas'?'기체':'액체'}가 파이프 속도대로 계속 나옵니다. 입구와 짝을 짓지 않고, 나간 양은 원자재 소비량에 잡힙니다.` : '채널마다 입구 하나와 출구 하나만 짝지어집니다. 목록에는 비어 있는 채널만 나옵니다.'}</p><dl class="kv" id="ikv"></dl>`;
+      <p class="note">${e.src ? `고른 ${ITEMS[e.src].cat==='gas'?'기체':'액체'}를 지역 창고에서 꺼내 파이프 속도대로 내보냅니다${world.isInf(e.src) ? ' (무한으로 켜져 있어 끝없이 나옴)' : ' · 무한이 꺼져 있어 창고 재고만큼만 나옴 (창고 탭에서 켤 수 있음)'}. 입구와 짝을 짓지 않고, 나간 양은 원자재 소비량에 잡힙니다.` : '채널마다 입구 하나와 출구 하나만 짝지어집니다. 목록에는 비어 있는 채널만 나옵니다.'}</p><dl class="kv" id="ikv"></dl>`;
   } else if (k==='bus' || k==='busport'){
     h += `<dl class="kv"><dt>상태</dt><dd>${e.busOn?'활성':'핵심 장치와 이어지지 않음'}</dd></dl><p>벨트를 직접 연결할 수 없습니다. 핵심 장치나 기초 장치에 창고 입력·출력 포트(1×3)를 긴 쪽으로 붙이고, 포트 가운데 칸에 벨트를 잇습니다.</p>`;
   } else {
@@ -4467,12 +4642,12 @@ function itemOptions(sel, carrier, emptyLabel){
   let keys = Object.keys(ITEMS);
   if (carrier === 'solid') keys = keys.filter(k => !ITEMS[k].fluid);
   if (carrier === 'fluid') keys = keys.filter(k => ITEMS[k].fluid);
-  const inf = k => AIC.RAW.has(k);
+  const inf = k => world.isInf(k);
   const raw = keys.filter(inf);
   const have = keys.filter(k => !inf(k) && ((world.depot[k]||0) > 0 || k===sel));
   const rest = keys.filter(k => !inf(k) && !have.includes(k));
   const opt = k => `<option value="${k}"${k===sel?' selected':''}>${esc(ITEMS[k].ko)}${!world.isInf(k) && world.depot[k]?' ('+world.depot[k]+')':''}</option>`;
-  return `<option value="">${emptyLabel || (carrier ? '— 모두 통과 —' : '— 끔 —')}</option><optgroup label="기초 원자재">${raw.map(opt).join('')}</optgroup>${have.length?`<optgroup label="창고에 있음">${have.map(opt).join('')}</optgroup>`:''}<optgroup label="기타">${rest.map(opt).join('')}</optgroup>`;
+  return `<option value="">${emptyLabel || (carrier ? '— 모두 통과 —' : '— 끔 —')}</option><optgroup label="무한 (창고 탭에서 바꿈)">${raw.map(opt).join('')}</optgroup>${have.length?`<optgroup label="창고에 있음">${have.map(opt).join('')}</optgroup>`:''}<optgroup label="기타">${rest.map(opt).join('')}</optgroup>`;
 }
 function toolHelp(type){
   const t = TYPES[type];
@@ -4504,8 +4679,8 @@ function toolHelp(type){
 document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
   ui.tab = b.dataset.tab;
   document.querySelectorAll('.tabs button').forEach(x => x.setAttribute('aria-selected', x===b));
-  for (const p of ['stats','facs','recipes','plan']) $('#pane-'+p).hidden = p !== ui.tab;
-  if (ui.tab==='stats') renderStats(); if (ui.tab==='facs') renderFacs();
+  for (const p of ['stats','facs','depot','recipes','plan']) $('#pane-'+p).hidden = p !== ui.tab;
+  if (ui.tab==='stats') renderStats(); if (ui.tab==='facs') renderFacs(); if (ui.tab==='depot') renderDepot(true);
 });
 const CAT_ORDER = ['final','battery','comp','filled','bottle','part','powder','refined','fluid','gas','seed','plant','ore'];
 const byCat = (a,b) => CAT_ORDER.indexOf(ITEMS[a].cat) - CAT_ORDER.indexOf(ITEMS[b].cat);
@@ -4518,12 +4693,11 @@ function renderStats(){
   const r = world.rates();
   const mk = (rate, total, cls) => Object.keys(Object.assign({}, rate, total)).filter(k => ITEMS[k]).sort(byCat).map(k => [k, rate[k]||0, total[k]||0, (rate[k]||0) > 0 ? cls : 'dim']);
   const rawUse = mk(r.out, r.total.out, 'neg'), produced = mk(r.in, r.total.in, 'pos'), made = mk(r.made, r.total.made, '');
-  const stock = Object.keys(ITEMS).filter(k => (world.depot[k]||0) > 0).sort(byCat);
   const el = $('#pane-stats');
   const open = [...el.querySelectorAll('details')].map(d => d.open);
   el.innerHTML = `
     <div class="row" style="justify-content:space-between;align-items:flex-start">
-      <p class="note" style="margin:0;flex:1;min-width:180px">기초 원자재(광석·식물·원목·청정수·산성 침적물·비활성 기체·식양 기체)는 채굴 없이 PAC 출력 포트에서 얼마든지 꺼내 씁니다.</p>
+      <p class="note" style="margin:0;flex:1;min-width:180px">지금 보는 부지(${esc(space.regionOf(ui.site).ko)} ${esc(space.siteDef(ui.site).name)})의 숫자입니다. 무한으로 켠 품목은 PAC 출력 포트에서 얼마든지 꺼내 쓰고, 나머지는 지역 창고 재고에서 나갑니다. 지역 전체 합계·필요한 채굴기 수·무한 설정은 "창고" 탭에서 봅니다.</p>
       <button class="btn sm" id="rst">통계 초기화</button>
     </div>
     <h4>원자재 소비량 <small>PAC 출력 포트·창고 출력 포트·공급 설정한 암관 출구로 나간 양</small></h4>
@@ -4531,10 +4705,104 @@ function renderStats(){
     <h4>산출물 <small>PAC 입력 포트·저장함·창고 입력 포트로 들어온 양</small></h4>
     ${rateTable(produced, '아직 창고로 들어온 생산품이 없습니다.')}
     <details><summary>설비 생산량 (중간재 포함)</summary>${rateTable(made, '아직 생산 기록이 없습니다.')}</details>
-    <details><summary>창고 재고${stock.length ? ' · '+stock.length+'종' : ''}</summary>${stock.length ? `<div class="tscroll"><table class="dep"><tbody>${stock.map(k => `<tr><td>${ic(k)}</td><td>${fmt(world.depot[k])}</td></tr>`).join('')}</tbody></table></div>` : '<p class="note">기초 원자재 외에 쌓인 재고가 없습니다.</p>'}</details>
     <p class="note">분당 값은 최근 ${r.window}초 평균, 시간당 값은 분당 값 × 60입니다. 누적은 ${Math.floor(r.elapsed/60)}분 ${Math.floor(r.elapsed%60)}초 동안의 합계입니다.</p>`;
   el.querySelectorAll('details').forEach((d,i) => { if (open[i]) d.open = true; });
   $('#rst').onclick = () => { world.resetStats(); renderStats(); };
+}
+// ---------- region depot: shared by the four sites of a region ----------
+const DEP_ORDER = ['ore','fluid','gas','plant','seed','refined','powder','part','bottle','comp','filled','battery','final'];
+const byDep = (a,b) => DEP_ORDER.indexOf(ITEMS[a].cat) - DEP_ORDER.indexOf(ITEMS[b].cat) || ITEMS[a].ko.localeCompare(ITEMS[b].ko, 'ko');
+const dep = { rg: null, filter: 'main', q: '', edit: null };
+function regionRates(r){
+  const agg = { in: {}, out: {} };
+  for (const w of r.sites){ const x = w.rates(); for (const c of ['in','out']) for (const k in x[c]) agg[c][k] = (agg[c][k] || 0) + x[c][k]; }
+  return agg;
+}
+const ceilN = n => Math.ceil(n - 1e-9);
+function extractCell(k, pm){
+  const x = AIC.EXTRACT[k]; if (!x) return '<span class="dim">채집 설비 없음</span>';
+  if (pm <= 0) return '<span class="dim">—</span>';
+  return `${esc(x.by)} <b>${ceilN(pm / x.hi)}</b>대` + (x.lo ? ` <span class="dim">(저${k.endsWith('_ore') ? '순도' : '농도'} ${ceilN(pm / x.lo)}대)</span>` : '');
+}
+function renderDepot(force){
+  const el = $('#pane-depot'); if (!el || ui.tab !== 'depot' || !space) return;
+  const a = document.activeElement;
+  if (!force && el.contains(a) && (a.tagName === 'SELECT' || (a.tagName === 'INPUT' && a.type !== 'checkbox'))) return;
+  const r = space.region(dep.rg) || space.regionOf(ui.site);
+  const rr = regionRates(r);
+  const flow = k => (rr.in[k] || 0) - (rr.out[k] || 0) + (r.xfer[k] || 0) / 60;
+  // 1. endless raw materials in use, and the extraction facilities that would sustain them
+  const used = [...r.inf].filter(k => (rr.out[k] || 0) > 0).sort(byDep);
+  const tot = {}; let cupWater = 0;
+  for (const k of used){
+    const x = AIC.EXTRACT[k], pm = rr.out[k]; if (!x) continue;
+    const t = tot[x.by] || (tot[x.by] = { hi: 0, lo: 0, lofine: !!x.lo });
+    t.hi += ceilN(pm / x.hi); t.lo += ceilN(pm / (x.lo || x.hi));
+    if (x.water) cupWater += pm * x.water;
+  }
+  const useRows = used.map(k => `<tr><td>${ic(k)}</td><td class="neg">${fmt(rr.out[k])}</td><td class="neg">${fmt(rr.out[k]*60)}</td><td style="text-align:left;font-family:var(--f-body);white-space:normal">${extractCell(k, rr.out[k])}</td></tr>`).join('');
+  const totLine = Object.entries(tot).map(([by, t]) => `<span class="mchip">${esc(by)} ${t.hi}대${t.lofine && t.lo !== t.hi ? ` <span class="dim">(낮은 순도·농도 ${t.lo}대)</span>` : ''}</span>`).join('')
+    + (cupWater > 0 ? `<span class="mchip">적동 광석 채굴용 청정수 분당 ${fmt(cupWater)} → 양수기 ${ceilN(cupWater / 60)}대 더</span>` : '');
+  // 2. metastorage transfers into this region
+  const other = space.regions.find(x => x !== r);
+  const xk = Object.keys(r.xfer).sort(byDep);
+  const xRows = xk.map(k => `<tr><td>${ic(k)}</td><td><input class="num" type="number" min="0" max="${AIC.XFER_MAX}" step="10" value="${r.xfer[k]}" data-xfer="${k}" aria-label="${esc(ITEMS[k].ko)} 시간당 전송량" style="width:84px"></td><td class="pos">${fmt(r.xfer[k] / 60)}</td><td><button class="btn sm" data-xdel="${k}" aria-label="${esc(ITEMS[k].ko)} 전송 빼기">빼기</button></td></tr>`).join('');
+  const solid = Object.keys(ITEMS).filter(k => !ITEMS[k].fluid && !r.xfer[k]).sort(byDep);
+  // 3. every item with its endless switch
+  const q = dep.q.trim().toLowerCase();
+  let keys = Object.keys(ITEMS);
+  if (q) keys = keys.filter(k => ITEMS[k].ko.toLowerCase().includes(q) || ITEMS[k].en.toLowerCase().includes(q));
+  else if (dep.filter === 'main') keys = keys.filter(k => AIC.RAW.has(k) || r.inf.has(k) || (r.depot[k] || 0) > 0 || rr.in[k] || rr.out[k] || r.xfer[k]);
+  else if (dep.filter === 'inf') keys = keys.filter(k => r.inf.has(k));
+  keys.sort(byDep);
+  const stockCell = k => r.inf.has(k) ? '<span class="dim">무한</span>'
+    : dep.edit === k ? `<input class="num" type="number" min="0" step="1" value="${Math.floor(r.depot[k] || 0)}" data-stock="${k}" aria-label="${esc(ITEMS[k].ko)} 재고" style="width:78px">`
+    : `<button class="linkish" data-sedit="${k}" title="눌러서 재고 정하기">${fmt(r.depot[k] || 0)}</button>`;
+  const list = keys.map(k => { const f = flow(k), inf = r.inf.has(k);
+    return `<tr><td>${ic(k)}</td><td>${stockCell(k)}</td><td class="${inf ? 'dim' : f > 0.05 ? 'pos' : f < -0.05 ? 'neg' : 'dim'}">${inf ? (rr.out[k] ? '−' + fmt(rr.out[k]) : '—') : (f > 0 ? '+' : '') + fmt(f)}</td><td><label class="switch" title="무한"><input type="checkbox" data-inf="${k}" ${inf ? 'checked' : ''} aria-label="${esc(ITEMS[k].ko)} 무한"></label></td></tr>`; }).join('');
+  const regionSw = `<div class="seg" role="group" aria-label="지역">${space.regions.map(x => `<button data-rg="${x.id}" aria-pressed="${x === r}">${esc(x.ko)}</button>`).join('')}</div>`;
+  const keepScroll = el.scrollTop;
+  el.innerHTML = `
+    <div class="row" style="justify-content:space-between;align-items:center;gap:8px">${regionSw}<span class="note" style="margin:0">${esc(r.ko)} 부지 ${r.sites.length}곳이 함께 쓰는 창고</span></div>
+    <h4>무한 원자재 사용량 <small>${esc(r.ko)} 전체 · 무한으로 켠 품목이 창고에서 나간 양</small></h4>
+    ${used.length ? `<div class="tscroll"><table class="dep"><thead><tr><th>품목</th><th>분당</th><th>시간당</th><th style="text-align:left">감당하려면</th></tr></thead><tbody>${useRows}</tbody></table></div>
+      <div class="tot" style="margin-top:6px"><div class="sub" style="margin-top:0">필요한 채집 설비 합계 (고순도·고농도 기준, 올림)</div>${totLine || '<span class="dim">채집 설비로 얻는 품목이 없습니다</span>'}</div>`
+      : '<p class="note">아직 무한 품목을 쓰는 곳이 없습니다. PAC 출력 포트에 품목을 정하면 여기에 표시됩니다.</p>'}
+    <p class="note">광물 채굴기 고순도 3초에 1개(분당 20)·저순도 6초에 1개(분당 10), 적동 광석은 1개마다 청정수 1. 양수기·내산성 양수기 1초에 1(분당 60). 기체 수집기 고농도 분당 20·저농도 분당 10. (나무위키 천연자원 문서 기준)</p>
+    <h4>무재고 전송 <small>${esc(other.ko)} → ${esc(r.ko)} 창고</small></h4>
+    <p class="note">정한 양이 1시간에 걸쳐 계속 들어옵니다(분당 = 시간당 ÷ 60). 보내는 쪽 재고는 줄지 않습니다. 게임에서는 지역 개발 Lv.12에 열리고 전송 용량 한도가 있지만, 한도는 넣지 않았습니다.</p>
+    ${xk.length ? `<div class="tscroll"><table class="dep"><thead><tr><th>품목</th><th>시간당</th><th>분당</th><th></th></tr></thead><tbody>${xRows}</tbody></table></div>` : ''}
+    <div class="form" style="margin-top:6px"><select id="xItem" aria-label="전송할 품목" style="flex:1;min-width:120px"><option value="">품목 고르기…</option>${solid.map(k => `<option value="${k}">${esc(ITEMS[k].ko)}</option>`).join('')}</select><input id="xAmt" class="num" type="number" min="1" max="${AIC.XFER_MAX}" step="10" value="1500" aria-label="시간당 전송량" style="width:84px"><span class="dim">개/시간</span><button class="btn sm primary" id="xAdd">추가</button></div>
+    <h4>품목 <small>무한 스위치 · 재고 · 분당 증감 (${esc(r.ko)} 전체)</small></h4>
+    <div class="form"><div class="seg" role="group" aria-label="보기">${[['main','주요'],['inf','무한 켜짐'],['all','전체']].map(([v,l]) => `<button data-df="${v}" aria-pressed="${!q && dep.filter === v}">${l}</button>`).join('')}</div><input id="depQ" type="search" placeholder="품목 찾기" aria-label="품목 찾기" value="${esc(dep.q)}" style="flex:1;min-width:90px"></div>
+    <div class="tscroll"><table class="dep depl"><thead><tr><th>품목</th><th>재고</th><th>분당</th><th>무한</th></tr></thead><tbody>${list || '<tr class="empty"><td colspan="4">맞는 품목이 없습니다.</td></tr>'}</tbody></table></div>
+    <p class="note">"주요"는 원자재와 재고·드나듦·무한·전송이 있는 품목입니다. 무한을 끈 품목은 창고 재고만큼만 나가고, 재고 숫자를 눌러 직접 정할 수 있습니다. 분당 증감 = 들어온 양 − 나간 양 + 무재고 전송 (최근 평균).</p>`;
+  el.scrollTop = keepScroll;
+  el.querySelectorAll('button[data-rg]').forEach(b => b.onclick = () => { dep.rg = b.dataset.rg; dep.edit = null; renderDepot(true); });
+  el.querySelectorAll('button[data-df]').forEach(b => b.onclick = () => { dep.filter = b.dataset.df; dep.q = ''; renderDepot(true); });
+  const dq = $('#depQ'); dq.oninput = () => { dep.q = dq.value; renderDepot(true); const n = $('#depQ'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); };
+  el.querySelectorAll('input[data-inf]').forEach(i => i.onchange = () => {
+    const k = i.dataset.inf;
+    if (i.checked){ r.inf.add(k); delete r.depot[k]; } else r.inf.delete(k);
+    markTouched(); renderDepot(true);
+  });
+  el.querySelectorAll('button[data-sedit]').forEach(b => b.onclick = () => { dep.edit = b.dataset.sedit; renderDepot(true); const n = el.querySelector('input[data-stock]'); if (n){ n.focus(); n.select(); } });
+  el.querySelectorAll('input[data-stock]').forEach(i => {
+    const save = ok => { if (dep.edit !== i.dataset.stock) return; const k = dep.edit; dep.edit = null; if (ok){ const n = Math.max(0, Math.min(1e9, Math.floor(+i.value || 0))); if (n) r.depot[k] = n; else delete r.depot[k]; markTouched(); } renderDepot(true); };
+    i.onkeydown = ev => { if (ev.key === 'Enter') save(true); if (ev.key === 'Escape') save(false); ev.stopPropagation(); };
+    i.onblur = () => save(true);
+  });
+  el.querySelectorAll('input[data-xfer]').forEach(i => i.onchange = () => { space.setXfer(r.id, i.dataset.xfer, +i.value); markTouched(); renderDepot(true); });
+  el.querySelectorAll('input[data-xfer]').forEach(i => i.onkeydown = ev => ev.stopPropagation());
+  el.querySelectorAll('button[data-xdel]').forEach(b => b.onclick = () => { space.setXfer(r.id, b.dataset.xdel, 0); markTouched(); renderDepot(true); });
+  $('#xAmt').onkeydown = ev => { ev.stopPropagation(); if (ev.key === 'Enter') $('#xAdd').click(); };
+  $('#xAdd').onclick = () => {
+    const k = $('#xItem').value, n = Math.floor(+$('#xAmt').value || 0);
+    if (!k){ flash('전송할 품목을 고르세요'); return; }
+    if (!(n > 0)){ flash('시간당 몇 개를 보낼지 적어 주세요'); return; }
+    space.setXfer(r.id, k, n); markTouched(); renderDepot(true);
+    flash(`${other.ko}에서 ${r.ko}로 ${ITEMS[k].ko} 시간당 ${Math.min(n, AIC.XFER_MAX).toLocaleString('ko-KR')}개(분당 ${fmt(Math.min(n, AIC.XFER_MAX)/60)}) 무재고 전송`);
+  };
 }
 function renderFacs(){
   const el = $('#pane-facs'); if (ui.tab !== 'facs') return;
@@ -4616,7 +4884,7 @@ function frame(now){
   const dt = Math.min(0.25, (now - last)/1000); last = now;
   if (ui.playing){
     ui.acc += dt * ui.speed;
-    let n = 0; while (ui.acc >= 0.05 && n < 400){ world.step(0.05); ui.acc -= 0.05; n++; }
+    let n = 0; while (ui.acc >= 0.05 && n < 400){ space.step(0.05); ui.acc -= 0.05; n++; }
     if (n >= 400) ui.acc = 0;
   }
   if (ui.view !== 'board') render();
@@ -4638,6 +4906,9 @@ function frame(now){
     statT = now;
     const pane = ui.tab==='stats' ? $('#pane-stats') : ui.tab==='facs' ? $('#pane-facs') : null;
     if (pane && !pane.contains(document.activeElement)){ if (ui.tab==='stats') renderStats(); else renderFacs(); }
+    if (ui.tab==='depot') renderDepot(false);
+    const sig = space.worlds().map(w => w.W + 'x' + w.H + ':' + (siteFacCount(w) ? 1 : 0)).join();
+    if (sig !== ui.sitesSig && !$('#sites').contains(document.activeElement)){ ui.sitesSig = sig; renderSites(); }
   }
   if (now - saveT > 6000){ saveT = now; if (ui.touched) store.saveLayout(); }
   requestAnimationFrame(frame);
@@ -4647,7 +4918,7 @@ const mq = matchMedia('(prefers-color-scheme: dark)');
 const retheme = () => { readColors(); renderTools(); renderPalette(); renderInspector(true); renderStats(); renderRecipes(); renderPlan(); board.redraw(); };
 if (mq.addEventListener) mq.addEventListener('change', retheme);
 new MutationObserver(retheme).observe(document.documentElement, { attributes:true, attributeFilter:['data-theme'] });
-window.addEventListener('resize', () => { resize(); board.redraw(); });
+window.addEventListener('resize', () => { resize(); board.redraw(); syncSitesH(); });
 // save right away when the tab is closed, reloaded or hidden (the periodic save runs every 6 s)
 const saveNow = () => { if (ui.touched) store.saveLayout(); };
 window.addEventListener('pagehide', saveNow);
@@ -4656,7 +4927,7 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 readColors();
 boot();
 renderTools(); renderPalette();
-syncSite(); fitView();
+syncSite(); renderSites(); fitView();
 renderInspector(true); renderStats(); renderRecipes(); renderPlan();
 store.init();
 acct.init();
