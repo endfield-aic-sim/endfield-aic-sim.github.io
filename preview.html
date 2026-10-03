@@ -4764,6 +4764,8 @@ function renderDepot(force){
   const keepScroll = el.scrollTop;
   el.innerHTML = `
     <div class="row" style="justify-content:space-between;align-items:center;gap:8px">${regionSw}<span class="note" style="margin:0">${esc(r.ko)} 부지 ${r.sites.length}곳이 함께 쓰는 창고</span></div>
+    <label class="switch" style="margin-top:10px;font-weight:600"><input type="checkbox" id="rawAll" ${AIC.RAW_DEFAULT.every(k => r.inf.has(k)) ? 'checked' : ''}><span style="white-space:nowrap">원자재 무한</span></label>
+    <p class="note" style="margin:4px 0 0">광석 4종 · 청정수 · 산성 침적물 · 비활성 기체 · 식양 기체를 한 번에 켜고 끕니다 (채굴기·양수기·기체 수집기로 얻는 것). 품목마다 따로 켜려면 아래 목록의 스위치를 씁니다.</p>
     <h4>무한 원자재 사용량 <small>${esc(r.ko)} 전체 · 무한으로 켠 품목이 창고에서 나간 양</small></h4>
     ${used.length ? `<div class="tscroll"><table class="dep"><thead><tr><th>품목</th><th>분당</th><th>시간당</th><th style="text-align:left">감당하려면</th></tr></thead><tbody>${useRows}</tbody></table></div>
       <div class="tot" style="margin-top:6px"><div class="sub" style="margin-top:0">필요한 채집 설비 합계 (고순도·고농도 기준, 올림)</div>${totLine || '<span class="dim">채집 설비로 얻는 품목이 없습니다</span>'}</div>`
@@ -4781,6 +4783,7 @@ function renderDepot(force){
   el.querySelectorAll('button[data-rg]').forEach(b => b.onclick = () => { dep.rg = b.dataset.rg; dep.edit = null; renderDepot(true); });
   el.querySelectorAll('button[data-df]').forEach(b => b.onclick = () => { dep.filter = b.dataset.df; dep.q = ''; renderDepot(true); });
   const dq = $('#depQ'); dq.oninput = () => { dep.q = dq.value; renderDepot(true); const n = $('#depQ'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); };
+  $('#rawAll').onchange = ev => { for (const k of AIC.RAW_DEFAULT){ if (ev.target.checked){ r.inf.add(k); delete r.depot[k]; } else r.inf.delete(k); } markTouched(); renderDepot(true); };
   el.querySelectorAll('input[data-inf]').forEach(i => i.onchange = () => {
     const k = i.dataset.inf;
     if (i.checked){ r.inf.add(k); delete r.depot[k]; } else r.inf.delete(k);
