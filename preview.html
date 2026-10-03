@@ -2140,15 +2140,19 @@ function resizeWorld(w, W, H) {
 }
 
 // ---------- the whole Endfield space ----------
-// Metastorage (무재고 전송): only Valley IV → Wuling exists in the game (Wuling → Valley IV not yet). Unlocks at Valley IV regional
-// development Lv.12, where the total transfer value per hour is 1500 (Lv.8 800 … Lv.11 1200 are for stock transfers). Only items whose
-// transfer value is known are offered: altema/game8.jp (buckflower 1, capsule I 10, capsule III 50), arca.live (cuprium 2, cuprium part 2),
-// and values worked out from amounts players send at the 1500 cap (ferrium bottle 750/h → 2, dense originium powder 1500/h → 1,
-// dense origocrust powder 750/h → 2, ferrium ore 1500/h → 1: est = not stated outright).
-const XFER = { from: 'valley', to: 'wuling', cap: 1500, items: {
-  ferrium_ore: { v: 1, est: true }, ferrium_bottle: { v: 2, est: true }, dense_originium_powder: { v: 1, est: true }, dense_origocrust_powder: { v: 2, est: true },
-  cuprium: { v: 2 }, cuprium_part: { v: 2 }, buckflower: { v: 1 }, buck_capsule_c: { v: 10 }, buck_capsule_a: { v: 50 },
-} };
+// Metastorage (무재고 전송): only Valley IV → Wuling exists in the game (Wuling → Valley IV not yet); unlocks at Valley IV regional
+// development Lv.12. ONE item at a time, total transfer value up to 1500 per hour, so the most you can send is 1500 ÷ the item's
+// transfer value (value 50 → 30 per hour). Item list and values from the user's in-game list (2026-10-03).
+const XFER_VALUES = {
+  1: 'yazhen_seed yazhen jincao_seed jincao aketine_seed aketine sandleaf_seed sandleaf citrome_seed citrome buckflower_seed buckflower ferrium_ore amethyst_ore originium_ore stabilized_carbon ground_buckflower_powder dense_carbon_powder dense_originium_powder yazhen_powder jincao_powder aketine_powder sandleaf_powder citrome_powder buckflower_powder ferrium_powder amethyst_powder origocrust_powder carbon_powder originium_powder ferrium amethyst_fiber origocrust carbon ferrium_part amethyst_part',
+  2: 'ferrium_bottle amethyst_bottle steel cryston_fiber packed_origocrust dense_ferrium_powder cryston_powder dense_origocrust_powder steel_part cryston_part',
+  5: 'steel_bottle cryston_bottle industrial_explosive',
+  10: 'amethyst_component buck_capsule_c canned_citrome_c',
+  20: 'ferrium_component sc_battery lc_battery buck_capsule_b canned_citrome_b',
+  50: 'cryston_component hc_battery buck_capsule_a canned_citrome_a',
+};
+const XFER = { from: 'valley', to: 'wuling', cap: 1500, items: {} };
+for (const v in XFER_VALUES) for (const k of XFER_VALUES[v].split(' ')) if (ITEMS[k]) XFER.items[k] = { v: +v };
 const XFER_MAX = XFER.cap;
 class Space {
   constructor() {
@@ -2179,11 +2183,12 @@ class Space {
     return sp;
   }
   xferUsed(rid, except) { const r = this.region(rid); let t = 0; if (r) for (const k in r.xfer) if (k !== except && XFER.items[k]) t += r.xfer[k] * XFER.items[k].v; return t; }
-  // returns the amount actually set (cut down so the total transfer value stays within the cap)
+  // one item at a time: setting an item replaces the one being sent. Returns the amount actually set (at most cap ÷ value)
   setXfer(rid, item, perHour) {
     const r = this.region(rid); if (!r) return 0;
     const x = XFER.items[item];
     if (rid !== XFER.to || !x) { delete r.xfer[item]; delete r.xacc[item]; return 0; }
+    if (Math.floor(+perHour || 0) > 0) for (const k of Object.keys(r.xfer)) if (k !== item) { delete r.xfer[k]; delete r.xacc[k]; }
     const room = Math.max(0, XFER.cap - this.xferUsed(rid, item));
     const n = Math.max(0, Math.min(Math.floor(room / x.v), Math.floor(+perHour || 0)));
     if (n) r.xfer[item] = n; else { delete r.xfer[item]; delete r.xacc[item]; }
@@ -4781,13 +4786,15 @@ function renderDepot(force){
   const totLine = Object.entries(tot).map(([by, t]) => `<span class="mchip">${esc(by)} ${t.hi}대${t.lofine && t.lo !== t.hi ? ` <span class="dim">(낮은 순도·농도 ${t.lo}대)</span>` : ''}</span>`).join('')
     + (cupWater > 0 ? `<span class="mchip">적동 광석 채굴용 청정수 분당 ${fmt(cupWater)} → 양수기 ${ceilN(cupWater / 60)}대 더</span>` : '');
   // 2. metastorage transfers into this region
-  const X = AIC.XFER, isDest = r.id === X.to, xUsed = space.xferUsed(r.id), src = space.region(X.from), dst = space.region(X.to);
-  const xRows = Object.keys(X.items).map(k => { const x = X.items[k], n = r.xfer[k] || 0, room = Math.floor((X.cap - xUsed + n * x.v) / x.v);
-    return `<tr${n ? ' class="picked"' : ''}><td>${ic(k)}<div class="xv">가치 ${x.v}${x.est ? '<span title="플레이어가 보낸 양으로 계산한 값">*</span>' : ''}</div></td><td><input class="num" type="number" min="0" max="${room}" step="${x.v >= 10 ? 1 : 50}" value="${n}" data-xfer="${k}" aria-label="${esc(ITEMS[k].ko)} 시간당 전송량" style="width:52px"></td><td class="${n ? 'pos' : 'dim'}">${fmt(n / 60)}</td><td><button class="btn sm" data-xmax="${k}" ${room > n ? '' : 'disabled'} title="남은 전송 가치를 모두 이 품목에">최대</button></td></tr>`; }).join('');
+  const X = AIC.XFER, isDest = r.id === X.to, src = space.region(X.from), dst = space.region(X.to);
+  const xk = Object.keys(r.xfer).find(k => X.items[k]) || '', xn = xk ? r.xfer[xk] : 0, xv = xk ? X.items[xk].v : 0, xmax = xk ? Math.floor(X.cap / xv) : 0;
+  const byVal = {}; for (const k in X.items) (byVal[X.items[k].v] = byVal[X.items[k].v] || []).push(k);
+  const xOpts = Object.keys(byVal).map(Number).sort((a, b) => a - b).map(v => `<optgroup label="전송 가치 ${v} · 시간당 최대 ${Math.floor(X.cap / v).toLocaleString('ko-KR')}개">${byVal[v].sort(byDep).map(k => `<option value="${k}"${k === xk ? ' selected' : ''}>${esc(ITEMS[k].ko)}</option>`).join('')}</optgroup>`).join('');
   const xferHTML = isDest ? `
-    <div class="xcap"><span>전송 가치 <b>${xUsed.toLocaleString('ko-KR')}</b> / ${X.cap.toLocaleString('ko-KR')}</span><span class="meter" style="flex:1"><i style="width:${Math.min(100, xUsed / X.cap * 100)}%"></i></span>${xUsed ? '<button class="linkish" id="xClear">모두 멈추기</button>' : ''}</div>
-    <div class="tscroll"><table class="dep depx"><thead><tr><th>품목 <span class="dim">· 1개당 전송 가치</span></th><th>시간당</th><th>분당</th><th></th></tr></thead><tbody>${xRows}</tbody></table></div>
-    <p class="note">시간당 개수 × 가치의 합이 ${X.cap.toLocaleString('ko-KR')}을 넘을 수 없습니다(지역 개발 Lv.12). 정한 양이 1시간에 걸쳐 계속 들어오고(분당 = 시간당 ÷ 60), 보내는 협곡 IV 창고는 줄지 않습니다. 전송 가치를 알아낸 품목만 넣었습니다. * 표시는 플레이어가 보낸 양으로 계산한 값입니다.</p>`
+    <div class="form"><select id="xItem" aria-label="무재고 전송할 품목" style="flex:1;min-width:140px"><option value="">— 보내지 않음 —</option>${xOpts}</select></div>
+    ${xk ? `<div class="form" style="margin-top:6px"><span class="dim">시간당</span><input id="xAmt" class="num" type="number" min="1" max="${xmax}" step="1" value="${xn}" aria-label="시간당 전송량" style="width:76px"><span class="dim">/ 최대 ${xmax.toLocaleString('ko-KR')}개</span><button class="btn sm" id="xMax" ${xn >= xmax ? 'disabled' : ''}>최대</button></div>
+      <div class="xcap"><span>${ic(xk)} 분당 <b class="pos">${fmt(xn / 60)}</b> · 전송 가치 <b>${(xn * xv).toLocaleString('ko-KR')}</b> / ${X.cap.toLocaleString('ko-KR')}</span><span class="meter" style="flex:1;min-width:50px"><i style="width:${Math.min(100, xn * xv / X.cap * 100)}%"></i></span></div>${r.inf.has(xk) ? `<p class="note" style="color:var(--warn)">${esc(ITEMS[xk].ko)}${josa(ITEMS[xk].ko, '은', '는')} ${esc(r.ko)}에서 무한으로 켜져 있어 전송한 양이 재고에 쌓이지 않습니다. 전송으로 채우려면 아래 품목 목록에서 무한을 끄세요.</p>` : ''}` : ''}
+    <p class="note">한 번에 한 종류만 보냅니다. 시간당 개수 × 전송 가치가 ${X.cap.toLocaleString('ko-KR')}까지라서 가치가 높을수록 적게 보냅니다 (가치 50 → 시간당 30개). 정한 양이 1시간에 걸쳐 계속 들어오고(분당 = 시간당 ÷ 60), 보내는 ${esc(src.ko)} 창고는 줄지 않습니다. 협곡 IV 지역 개발 Lv.12에서 열립니다.</p>`
     : `<p class="note">게임에서 무재고 전송은 ${esc(src.ko)} → ${esc(dst.ko)} 방향만 있습니다 (${esc(src.ko)} 지역 개발 Lv.12). ${esc(dst.ko)}에서 ${esc(src.ko)}로 보내는 기능은 아직 없습니다. ${esc(dst.ko)} 창고에서 받을 품목을 정하세요.</p>${dst ? `<button class="btn sm" data-rg="${dst.id}">${esc(dst.ko)} 창고 열기</button>` : ''}`;
   // 3. every item with its endless switch
   const q = dep.q.trim().toLowerCase();
@@ -4866,13 +4873,15 @@ function renderDepot(force){
     i.onkeydown = ev => { if (ev.key === 'Enter') save(true); if (ev.key === 'Escape') save(false); ev.stopPropagation(); };
     i.onblur = () => save(true);
   });
-  const setX = (k, n) => {
-    const want = Math.max(0, Math.floor(+n || 0)), got = space.setXfer(r.id, k, want); markTouched(); renderDepot(true);
-    if (got < want) flash(`전송 가치 한도(${AIC.XFER.cap.toLocaleString('ko-KR')})를 넘어서 ${ITEMS[k].ko}${josa(ITEMS[k].ko, '은', '는')} 시간당 ${got.toLocaleString('ko-KR')}개까지만 보냅니다`);
+  const setX = (k, n) => { space.setXfer(r.id, k, n); markTouched(); renderDepot(true); };
+  if ($('#xItem')) $('#xItem').onchange = ev => {
+    const k = ev.target.value;
+    if (!k){ for (const o of Object.keys(r.xfer)) space.setXfer(r.id, o, 0); markTouched(); renderDepot(true); return; }
+    const n = Math.floor(AIC.XFER.cap / AIC.XFER.items[k].v); setX(k, n);
+    flash(`${ITEMS[k].ko}${josa(ITEMS[k].ko, '을', '를')} 시간당 ${n.toLocaleString('ko-KR')}개(분당 ${fmt(n / 60)}) 무재고 전송합니다`);
   };
-  el.querySelectorAll('input[data-xfer]').forEach(i => { i.onchange = () => setX(i.dataset.xfer, i.value); i.onkeydown = ev => { ev.stopPropagation(); if (ev.key === 'Enter') i.blur(); }; });
-  el.querySelectorAll('button[data-xmax]').forEach(b => b.onclick = () => setX(b.dataset.xmax, 1e9));
-  if ($('#xClear')) $('#xClear').onclick = () => { for (const k of Object.keys(r.xfer)) space.setXfer(r.id, k, 0); markTouched(); renderDepot(true); };
+  if ($('#xAmt')){ const a = $('#xAmt'); a.onchange = () => setX(xk, Math.max(1, Math.min(xmax, Math.floor(+a.value || 0)))); a.onkeydown = ev => { ev.stopPropagation(); if (ev.key === 'Enter') a.blur(); }; }
+  if ($('#xMax')) $('#xMax').onclick = () => setX(xk, xmax);
 }
 function renderFacs(){
   const el = $('#pane-facs'); if (ui.tab !== 'facs') return;
