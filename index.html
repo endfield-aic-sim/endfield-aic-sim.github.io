@@ -181,7 +181,8 @@ aside.side{grid-column:2;grid-row:2/4;border-left:1px solid var(--line);backgrou
 button.linkish{border:0;background:transparent;padding:0;font:inherit;color:inherit;cursor:pointer;border-bottom:1px dashed var(--muted)}
 table.depl td:last-child{width:40px}
 table.depl .pk{width:22px;text-align:center;padding-inline:2px}
-.xcap{display:flex;align-items:center;gap:8px;font-size:12px;margin:4px 0 6px}
+.xcap{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;font-size:12px;margin:6px 0}
+.xcap .meter{flex:1 1 100%!important}
 .xcap b{font-family:var(--f-mono)}
 table.depx .xv{font-size:10.5px;color:var(--muted);margin:1px 0 0 22px}
 table.depx td:first-child{white-space:normal}
@@ -196,6 +197,12 @@ table.depl tr.picked td{background:color-mix(in srgb, var(--accent) 14%, transpa
 .refill .form{margin-top:6px;flex-wrap:wrap}
 .refill .btn[aria-pressed="true"]{border-color:var(--ink)}
 .refill .btn:disabled{opacity:.45;cursor:default}
+.newopts{display:flex;flex-direction:column;gap:8px;margin:10px 0}
+.newopt{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;border:1px solid var(--line);border-radius:6px;padding:10px;cursor:pointer}
+.newopt:has(input:checked){border-color:var(--ink);background:var(--panel-2)}
+.newopt input{margin-top:3px}
+.newopt b{display:block;font-size:13px}
+.newopt small{display:block;color:var(--muted);font-size:12px;line-height:1.5;margin-top:2px}
 .rfpicked{margin-top:8px;max-height:84px;overflow-y:auto}
 table.dep{width:100%;border-collapse:collapse;font-size:12px}
 table.dep th{font-weight:500;color:var(--muted);font-size:11px;text-align:right;padding:3px 4px;border-bottom:1px solid var(--line);white-space:nowrap}
@@ -516,6 +523,7 @@ header.bar{gap:8px 12px}
         <label class="lbl" for="site" style="font-size:11px;color:var(--muted)">부지</label>
         <select class="sel" id="site" aria-label="부지 크기"></select>
         <span class="row" id="siteCustom" hidden style="gap:4px"><input id="sw" type="number" min="12" max="120" aria-label="부지 가로 칸 수" class="num"> × <input id="sh" type="number" min="12" max="120" aria-label="부지 세로 칸 수" class="num"><button class="btn sm primary" id="siteApply">적용</button><button class="btn sm" id="siteCancel">취소</button></span>
+        <button class="btn" id="newFac" title="빈 공장으로 새로 시작">새 공장</button>
         <select class="sel" id="preset" aria-label="예시 공장 불러오기"><option value="">예시 공장 불러오기…</option></select>
         <button class="btn" id="io">레이아웃 코드</button>
         <button class="btn" id="facSave" hidden title="지금 공장을 내 계정에 저장">공장 저장</button>
@@ -542,7 +550,7 @@ header.bar{gap:8px 12px}
       <div class="search"><input id="q" type="search" placeholder="설비 찾기 (예: 반응기)" aria-label="설비 검색"></div>
     </div>
     <div class="strip" id="plist" role="tabpanel" aria-label="설비 목록"></div>
-    <div class="keys"><kbd>E</kbd> 컨베이어 벨트 · <kbd>Q</kbd> 파이프 · <kbd>R</kbd> 회전 · <kbd>M</kbd> 이동 (설비를 끌어도 됨) · <kbd>Esc</kbd> 취소 · <kbd>Del</kbd> 철거 · 범위 드래그 = 선택 · <kbd>Shift</kbd>+드래그 = 선택에서 빼기 · <kbd>Ctrl</kbd>+드래그 = 더하기 · <kbd>Ctrl</kbd>+<kbd>C</kbd>/<kbd>V</kbd> 복사·붙여넣기 · 벨트·파이프는 드래그해서 깔기 (같은 종류끼리 교차하면 브리지, 벨트와 파이프는 겹쳐 지나감) · 분류기·합류기·컨트롤 포트는 벨트(파이프용은 파이프) 위에 놓으면 그 자리에 끼워짐 · <span title="Hypergryph·Gryphline과 관계없는 팬 제작 도구입니다">비공식 팬 제작</span></div>
+    <div class="keys"><kbd>E</kbd> 컨베이어 벨트 · <kbd>Q</kbd> 파이프 · <kbd>R</kbd> 회전 · <kbd>M</kbd> 이동 (설비를 끌어도 됨) · <kbd>Esc</kbd> 취소 · <kbd>Del</kbd> 철거 · 범위 드래그 = 선택 · <kbd>Shift</kbd>+드래그 = 선택에서 빼기 · <kbd>Ctrl</kbd>+드래그 = 더하기 · <kbd>Ctrl</kbd>+<kbd>C</kbd>/<kbd>V</kbd> 복사·붙여넣기</div>
   </section>
 
   <aside class="side">
@@ -640,6 +648,17 @@ header.bar{gap:8px 12px}
   </form>
 </dialog>
 
+<dialog id="newDlg" aria-labelledby="newTitle">
+  <form method="dialog" id="newForm">
+    <h3 id="newTitle">새 공장</h3>
+    <div class="newopts">
+      <label class="newopt"><input type="radio" name="newScope" value="site" checked><span><b id="newSiteName">이 부지만 비우기</b><small>지금 보는 부지의 설비를 모두 철거하고 PAC만 남깁니다. 부지 크기·다른 부지·지역 창고는 그대로입니다.</small></span></label>
+      <label class="newopt"><input type="radio" name="newScope" value="all"><span><b>전체 새로 시작</b><small>협곡 IV·무릉 부지 8곳을 모두 비우고 크기를 최대 확장으로, 창고 재고·무한 설정·무재고 전송·부지 이름을 처음 상태로 되돌립니다.</small></span></label>
+    </div>
+    <p class="note" id="newNote">되돌릴 수 없습니다. 지금 공장을 남기려면 먼저 "공장 저장"이나 "레이아웃 코드"로 보관하세요.</p>
+    <div class="acts"><button class="btn primary" value="go" id="newGo">비우기</button><span class="spacer"></span><button class="btn" value="cancel" formnovalidate>취소</button></div>
+  </form>
+</dialog>
 <dialog id="dlg">
   <h3 id="dlgTitle">레이아웃 코드</h3>
   <p class="note" id="dlgNote" style="margin:0 0 8px"></p>
@@ -4393,6 +4412,30 @@ presetSel.onchange = () => {
   if (eb.length){ r.world.edgeBus = eb.sort(); if (ec === false) r.world.edgeCore = false; r.world.dirtyPower = true; }
   ui.presetNote = k; loadWorld(r.world); setTool('select'); markTouched();
 };
+
+// ---------- new factory: empty the site on screen, or start the whole space over ----------
+function emptySite(){
+  const W = world.W, H = world.H, eb = (world.edgeBus || []).slice(), ec = world.edgeCore;
+  const w = AIC.newWorld(W, H);
+  if (eb.length){ w.edgeBus = eb; if (ec === false) w.edgeCore = false; }
+  w.computeCoverage();
+  return w;
+}
+$('#newFac').onclick = () => {
+  const d = space.siteDef(ui.site);
+  $('#newSiteName').textContent = `이 부지만 비우기 · ${space.regionOf(ui.site).ko} ${d.name}`;
+  $('#newForm').querySelector('input[value="site"]').checked = true;
+  $('#newDlg').returnValue = ''; $('#newDlg').showModal();
+};
+$('#newDlg').addEventListener('close', () => {
+  if ($('#newDlg').returnValue !== 'go') return;
+  const all = $('#newForm').querySelector('input[value="all"]').checked;
+  if (ui.move) cancelMove();
+  ui.presetNote = null;
+  if (all){ loadSpace(AIC.Space.fresh(), 'valley:0'); dep.picked.clear(); flash('협곡 IV·무릉 부지 8곳을 모두 비우고 새로 시작합니다'); }
+  else { const d = space.siteDef(ui.site); loadWorld(emptySite()); flash(`${space.regionOf(ui.site).ko} ${d.name} 부지를 비웠습니다`); }
+  setTool('select'); markTouched();
+});
 
 // ---------- site size ----------
 const siteSel = $('#site');
