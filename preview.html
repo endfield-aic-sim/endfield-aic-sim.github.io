@@ -4805,7 +4805,7 @@ function regionRates(r){
 }
 const ceilN = n => Math.ceil(n - 1e-9);
 function extractCell(k, pm){
-  const x = AIC.EXTRACT[k]; if (!x) return '<span class="dim">채집 설비 없음</span>';
+  const x = AIC.EXTRACT[k]; if (!x) return '<span class="dim">수집 장치 없음</span>';
   if (pm <= 0) return '<span class="dim">—</span>';
   return `${esc(x.by)} <b>${ceilN(pm / x.hi)}</b>대` + (x.lo ? ` <span class="dim">(저${k.endsWith('_ore') ? '순도' : '농도'} ${ceilN(pm / x.lo)}대)</span>` : '');
 }
@@ -4870,8 +4870,8 @@ function renderDepot(force){
     <label class="switch" style="margin-top:10px;font-weight:600"><input type="checkbox" id="rawAll" ${AIC.RAW_DEFAULT.every(k => r.inf.has(k)) ? 'checked' : ''}><span style="white-space:nowrap">원자재 무한</span></label>
     <p class="note" style="margin:4px 0 0">광석 4종 · 청정수 · 산성 침적물 · 비활성 기체 · 식양 기체를 한 번에 켜고 끕니다 (채굴기·양수기·기체 수집기로 얻는 것). 품목마다 따로 켜려면 아래 목록의 스위치를 씁니다.</p>
     <h4>무한 원자재 사용량 <small>${esc(r.ko)} 전체 · 무한으로 켠 품목이 창고에서 나간 양</small></h4>
-    ${used.length ? `<div class="tscroll"><table class="dep"><thead><tr><th>품목</th><th>분당</th><th>시간당</th><th style="text-align:left">감당하려면</th></tr></thead><tbody>${useRows}</tbody></table></div>
-      <div class="tot" style="margin-top:6px"><div class="sub" style="margin-top:0">필요한 채집 설비 합계 (고순도·고농도 기준, 올림)</div>${totLine || '<span class="dim">채집 설비로 얻는 품목이 없습니다</span>'}</div>`
+    ${used.length ? `<div class="tscroll"><table class="dep"><thead><tr><th>품목</th><th>분당</th><th>시간당</th><th style="text-align:left">필요한 수집 장치</th></tr></thead><tbody>${useRows}</tbody></table></div>
+      <div class="tot" style="margin-top:6px"><div class="sub" style="margin-top:0">필요한 수집 장치 합계 (고순도·고농도 기준, 올림)</div>${totLine || '<span class="dim">수집 장치로 얻는 품목이 없습니다</span>'}</div>`
       : '<p class="note">아직 무한 품목을 쓰는 곳이 없습니다. PAC 출력 포트에 품목을 정하면 여기에 표시됩니다.</p>'}
     <p class="note">광물 채굴기 고순도 3초에 1개(분당 20)·저순도 6초에 1개(분당 10), 적동 광석은 1개마다 청정수 1. 양수기·내산성 양수기 1초에 1(분당 60). 기체 수집기 고농도 분당 20·저농도 분당 10. (나무위키 천연자원 문서 기준)</p>
     <h4>무재고 전송 <small>${esc(src.ko)} → ${esc(dst.ko)} 창고</small></h4>
