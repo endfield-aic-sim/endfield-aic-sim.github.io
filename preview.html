@@ -180,6 +180,16 @@ aside.side{grid-column:2;grid-row:2/4;border-left:1px solid var(--line);backgrou
 .tscroll{overflow-x:auto}
 button.linkish{border:0;background:transparent;padding:0;font:inherit;color:inherit;cursor:pointer;border-bottom:1px dashed var(--muted)}
 table.depl td:last-child{width:40px}
+table.depl .pk{width:22px;text-align:center;padding-inline:2px}
+table.depl td:nth-child(2),table.depl th:nth-child(2){text-align:left}
+table.depl .pk input{margin:0;cursor:pointer;accent-color:var(--ink)}
+table.depl tr.picked td{background:color-mix(in srgb, var(--accent) 14%, transparent)}
+.refill{border:1px solid var(--line);border-radius:6px;background:var(--panel-2);padding:8px 10px;margin:8px 0}
+.refill .rfhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:12.5px;margin-bottom:2px}
+.refill .form{margin-top:6px;flex-wrap:wrap}
+.refill .btn[aria-pressed="true"]{border-color:var(--ink)}
+.refill .btn:disabled{opacity:.45;cursor:default}
+.rfpicked{margin-top:8px;max-height:84px;overflow-y:auto}
 table.dep{width:100%;border-collapse:collapse;font-size:12px}
 table.dep th{font-weight:500;color:var(--muted);font-size:11px;text-align:right;padding:3px 4px;border-bottom:1px solid var(--line);white-space:nowrap}
 table.dep th:first-child{text-align:left}
@@ -2364,6 +2374,7 @@ function showSite(){
 function switchSite(key){
   if (key === ui.site || !space.get(key)) return;
   if (ui.move) cancelMove();
+  if (space.regionOf(key) !== space.regionOf(ui.site)) dep.picked.clear();
   ui.site = key; ui.presetNote = null; dep.rg = null; dep.edit = null; showSite(); setTool(ui.tool.startsWith('build:') ? ui.tool : 'select');
 }
 // the site moved from rlawnstjr0611.github.io/endfield_AIC_simulation; that address's redirect page passes along
@@ -4712,7 +4723,7 @@ function renderStats(){
 // ---------- region depot: shared by the four sites of a region ----------
 const DEP_ORDER = ['ore','fluid','gas','plant','seed','refined','powder','part','bottle','comp','filled','battery','final'];
 const byDep = (a,b) => DEP_ORDER.indexOf(ITEMS[a].cat) - DEP_ORDER.indexOf(ITEMS[b].cat) || ITEMS[a].ko.localeCompare(ITEMS[b].ko, 'ko');
-const dep = { rg: null, filter: 'main', q: '', edit: null };
+const dep = { rg: null, filter: 'main', q: '', edit: null, picked: new Set(), amt: 1000 };
 function regionRates(r){
   const agg = { in: {}, out: {} };
   for (const w of r.sites){ const x = w.rates(); for (const c of ['in','out']) for (const k in x[c]) agg[c][k] = (agg[c][k] || 0) + x[c][k]; }
@@ -4758,8 +4769,20 @@ function renderDepot(force){
   const stockCell = k => r.inf.has(k) ? '<span class="dim">무한</span>'
     : dep.edit === k ? `<input class="num" type="number" min="0" step="1" value="${Math.floor(r.depot[k] || 0)}" data-stock="${k}" aria-label="${esc(ITEMS[k].ko)} 재고" style="width:78px">`
     : `<button class="linkish" data-sedit="${k}" title="눌러서 재고 정하기">${fmt(r.depot[k] || 0)}</button>`;
+  for (const k of [...dep.picked]) if (r.inf.has(k)) dep.picked.delete(k);   // endless items never need topping up
+  const pickable = keys.filter(k => !r.inf.has(k)), allPicked = pickable.length > 0 && pickable.every(k => dep.picked.has(k));
+  const pickCell = k => r.inf.has(k) ? `<input type="checkbox" disabled title="무한이라 보충할 필요가 없습니다" aria-label="${esc(ITEMS[k].ko)} (무한)">`
+    : `<input type="checkbox" data-pick="${k}" ${dep.picked.has(k) ? 'checked' : ''} aria-label="${esc(ITEMS[k].ko)} 보충할 품목으로 고르기">`;
+  const np = dep.picked.size;
+  const refill = `<div class="refill">
+      <div class="rfhead"><b>${np ? `${np}개 품목 고름` : '창고에 보충하기'}</b>${np ? `<button class="linkish" id="rfClear">선택 해제</button>` : `<span class="dim">표 왼쪽 칸에서 품목을 고르세요</span>`}</div>
+      <div class="form"><input id="rfN" class="num" type="number" min="1" max="1000000000" step="100" value="${dep.amt}" aria-label="보충할 개수" style="width:96px"><span class="dim">개</span>
+        ${[100, 1000, 10000].map(n => `<button class="btn sm" data-rfq="${n}" aria-pressed="${dep.amt === n}">${n.toLocaleString('ko-KR')}</button>`).join('')}</div>
+      <div class="form"><button class="btn sm primary" id="rfAdd" ${np ? '' : 'disabled'}>더하기 (+)</button><button class="btn sm" id="rfSet" ${np ? '' : 'disabled'} title="고른 품목의 재고를 이 개수로 맞춥니다">이 개수로 맞추기</button><button class="btn sm" id="rfEmpty" ${np ? '' : 'disabled'}>비우기</button></div>
+      ${np ? `<div class="rfpicked">${[...dep.picked].sort(byDep).map(k => `<button class="mchip" data-unpick="${k}" title="빼기">${esc(ITEMS[k].ko)} ×</button>`).join('')}</div>` : ''}
+    </div>`;
   const list = keys.map(k => { const f = flow(k), inf = r.inf.has(k);
-    return `<tr><td>${ic(k)}</td><td>${stockCell(k)}</td><td class="${inf ? 'dim' : f > 0.05 ? 'pos' : f < -0.05 ? 'neg' : 'dim'}">${inf ? (rr.out[k] ? '−' + fmt(rr.out[k]) : '—') : (f > 0 ? '+' : '') + fmt(f)}</td><td><label class="switch" title="무한"><input type="checkbox" data-inf="${k}" ${inf ? 'checked' : ''} aria-label="${esc(ITEMS[k].ko)} 무한"></label></td></tr>`; }).join('');
+    return `<tr${dep.picked.has(k) ? ' class="picked"' : ''}><td class="pk">${pickCell(k)}</td><td>${ic(k)}</td><td>${stockCell(k)}</td><td class="${inf ? 'dim' : f > 0.05 ? 'pos' : f < -0.05 ? 'neg' : 'dim'}">${inf ? (rr.out[k] ? '−' + fmt(rr.out[k]) : '—') : (f > 0 ? '+' : '') + fmt(f)}</td><td><label class="switch" title="무한"><input type="checkbox" data-inf="${k}" ${inf ? 'checked' : ''} aria-label="${esc(ITEMS[k].ko)} 무한"></label></td></tr>`; }).join('');
   const regionSw = `<div class="seg" role="group" aria-label="지역">${space.regions.map(x => `<button data-rg="${x.id}" aria-pressed="${x === r}">${esc(x.ko)}</button>`).join('')}</div>`;
   const keepScroll = el.scrollTop;
   el.innerHTML = `
@@ -4775,12 +4798,13 @@ function renderDepot(force){
     <p class="note">정한 양이 1시간에 걸쳐 계속 들어옵니다(분당 = 시간당 ÷ 60). 보내는 쪽 재고는 줄지 않습니다. 게임에서는 지역 개발 Lv.12에 열리고 전송 용량 한도가 있지만, 한도는 넣지 않았습니다.</p>
     ${xk.length ? `<div class="tscroll"><table class="dep"><thead><tr><th>품목</th><th>시간당</th><th>분당</th><th></th></tr></thead><tbody>${xRows}</tbody></table></div>` : ''}
     <div class="form" style="margin-top:6px"><select id="xItem" aria-label="전송할 품목" style="flex:1;min-width:120px"><option value="">품목 고르기…</option>${solid.map(k => `<option value="${k}">${esc(ITEMS[k].ko)}</option>`).join('')}</select><input id="xAmt" class="num" type="number" min="1" max="${AIC.XFER_MAX}" step="10" value="1500" aria-label="시간당 전송량" style="width:84px"><span class="dim">개/시간</span><button class="btn sm primary" id="xAdd">추가</button></div>
-    <h4>품목 <small>무한 스위치 · 재고 · 분당 증감 (${esc(r.ko)} 전체)</small></h4>
+    <h4>품목 <small>보충 · 무한 스위치 · 재고 · 분당 증감 (${esc(r.ko)} 전체)</small></h4>
     <div class="form"><div class="seg" role="group" aria-label="보기">${[['main','주요'],['inf','무한 켜짐'],['all','전체']].map(([v,l]) => `<button data-df="${v}" aria-pressed="${!q && dep.filter === v}">${l}</button>`).join('')}</div><input id="depQ" type="search" placeholder="품목 찾기" aria-label="품목 찾기" value="${esc(dep.q)}" style="flex:1;min-width:90px"></div>
-    <div class="tscroll"><table class="dep depl"><thead><tr><th>품목</th><th>재고</th><th>분당</th><th>무한</th></tr></thead><tbody>${list || '<tr class="empty"><td colspan="4">맞는 품목이 없습니다.</td></tr>'}</tbody></table></div>
-    <p class="note">"주요"는 원자재와 재고·드나듦·무한·전송이 있는 품목입니다. 무한을 끈 품목은 창고 재고만큼만 나가고, 재고 숫자를 눌러 직접 정할 수 있습니다. 분당 증감 = 들어온 양 − 나간 양 + 무재고 전송 (최근 평균).</p>`;
+    ${refill}
+    <div class="tscroll"><table class="dep depl"><thead><tr><th class="pk"><input type="checkbox" id="pickAll" ${allPicked ? 'checked' : ''} ${pickable.length ? '' : 'disabled'} aria-label="보이는 품목 모두 고르기" title="보이는 품목 모두 고르기 (무한 제외)"></th><th>품목</th><th>재고</th><th>분당</th><th>무한</th></tr></thead><tbody>${list || '<tr class="empty"><td colspan="5">맞는 품목이 없습니다.</td></tr>'}</tbody></table></div>
+    <p class="note">"주요"는 원자재와 재고·드나듦·무한·전송이 있는 품목입니다. 무한을 끈 품목은 창고 재고만큼만 나갑니다. 왼쪽 칸에서 여러 품목을 골라 한꺼번에 보충하거나, 재고 숫자를 눌러 하나씩 정할 수 있습니다. 분당 증감 = 들어온 양 − 나간 양 + 무재고 전송 (최근 평균).</p>`;
   el.scrollTop = keepScroll;
-  el.querySelectorAll('button[data-rg]').forEach(b => b.onclick = () => { dep.rg = b.dataset.rg; dep.edit = null; renderDepot(true); });
+  el.querySelectorAll('button[data-rg]').forEach(b => b.onclick = () => { dep.rg = b.dataset.rg; dep.edit = null; dep.picked.clear(); renderDepot(true); });
   el.querySelectorAll('button[data-df]').forEach(b => b.onclick = () => { dep.filter = b.dataset.df; dep.q = ''; renderDepot(true); });
   const dq = $('#depQ'); dq.oninput = () => { dep.q = dq.value; renderDepot(true); const n = $('#depQ'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); };
   $('#rawAll').onchange = ev => { for (const k of AIC.RAW_DEFAULT){ if (ev.target.checked){ r.inf.add(k); delete r.depot[k]; } else r.inf.delete(k); } markTouched(); renderDepot(true); };
@@ -4789,6 +4813,25 @@ function renderDepot(force){
     if (i.checked){ r.inf.add(k); delete r.depot[k]; } else r.inf.delete(k);
     markTouched(); renderDepot(true);
   });
+  // top up the depot: pick rows, then add / set / empty them in one go
+  const redraw = () => renderDepot(true);
+  el.querySelectorAll('input[data-pick]').forEach(i => i.onchange = () => { if (i.checked) dep.picked.add(i.dataset.pick); else dep.picked.delete(i.dataset.pick); redraw(); });
+  $('#pickAll').onchange = ev => { for (const k of pickable){ if (ev.target.checked) dep.picked.add(k); else dep.picked.delete(k); } redraw(); };
+  el.querySelectorAll('button[data-unpick]').forEach(b => b.onclick = () => { dep.picked.delete(b.dataset.unpick); redraw(); });
+  if ($('#rfClear')) $('#rfClear').onclick = () => { dep.picked.clear(); redraw(); };
+  const rfN = $('#rfN'), readAmt = () => { dep.amt = Math.max(1, Math.min(1e9, Math.floor(+rfN.value || 0))) || 1; return dep.amt; };
+  rfN.onchange = readAmt;
+  rfN.onkeydown = ev => { ev.stopPropagation(); if (ev.key === 'Enter' && dep.picked.size) $('#rfAdd').click(); };
+  el.querySelectorAll('button[data-rfq]').forEach(b => b.onclick = () => { dep.amt = +b.dataset.rfq; redraw(); });
+  const apply = (fn, msg) => {
+    const ks = [...dep.picked].filter(k => !r.inf.has(k)); if (!ks.length) return;
+    for (const k of ks){ const n = Math.max(0, Math.min(1e9, Math.floor(fn(r.depot[k] || 0)))); if (n) r.depot[k] = n; else delete r.depot[k]; }
+    markTouched(); redraw(); flash(msg(ks));
+  };
+  const names = ks => ks.length > 2 ? `${ITEMS[ks[0]].ko} 외 ${ks.length - 1}개` : ks.map(k => ITEMS[k].ko).join(', ');
+  $('#rfAdd').onclick = () => { const n = readAmt(); apply(v => v + n, ks => `${r.ko} 창고에 ${names(ks)}${josa(names(ks), '을', '를')} ${n.toLocaleString('ko-KR')}개씩 보충했습니다`); };
+  $('#rfSet').onclick = () => { const n = readAmt(); apply(() => n, ks => `${names(ks)} 재고를 ${n.toLocaleString('ko-KR')}개로 맞췄습니다`); };
+  $('#rfEmpty').onclick = () => apply(() => 0, ks => `${names(ks)} 재고를 비웠습니다`);
   el.querySelectorAll('button[data-sedit]').forEach(b => b.onclick = () => { dep.edit = b.dataset.sedit; renderDepot(true); const n = el.querySelector('input[data-stock]'); if (n){ n.focus(); n.select(); } });
   el.querySelectorAll('input[data-stock]').forEach(i => {
     const save = ok => { if (dep.edit !== i.dataset.stock) return; const k = dep.edit; dep.edit = null; if (ok){ const n = Math.max(0, Math.min(1e9, Math.floor(+i.value || 0))); if (n) r.depot[k] = n; else delete r.depot[k]; markTouched(); } renderDepot(true); };
