@@ -2222,7 +2222,28 @@ const store = {
   },
 };
 function loadWorld(w){ world = w; ui.fac = null; ui.sel = null; ui.multi.clear(); ui.paste = null; if (ui.tool==='paste' || ui.tool==='movepac') ui.tool='select'; syncSite(); fitView(); renderInspector(true); renderSelbar(); renderStats(); renderFacs(); }
+// the site moved from rlawnstjr0611.github.io/endfield_AIC_simulation; that address's redirect page passes along
+// what the visitor had saved in that browser as #migrate=<base64url JSON {bps, layout, hash}>
+function importFromOldSite(){
+  const h = location.hash; if (!h.startsWith('#migrate=')) return;
+  let back = '';
+  try {
+    let b = h.slice(9).replace(/-/g, '+').replace(/_/g, '/'); while (b.length % 4) b += '=';
+    const o = JSON.parse(decodeURIComponent(escape(atob(b))));
+    if (typeof o.hash === 'string' && o.hash.startsWith('#') && !o.hash.startsWith('#migrate=')) back = o.hash;
+    let nb = 0, nl = false;
+    if (Array.isArray(o.bps)){
+      const cur = store.lsGet(LS_BP) || [], ids = new Set(cur.map(x => x.id));
+      for (const x of o.bps) if (x && typeof x.id === 'string' && typeof x.name === 'string' && x.bp && Array.isArray(x.bp.ents) && !ids.has(x.id)){ cur.push({ id: x.id, name: x.name.slice(0, 60), ts: +x.ts || Date.now(), bp: x.bp }); ids.add(x.id); nb++; }
+      if (nb) store.lsSet(LS_BP, cur.sort((a, c) => (c.ts || 0) - (a.ts || 0)));
+    }
+    if (o.layout && o.layout.world && !store.lsGet(LS_LAYOUT)){ store.lsSet(LS_LAYOUT, o.layout); nl = true; }
+    if (nb || nl) ui.migrated = { nb, nl };
+  } catch(e){ /* unreadable hand-over: just open the site */ }
+  history.replaceState(null, '', location.pathname + location.search + back);
+}
 function boot(){
+  importFromOldSite();
   let w = null;
   const saved = store.lsGet(LS_LAYOUT);
   try { if (saved && saved.world && saved.world.v >= 3) w = AIC.deserialize(saved.world); else if (saved) ui.oldSave = true; } catch(e){ w = null; }
@@ -4642,6 +4663,7 @@ acct.init();
 route();
 if (document.fonts) document.fonts.ready.then(() => render());
 if (ui.oldSave) setTimeout(() => flash('PAC 포트 배치가 바뀌어 이전 공장 대신 예시 공장을 열었습니다. 청사진은 그대로 있습니다.'), 600);
+if (ui.migrated) setTimeout(() => flash('이전 주소에서 ' + [ui.migrated.nb ? `청사진 ${ui.migrated.nb}개` : '', ui.migrated.nl ? '작업 중이던 공장' : ''].filter(Boolean).join('와 ') + (ui.migrated.nl ? '을' : '를') + ' 옮겨 왔습니다'), 700);
 requestAnimationFrame(frame);
 })();
 
