@@ -4844,7 +4844,7 @@ function renderDepot(force){
   let keys = Object.keys(ITEMS);
   if (q) keys = keys.filter(k => ITEMS[k].ko.toLowerCase().includes(q) || ITEMS[k].en.toLowerCase().includes(q));
   else if (dep.filter === 'main') keys = keys.filter(k => AIC.RAW.has(k) || r.inf.has(k) || (r.depot[k] || 0) > 0 || rr.in[k] || rr.out[k] || r.xfer[k]);
-  else if (dep.filter === 'inf') keys = keys.filter(k => r.inf.has(k));
+  else if (dep.filter === 'prod') keys = keys.filter(k => !AIC.RAW.has(k) && AIC.producerOf(k));   // anything a facility makes
   keys.sort(byDep);
   const stockCell = k => r.inf.has(k) ? '<span class="dim">무한</span>'
     : dep.edit === k ? `<input class="num" type="number" min="0" step="1" value="${Math.floor(r.depot[k] || 0)}" data-stock="${k}" aria-label="${esc(ITEMS[k].ko)} 재고" style="width:78px">`
@@ -4877,10 +4877,10 @@ function renderDepot(force){
     <h4>무재고 전송 <small>${esc(src.ko)} → ${esc(dst.ko)} 창고</small></h4>
     ${xferHTML}
     <h4>품목 <small>보충 · 무한 스위치 · 재고 · 분당 증감 (${esc(r.ko)} 전체)</small></h4>
-    <div class="form"><div class="seg" role="group" aria-label="보기">${[['main','주요'],['inf','무한 켜짐'],['all','전체']].map(([v,l]) => `<button data-df="${v}" aria-pressed="${!q && dep.filter === v}">${l}</button>`).join('')}</div><input id="depQ" type="search" placeholder="품목 찾기" aria-label="품목 찾기" value="${esc(dep.q)}" style="flex:1;min-width:90px"></div>
+    <div class="form"><div class="seg" role="group" aria-label="보기">${[['main','주요'],['prod','생산품'],['all','전체']].map(([v,l]) => `<button data-df="${v}" aria-pressed="${!q && dep.filter === v}">${l}</button>`).join('')}</div><input id="depQ" type="search" placeholder="품목 찾기" aria-label="품목 찾기" value="${esc(dep.q)}" style="flex:1;min-width:90px"></div>
     ${refill}
     <div class="tscroll"><table class="dep depl"><thead><tr><th class="pk"><input type="checkbox" id="pickAll" ${allPicked ? 'checked' : ''} ${pickable.length ? '' : 'disabled'} aria-label="보이는 품목 모두 고르기" title="보이는 품목 모두 고르기 (무한 제외)"></th><th>품목</th><th>재고</th><th>분당</th><th>무한</th></tr></thead><tbody>${list || '<tr class="empty"><td colspan="5">맞는 품목이 없습니다.</td></tr>'}</tbody></table></div>
-    <p class="note">"주요"는 원자재와 재고·드나듦·무한·전송이 있는 품목입니다. 무한을 끈 품목은 창고 재고만큼만 나갑니다. 왼쪽 칸에서 여러 품목을 골라 한꺼번에 보충하거나, 재고 숫자를 눌러 하나씩 정할 수 있습니다. 분당 증감 = 들어온 양 − 나간 양 + 무재고 전송 (최근 평균).</p>`;
+    <p class="note">"주요"는 원자재와 재고·드나듦·무한·전송이 있는 품목, "생산품"은 설비로 만드는 품목입니다. 무한을 끈 품목은 창고 재고만큼만 나갑니다. 왼쪽 칸에서 여러 품목을 골라 한꺼번에 보충하거나, 재고 숫자를 눌러 하나씩 정할 수 있습니다. 분당 증감 = 들어온 양 − 나간 양 + 무재고 전송 (최근 평균).</p>`;
   el.scrollTop = keepScroll;
   el.querySelectorAll('button[data-rg]').forEach(b => b.onclick = () => { dep.rg = b.dataset.rg; dep.edit = null; dep.picked.clear(); renderDepot(true); });
   el.querySelectorAll('button[data-df]').forEach(b => b.onclick = () => { dep.filter = b.dataset.df; dep.q = ''; renderDepot(true); });
