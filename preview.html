@@ -196,7 +196,7 @@ table.depl tr.picked td{background:color-mix(in srgb, var(--accent) 14%, transpa
 .setgrp legend{font-weight:700;font-size:13px;margin-bottom:6px;padding:0}
 .setgrp.col{flex-direction:column;align-items:flex-start}
 .setgrp label{display:inline-flex;align-items:center;gap:6px;font-size:13px;cursor:pointer}
-.bar,.build,aside.side,section.board,dialog{zoom:var(--ui-zoom,1)}
+.bar,.build,aside.side,section.board,section.craft,dialog{zoom:var(--ui-zoom,1)}
 .newopts{display:flex;flex-direction:column;gap:8px;margin:10px 0}
 .newopt{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;border:1px solid var(--line);border-radius:6px;padding:10px;cursor:pointer}
 .newopt:has(input:checked){border-color:var(--ink);background:var(--panel-2)}
@@ -285,6 +285,9 @@ dialog textarea{width:100%;height:200px;font-family:var(--f-mono);font-size:11px
 .seg.view button[aria-pressed="true"]:hover{border-bottom-color:var(--accent)}
 .hlinks{display:flex;gap:16px;align-items:center}
 .board{display:none}
+.craft{display:none}
+.app.craftmode main.stage,.app.craftmode .build,.app.craftmode aside.side,.app.craftmode .simonly{display:none!important}
+.app.craftmode .craft{display:flex;flex-direction:column;grid-column:1/-1;grid-row:2/4;min-height:0;background:var(--bg);position:relative}
 .app.boardmode main.stage,.app.boardmode .build,.app.boardmode aside.side,.app.boardmode .simonly{display:none!important}
 .app.boardmode .board{display:block;grid-column:1/-1;grid-row:2/4;overflow-y:auto;min-height:0;background:var(--bg)}
 .bwrap{max-width:960px;margin:0 auto;padding:22px 16px 56px}
@@ -383,6 +386,8 @@ a.btn{color:inherit;text-decoration:none;display:inline-block}
 .pwrite .acts{margin-left:82px}
 @media (max-width: 960px){
   .app.boardmode .board{grid-row:auto;overflow:visible}
+  .app.craftmode .craft{grid-row:auto;height:calc(100vh - 56px)}
+  .cbar{flex-wrap:wrap} .csearch{width:100%}
 }
 @media (max-width: 640px){
   .prow{grid-template-columns:84px minmax(0,1fr);gap:10px}
@@ -531,6 +536,50 @@ body.resizing.rcol{cursor:col-resize} body.resizing.rrow{cursor:row-resize}
 .itmach img{width:22px;height:22px}
 .itmach:hover b{text-decoration:underline}
 .itx{margin-top:14px}
+/* crafting chains */
+.cbar{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);flex:none}
+.ccrumb{display:flex;align-items:center;gap:6px;font-size:14px;flex:1;min-width:0}
+.ccrumb a{color:inherit;text-decoration:none} .ccrumb a:hover{text-decoration:underline} .ccrumb span{opacity:.6}
+.csearch{position:relative;width:min(320px,50vw)}
+.csearch input{width:100%}
+.cres{position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:20;background:var(--panel);border:1px solid var(--line);max-height:60vh;overflow-y:auto;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.cres a{display:flex;align-items:center;gap:8px;padding:5px 6px;color:inherit;text-decoration:none}
+.cres a:hover{background:var(--panel-2)} .cres img{width:24px;height:24px}
+.cpick{overflow-y:auto;padding:12px 16px 24px;flex:1;min-height:0}
+.cgrp{margin:0 0 14px} .cgrp h4,.cgrp summary{margin:0 0 8px;cursor:default} .cgrp summary{cursor:pointer;font-weight:700}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px}
+.cpi{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;border:1px solid var(--line);background:var(--panel);color:inherit;text-decoration:none;font-size:12px;text-align:center;line-height:1.25}
+.cpi:hover{border-color:var(--ink)} .cpi img{width:40px;height:40px}
+.cstage{position:relative;flex:1;min-height:0;overflow:hidden;cursor:grab;background:var(--cv-bg);touch-action:none}
+.cstage.drag{cursor:grabbing}
+.cplane{position:absolute;left:0;top:0;transform-origin:0 0}
+.clines{position:absolute;left:0;top:0;overflow:visible}
+.clines path{fill:none;stroke:var(--ink);stroke-opacity:.55;stroke-width:2}
+.cnode{position:absolute;width:64px;cursor:pointer}
+.cimg{width:64px;height:64px;background:var(--panel-2);border:1px solid var(--line);box-shadow:inset 0 -4px 0 var(--mc);display:flex;align-items:center;justify-content:center}
+.cimg img{width:52px;height:52px}
+.cnode:hover .cimg{border-color:var(--ink)}
+.cnode.root .cimg{border:2px solid var(--accent)}
+.cnode.dep .cimg{filter:grayscale(1);opacity:.55}
+.cnode.flash .cimg{animation:cflash 1s 2}
+@keyframes cflash{50%{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent)}}
+.cname{position:absolute;top:68px;left:50%;transform:translateX(-50%);width:110px;text-align:center;font-size:11px;line-height:1.25}
+.cq{position:absolute;top:-8px;left:-8px;background:var(--ink);color:var(--bg);font-size:10.5px;font-weight:700;padding:1px 4px}
+.ceye{position:absolute;left:-30px;top:20px;width:22px;height:22px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:12px;line-height:1;padding:0;cursor:pointer}
+.cloop{position:absolute;left:-24px;top:22px;font-weight:700}
+.cpill{position:absolute;height:38px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--panel);border:1.5px solid var(--ink);font-size:12px;line-height:1.2}
+.cpill b{display:flex;align-items:center;gap:4px;max-width:124px;overflow:hidden;white-space:nowrap}
+.cpill b img{width:18px;height:18px}
+.cpill>span:last-child{font-size:10.5px;opacity:.75}
+.cgas{position:absolute;bottom:calc(100% + 3px);left:-1.5px;right:-1.5px;background:var(--gc);color:#111;font-size:10.5px;font-weight:700;text-align:center;padding:1px 0}
+.caltbtn{position:absolute;transform:translateX(-50%);white-space:nowrap;font-size:10.5px;font-weight:700;padding:2px 8px;border:0;background:var(--accent);color:#111;cursor:pointer}
+.caltbtn:hover{filter:brightness(1.1)}
+.czoom{position:absolute;right:12px;bottom:12px;display:flex;gap:4px}
+.calt{position:absolute;z-index:30;width:300px;max-height:50vh;overflow-y:auto;background:var(--panel);border:1px solid var(--line);padding:8px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.calt h4{margin:2px 4px 8px}
+.caltrow{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;padding:6px;border:1px solid transparent;background:transparent;color:inherit;font:inherit;font-size:12px;cursor:pointer;text-align:left}
+.caltrow:hover{background:var(--panel-2)} .caltrow.on{border-color:var(--accent)}
+.cins{display:flex;align-items:center;gap:2px;flex-wrap:wrap} .cins img{width:20px;height:20px}
 .note:empty{display:none}
 </style>
 
@@ -541,7 +590,7 @@ body.resizing.rcol{cursor:col-resize} body.resizing.rrow{cursor:row-resize}
 <div class="app" id="app">
   <header class="bar" id="bar">
     <div class="brand"><h1>AIC 공장 시뮬레이터</h1></div>
-    <nav class="seg view" id="viewSw" aria-label="화면" hidden><button data-v="sim" aria-pressed="true">공장</button><button data-v="board" aria-pressed="false">게시판</button><button data-v="admin" aria-pressed="false" hidden>관리자</button></nav>
+    <nav class="seg view" id="viewSw" aria-label="화면"><button data-v="sim" aria-pressed="true">공장</button><button data-v="board" aria-pressed="false">게시판</button><button data-v="craft" aria-pressed="false">조합식</button><button data-v="admin" aria-pressed="false" hidden>관리자</button></nav>
     <nav class="hlinks" aria-label="도움"><button id="bugBtn" hidden title="문제를 운영자에게 알리기">버그 제보</button><button id="setBtn" title="화면 설정">설정</button></nav>
     <span class="acct" id="acct" hidden></span>
     <div class="toolbar simonly">
@@ -604,6 +653,7 @@ body.resizing.rcol{cursor:col-resize} body.resizing.rrow{cursor:row-resize}
   </aside>
 
   <section class="board" id="board" aria-label="게시판"></section>
+  <section class="craft" id="craft" aria-label="조합식"></section>
   <div class="ucard" id="ucard" role="tooltip" hidden></div>
 </div>
 
@@ -2377,6 +2427,7 @@ function loadPics(){
     const put = (map, obj) => { for (const [k, i] of Object.entries(obj || {})) map.set(k, { im, sx: (i % A.cols) * A.cell, sy: Math.floor(i / A.cols) * A.cell, s: A.cell }); };
     put(PICS.items, A.items); put(PICS.facs, A.facilities);
     iconCache.clear(); renderPalette(); renderStats(); renderInspector(true); renderDepot(true); renderRecipes(); renderTools();
+    facIconCache.clear(); if (ui.view === 'craft') craft.target ? craft.draw(false) : craft.picker();
   };
   im.src = A.src;
 }
@@ -2628,7 +2679,15 @@ function acctError(e){
   return '문제가 생겼습니다: ' + m;
 }
 // save a new blueprint to the account when logged in, otherwise to this browser
+// names never repeat: an empty name becomes "청사진 1", "청사진 2" …; a name already in use gets " 1", " 2" … after it
+function uniqueBpName(name){
+  const used = new Set([...store.bps, ...acct.mine].map(b => String(b.name || '').trim()));
+  const base = String(name || '').trim().slice(0, 56) || '청사진';
+  if (name && String(name).trim() && !used.has(base)) return base;
+  for (let n = 1; ; n++) if (!used.has(`${base} ${n}`)) return `${base} ${n}`;
+}
 async function saveBp(name, bp){
+  name = uniqueBpName(name); saveBp.last = name;
   if (acct.user){ try { await acct.addBp(name, bp); return 'account'; } catch(e){ flash('계정에 저장하지 못해 이 브라우저에 저장했습니다 · ' + acctError(e)); } }
   await store.addBp(name, bp); return 'local';
 }
@@ -3656,12 +3715,13 @@ const bugs = {
 // simulator ↔ board: the address decides which one is on screen
 function setView(v, tab){
   const was = ui.view; ui.view = v;
-  $('#app').classList.toggle('boardmode', v === 'board');
+  $('#app').classList.toggle('boardmode', v === 'board'); $('#app').classList.toggle('craftmode', v === 'craft');
   document.querySelectorAll('#viewSw button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === (tab || v)));
-  if (v === 'sim' && was === 'board'){ fitHeader(); resize(); render(); }
+  if (v === 'sim' && was !== 'sim'){ fitHeader(); resize(); render(); }
 }
 function route(){
   const [v, arg, arg2] = location.hash.replace(/^#\/?/, '').split('/');
+  if (v === 'craft'){ setView('craft'); craft.show(decodeURIComponent(arg || '')); return; }
   if (!acct.enabled() || !BOARD_VIEWS.includes(v)){ setView('sim'); return; }
   const first = ui.view !== 'board';
   setView('board', v === 'admin' || v === 'reports' ? 'admin' : 'board');
@@ -3671,10 +3731,11 @@ function route(){
 window.addEventListener('hashchange', route);
 $('#viewSw').onclick = ev => {
   const b = ev.target.closest('button'); if (!b) return;
-  if (b.dataset.v === 'board' || b.dataset.v === 'admin'){ const h = '#' + b.dataset.v; if (location.hash !== h) location.hash = b.dataset.v; else route(); }
+  if (b.dataset.v === 'craft'){ const h = '#craft' + (craft.target ? '/' + craft.target : ''); if (location.hash !== h) location.hash = h; else route(); }
+  else if (b.dataset.v === 'board' || b.dataset.v === 'admin'){ const h = '#' + b.dataset.v; if (location.hash !== h) location.hash = b.dataset.v; else route(); }
   else if (ui.view !== 'sim'){ history.pushState(null, '', location.pathname + location.search); route(); }
 };
-$('#viewSw').hidden = !acct.enabled();
+$('#viewSw').querySelector('[data-v="board"]').hidden = !acct.enabled();
 $('#bar').classList.toggle('site', acct.enabled());
 // the header always uses two rows on the factory screen: title, menu and account on top, factory controls below
 function fitHeader(){
@@ -4497,14 +4558,13 @@ function renderSelbar(){
   $('#sbClear').onclick = () => { ui.multi.clear(); renderSelbar(); renderInspector(true); };
   $('#sbSave').onclick = async () => {
     const bp = world.blueprint(selectionIds()); if (!bp){ flash('저장할 설비가 없습니다'); return; }
-    const name = ($('#sbName').value || '').trim() || `청사진 ${store.bps.length+1}`;
-    const where = await saveBp(name, bp); flash(`"${name}" 청사진을 ${where === 'account' ? '계정에' : ''} 저장했습니다`.replace('을  저장', '을 저장'));
+    const where = await saveBp(($('#sbName').value || '').trim(), bp), name = saveBp.last; flash(`"${name}" 청사진을 ${where === 'account' ? '계정에' : ''} 저장했습니다`.replace('을  저장', '을 저장'));
     setCat('bp');
   };
 }
 
 document.addEventListener('keydown', ev => {
-  if (ui.view === 'board' || ev.target.closest('input,select,textarea,dialog')) return;
+  if (ui.view !== 'sim' || ev.target.closest('input,select,textarea,dialog')) return;
   const k = ev.key.toLowerCase(), mod = ev.ctrlKey || ev.metaKey;
   if (mod && k==='c'){ copySel(); ev.preventDefault(); return; }
   if (mod && k==='v'){ if (ui.clip) startPaste(ui.clip); ev.preventDefault(); return; }
@@ -5129,6 +5189,7 @@ function openItem(id, push){
   if (uses.length) h += `<h4>쓰이는 곳 <small>${uses.length}</small></h4>` + uses.slice(0, 60).map(row).join('') + (uses.length > 60 ? `<p class="dim">60개만 표시</p>` : '');
   const extra = [fuel ? `열에너지 뱅크 연료 (+${fuel.p} · ${fuel.t}초)` : '', xv ? `무재고 전송 가치 ${xv.v}` : ''].filter(Boolean);
   if (extra.length) h += `<p class="dim itx">${extra.join(' · ')}</p>`;
+  h += `<p class="itx"><a class="btn sm" href="#craft/${id}" id="itCraft">조합식 보기</a></p>`;
   $('#itBody').innerHTML = h; $('#itBody').scrollTop = 0;
   if (!dlg.open) dlg.showModal();
 }
@@ -5143,9 +5204,169 @@ $('#itClose').onclick = () => $('#itemDlg').close();
 $('#itBack').onclick = () => { const prev = itemNav.pop(); if (prev){ $('#itemDlg').dataset.item = ''; openItem(prev, true); } };
 $('#itemDlg').addEventListener('click', ev => {
   if (ev.target === ev.currentTarget){ ev.currentTarget.close(); return; }   // click on the backdrop
+  if (ev.target.closest('#itCraft')){ ev.currentTarget.close(); return; }
   const b = ev.target.closest('[data-build]'); if (!b) return;
-  $('#itemDlg').close(); if (ui.view === 'board') location.hash = ''; setTool('build:' + b.dataset.build);
+  $('#itemDlg').close(); if (ui.view !== 'sim') location.hash = ''; setTool('build:' + b.dataset.build);
 });
+
+// ---------- crafting chains (조합식): search an item, see the whole chain from raw materials (left) to it (right) ----------
+const CAT_KO = { ore:'광석', plant:'식물', seed:'씨앗', fluid:'액체', gas:'기체', refined:'정제 소재', powder:'가루', part:'부품', comp:'장비 부품', bottle:'병·캔', final:'완제품', battery:'배터리', filled:'채운 병·캔' };
+const craft = {
+  target: '', hist: [], z: 1, px: 0, py: 0,
+  choice: (() => { try { return JSON.parse(localStorage.getItem('aic-craft')) || {}; } catch(e){ return {}; } })(),
+  el(){ return $('#craft'); },
+  // the ways to get an item: gathering (extractors) first, then every recipe that makes it
+  ways(id){
+    const w = [], ex = AIC.EXTRACT[id];
+    if (ex) w.push({ src: true, by: ex.by, t: Math.round(60 / ex.hi * 10) / 10, in: {}, out: { [id]: 1 } });
+    for (const r of RECIPES) if (r.out[id]) w.push(r);
+    return w;
+  },
+  pick(id, path){
+    const w = this.ways(id); if (!w.length) return { w, i: -1 };
+    const c = this.choice[id]; if (c != null && w[c]) return { w, i: c };
+    // default: the way with the smallest whole chain that does not loop back (gathering counts as 1 step)
+    let i = 0, best = Infinity;
+    w.forEach((r, j) => { const v = this.wayCost(r, id, path); if (v < best){ best = v; i = j; } });
+    return { w, i };
+  },
+  wayCost(r, id, path){
+    if (r.src) return 1;
+    let v = 1 + (r.gas ? 1 : 0);
+    const p2 = new Set(path); p2.add(id);
+    for (const k of Object.keys(r.in)) v += k === id || p2.has(k) ? 60 : this.cost(k, p2);
+    return v;
+  },
+  cost(id, path){
+    this.memo = this.memo || new Map(); if (this.memo.has(id)) return this.memo.get(id);
+    if (path.size > 12) return 30;
+    const w = this.ways(id); if (!w.length) return 2;
+    let best = Infinity; for (const r of w) best = Math.min(best, this.wayCost(r, id, path));
+    if (best < 60) this.memo.set(id, best);   // results that hit a loop depend on the path: not cached
+    return best;
+  },
+  build(id, path, seen){
+    const n = { id, kids: [], way: null, nWays: 0 };
+    if (path.has(id)){ n.loop = true; return n; }
+    if (seen.has(id)){ n.dup = true; return n; }
+    seen.add(id);
+    const { w, i } = this.pick(id, path); n.nWays = w.length;
+    if (i < 0) return n;
+    n.way = w[i]; n.wi = i;
+    const p2 = new Set(path); p2.add(id);
+    if (n.way.src) n.kids.push({ id, deposit: true, kids: [] });
+    else for (const [k, q] of Object.entries(n.way.in)){ const c = this.build(k, p2, seen); c.qty = q; n.kids.push(c); }
+    return n;
+  },
+  show(id){
+    const el = this.el();
+    if (!el.firstChild) this.shell();
+    if (id && !ITEMS[id]) id = '';
+    if (id !== this.target && this.target && id) this.hist.push(this.target);
+    this.target = id;
+    $('#cCrumb').innerHTML = `<a href="#craft">조합식</a>${id ? ` <span>›</span> <b>${esc(ITEMS[id].ko)}</b>` : ''}`;
+    $('#cPick').hidden = !!id; $('#cStage').hidden = !id;
+    if (!id){ this.picker(); return; }
+    this.draw(true);
+  },
+  shell(){
+    this.el().innerHTML = `<div class="cbar"><nav class="ccrumb" id="cCrumb"></nav>
+      <div class="csearch"><input id="cq" type="search" placeholder="생산품·원재료 찾기" autocomplete="off" aria-label="아이템 찾기"><div class="cres" id="cRes" hidden></div></div></div>
+      <div class="cpick" id="cPick"></div>
+      <div class="cstage" id="cStage" hidden><div class="cplane" id="cPlane"></div>
+        <div class="czoom"><button class="btn sm" data-z="in" aria-label="확대">+</button><button class="btn sm" data-z="out" aria-label="축소">−</button><button class="btn sm" data-z="fit">맞추기</button></div></div>
+      <div class="calt" id="cAlt" hidden></div>`;
+    const q = $('#cq'), res = $('#cRes');
+    const find = () => { const v = q.value.trim().toLowerCase(); if (!v){ res.hidden = true; return []; }
+      const hits = Object.keys(ITEMS).filter(k => ITEMS[k].ko.toLowerCase().includes(v) || ITEMS[k].en.toLowerCase().includes(v))
+        .sort((a, b) => (ITEMS[a].ko.startsWith(v) ? 0 : 1) - (ITEMS[b].ko.startsWith(v) ? 0 : 1) || ITEMS[a].ko.length - ITEMS[b].ko.length).slice(0, 14);
+      res.innerHTML = hits.length ? hits.map(k => `<a href="#craft/${k}"><img alt="" src="${iconURL(k)}">${esc(ITEMS[k].ko)}</a>`).join('') : '<span class="dim">없음</span>';
+      res.hidden = false; return hits; };
+    q.oninput = find;
+    q.onkeydown = ev => { if (ev.key === 'Enter'){ const h = find(); if (h.length){ location.hash = 'craft/' + h[0]; q.value = ''; res.hidden = true; q.blur(); } } else if (ev.key === 'Escape'){ q.value = ''; res.hidden = true; } };
+    res.onclick = () => { q.value = ''; res.hidden = true; };
+    document.addEventListener('click', ev => { if (!ev.target.closest('.csearch')) res.hidden = true; if (!ev.target.closest('#cAlt, .caltbtn')) $('#cAlt').hidden = true; });
+    // pan by dragging the background, zoom with the wheel or the buttons
+    const st = $('#cStage');
+    st.addEventListener('pointerdown', ev => {
+      if (ev.button !== 0 || ev.target.closest('.cnode, .cpill, .caltbtn, .czoom, .ceye')) return;
+      const x0 = ev.clientX, y0 = ev.clientY, px = this.px, py = this.py; st.setPointerCapture(ev.pointerId); st.classList.add('drag');
+      const mv = e => { this.px = px + e.clientX - x0; this.py = py + e.clientY - y0; this.apply(); };
+      const up = () => { st.removeEventListener('pointermove', mv); st.removeEventListener('pointerup', up); st.classList.remove('drag'); };
+      st.addEventListener('pointermove', mv); st.addEventListener('pointerup', up);
+    });
+    st.addEventListener('wheel', ev => { ev.preventDefault(); const r = st.getBoundingClientRect(); this.zoomAt(ev.deltaY < 0 ? 1.15 : 1/1.15, ev.clientX - r.left, ev.clientY - r.top); }, { passive: false });
+    st.querySelector('.czoom').onclick = ev => { const b = ev.target.closest('[data-z]'); if (!b) return; const r = st.getBoundingClientRect();
+      if (b.dataset.z === 'fit') this.fit(); else this.zoomAt(b.dataset.z === 'in' ? 1.25 : 1/1.25, r.width / 2, r.height / 2); };
+    $('#cPlane').addEventListener('click', ev => {
+      const alt = ev.target.closest('.caltbtn'); if (alt){ this.alts(alt.dataset.item, alt); return; }
+      const eye = ev.target.closest('.ceye'); if (eye){ const o = $('#cPlane').querySelector(`.cnode[data-main="${eye.dataset.item}"]`); if (o){ o.classList.remove('flash'); void o.offsetWidth; o.classList.add('flash'); } return; }
+      const nd = ev.target.closest('.cnode'); if (nd && nd.dataset.item && nd.dataset.item !== this.target) location.hash = 'craft/' + nd.dataset.item;
+      else if (nd && nd.dataset.item) openItem(nd.dataset.item);
+    });
+  },
+  picker(){
+    const groups = {}; for (const [k, it] of Object.entries(ITEMS)) (groups[it.cat] = groups[it.cat] || []).push(k);
+    const order = ['final', 'battery', 'comp', 'part', 'bottle', 'refined', 'powder', 'plant', 'seed', 'ore', 'fluid', 'gas', 'filled'];
+    const card = k => `<a class="cpi" href="#craft/${k}" title="${esc(ITEMS[k].en)}"><img alt="" src="${iconURL(k)}"><span>${esc(ITEMS[k].ko)}</span></a>`;
+    $('#cPick').innerHTML = order.filter(c => groups[c]).map(c => c === 'filled'
+      ? `<details class="cgrp"><summary>${CAT_KO[c] || c} <small>${groups[c].length}</small></summary><div class="cgrid">${groups[c].map(card).join('')}</div></details>`
+      : `<section class="cgrp"><h4>${CAT_KO[c] || c} <small>${groups[c].length}</small></h4><div class="cgrid">${groups[c].map(card).join('')}</div></section>`).join('');
+  },
+  draw(refit){
+    const root = this.build(this.target, new Set(), new Set());
+    // layout: depth → column (target on the right), leaves take rows top to bottom, a parent sits on its first input's row
+    const CW = 64, PW = 132, G = 30, PITCH = CW + PW + 2 * G, RH = 104, M = 40;
+    let row = 0, maxD = 0;
+    const place = (n, d) => { n.d = d; maxD = Math.max(maxD, d); if (!n.kids.length){ n.row = row++; return; } n.kids.forEach(c => place(c, d + 1)); n.row = n.kids[0].row; };
+    place(root, 0);
+    const W = (maxD + 1) * PITCH - PW - 2 * G + 2 * M, H = row * RH + 2 * M - 20;
+    const cx = n => M + (maxD - n.d) * PITCH, cy = n => M + n.row * RH;
+    let html = '', lines = '';
+    const all = []; const walk = n => { all.push(n); n.kids.forEach(walk); }; walk(root);
+    for (const n of all){
+      const x = cx(n), y = cy(n), it = ITEMS[n.id];
+      html += `<div class="cnode${n.deposit ? ' dep' : ''}${n === root ? ' root' : ''}" data-item="${n.id}"${!n.deposit && !n.dup && !n.loop ? ` data-main="${n.id}"` : ''} style="left:${x}px;top:${y}px" title="${esc(it.ko)}${n.deposit ? ' (매장지)' : ''}">
+        <div class="cimg" style="--mc:${MAT[it.mat] || '#888'}"><img alt="" src="${iconURL(n.id)}"></div>${n.qty > 1 ? `<span class="cq">×${n.qty}</span>` : ''}
+        ${n.dup ? `<button class="ceye" type="button" data-item="${n.id}" title="위에서 이미 펼친 재료 (눌러서 찾기)">◉</button>` : ''}${n.loop ? '<span class="cloop" title="이 재료는 위 단계에서 다시 만들어짐">↻</span>' : ''}
+        <div class="cname">${esc(it.ko)}</div></div>`;
+      if (!n.way) continue;
+      // the machine (or extractor) pill left of the item, wires from each input to the pill and from the pill to the item
+      const pr = x - G, pl = pr - PW, my = y + CW / 2, wy = n.way;
+      const name = wy.src ? wy.by : MNAME(wy.m), icon = wy.src ? '' : facIconURL(wy.m);
+      html += `<div class="cpill" style="left:${pl}px;top:${my - 19}px;width:${PW}px">${wy.gas ? `<span class="cgas" style="--gc:${MAT[ITEMS[wy.gas].mat]}">${esc(ITEMS[wy.gas].ko)} 환경</span>` : ''}
+        <b>${icon ? `<img alt="" src="${icon}">` : ''}${esc(name)}</b><span>${wy.t}초</span></div>`;
+      if (n.nWays > 1) html += `<button class="caltbtn" type="button" data-item="${n.id}" style="left:${pl + PW / 2}px;top:${my + 26}px">기타 조합 공식 ${n.wi + 1}/${n.nWays}</button>`;
+      lines += `<path d="M${pr} ${my}H${x}"/>`;
+      const jx = pl - G / 2;
+      for (const c of n.kids){ const ky = cy(c) + CW / 2; lines += `<path d="M${cx(c) + CW} ${ky}H${jx}V${my}H${pl}"/>`; }
+    }
+    const pl = $('#cPlane'); pl.style.width = W + 'px'; pl.style.height = H + 'px';
+    pl.innerHTML = `<svg class="clines" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" aria-hidden="true">${lines}</svg>` + html;
+    this.W = W; this.H = H;
+    if (refit) this.fit(); else this.apply();
+  },
+  apply(){ $('#cPlane').style.transform = `translate(${this.px}px, ${this.py}px) scale(${this.z})`; },
+  fit(){
+    const r = $('#cStage').getBoundingClientRect(); if (!r.width) return;
+    this.z = Math.max(.7, Math.min(1, (r.width - 20) / this.W, (r.height - 20) / this.H));
+    const w = this.W * this.z, h = this.H * this.z;
+    this.px = w <= r.width ? (r.width - w) / 2 : r.width - w - 10;   // too wide: keep the target (right end) in view
+    this.py = h <= r.height ? (r.height - h) / 2 : 10;
+    this.apply();
+  },
+  zoomAt(k, sx, sy){ const z = Math.max(.25, Math.min(2.5, this.z * k)); k = z / this.z; this.px = sx - (sx - this.px) * k; this.py = sy - (sy - this.py) * k; this.z = z; this.apply(); },
+  alts(id, btn){
+    const box = $('#cAlt'), w = this.ways(id), cur = this.pick(id, new Set()).i;
+    box.innerHTML = `<h4>${esc(ITEMS[id].ko)} 조합 공식</h4>` + w.map((r, i) => `<button type="button" class="caltrow${i === (this.choice[id] ?? cur) ? ' on' : ''}" data-i="${i}">
+      <span class="cins">${r.src ? `<span class="dim">${esc(r.by)}</span>` : Object.entries(r.in).map(([k, q]) => `<img alt="" src="${iconURL(k)}" title="${esc(ITEMS[k].ko)}">×${q}`).join(' ')}</span>
+      <span class="dim">${r.src ? '' : esc(MNAME(r.m)) + ' · '}${r.t}초</span></button>`).join('');
+    const sr = $('#cStage').getBoundingClientRect(), br = btn.getBoundingClientRect(), zr = this.el().getBoundingClientRect(), zz = zoomOf(this.el());
+    box.style.left = Math.max(8, Math.min((br.left - zr.left) / zz, (sr.width - 300) / zz)) + 'px'; box.style.top = ((br.bottom - zr.top) / zz + 6) + 'px';
+    box.hidden = false;
+    box.onclick = ev => { const b = ev.target.closest('[data-i]'); if (!b) return; this.choice[id] = +b.dataset.i; try { localStorage.setItem('aic-craft', JSON.stringify(this.choice)); } catch(e){} box.hidden = true; this.draw(false); };
+  },
+};
 
 // ---------- loop ----------
 let last = performance.now(), uiT = 0, statT = 0, saveT = 0;
@@ -5156,7 +5377,7 @@ function frame(now){
     let n = 0; while (ui.acc >= 0.05 && n < 400){ space.step(0.05); ui.acc -= 0.05; n++; }
     if (n >= 400) ui.acc = 0;
   }
-  if (ui.view !== 'board') render();
+  if (ui.view === 'sim') render();
   if (now - uiT > 250){
     uiT = now;
     const p = world.power, over = p.demand > p.supply;
