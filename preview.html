@@ -94,10 +94,10 @@ input.num{width:58px;border:1px solid var(--line);background:var(--panel-2);bord
 .search{flex:none;width:210px;padding-bottom:8px}
 .search input{width:100%;border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:5px 8px;font-size:12.5px}
 .strip{display:flex;align-items:stretch;gap:6px;overflow-x:auto;overflow-y:hidden;padding:10px 12px;background:var(--panel-2);min-height:124px;scroll-padding-inline:12px;overscroll-behavior-x:contain}
-.tool{flex:none;width:104px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:4px;text-align:center;border:1px solid var(--line);background:var(--panel);border-radius:5px;padding:9px 6px 7px}
+.tool{flex:none;width:104px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:4px;text-align:center;border:1px solid var(--line);background:var(--panel);border-radius:2px;padding:7px 6px 6px}
 .tool:hover{border-color:var(--muted)}
 .tool[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
-.tool canvas{width:36px;height:36px;flex:none}
+.tool canvas{width:48px;height:48px;flex:none}
 .tool .nm{font-size:12px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.5em;word-break:keep-all;overflow-wrap:anywhere}
 .tool .meta{font-size:11.5px;color:var(--ink);white-space:nowrap;margin-top:auto}
 .tool.addbp{justify-content:center;border-style:dashed}
@@ -160,7 +160,7 @@ aside.side{grid-column:2;grid-row:2/4;border-left:1px solid var(--line);backgrou
 .rec .ar{color:var(--muted)}
 .rec .t{margin-left:auto;font-family:var(--f-mono);font-size:10.5px;color:var(--muted)}
 .ic{display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
-.ic img{width:15px;height:15px}
+.ic img{width:20px;height:20px}
 .ports{display:grid;grid-template-columns:auto 1fr;gap:5px 8px;align-items:center;margin-top:6px}
 .ports label{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
 .ports select,.ports input{width:100%;border:1px solid var(--line);background:var(--panel-2);border-radius:3px;padding:3px 5px;font-size:12px}
@@ -209,7 +209,7 @@ table.dep th{font-weight:500;color:var(--muted);font-size:11px;text-align:right;
 table.dep th:first-child{text-align:left}
 table.dep td{padding:4px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;text-align:right;font-family:var(--f-mono);font-size:11.5px;white-space:nowrap}
 table.dep td:first-child{text-align:left;font-family:var(--f-body);font-size:12px;white-space:normal}
-td .ic img{width:16px;height:16px}
+td .ic img{width:20px;height:20px}
 table.dep tr.empty td{color:var(--muted);text-align:left;font-family:var(--f-body)}
 .pos{color:var(--ok)} .neg{color:var(--warn)} .dim{color:var(--muted)}
 .note{font-size:11.5px;color:var(--muted);margin:8px 0 0;max-width:60ch}
@@ -2328,23 +2328,22 @@ const CARRIER = new Set(['belt','splitter','converger','bridge','control']);
 const MAT = { ori:'#E2683B', ame:'#9A6AE0', fer:'#5A8CB8', cup:'#C8763A', buck:'#E0628B', cit:'#E6B51F', sand:'#C3A165', ake:'#5CAD60', jin:'#D4A93A', yaz:'#7FB069', wood:'#8B6A45', carb:'#56585A', cry:'#3CBFCD', steel:'#8F9CA8', xir:'#4FD1A5', het:'#B04A6F', pyr:'#E24A2C', water:'#4BA3E3', sew:'#7D7A52', acid:'#B7D334', iner:'#A9B8C9' };
 let C = {};
 const iconCache = new Map();
-// pictures for items and facilities, when the site has them: img/manifest.json = {"items":{"<item id>":"img/items/…png"},"facilities":{"<type>":"img/facilities/…png"}}
-// anything without a picture keeps the drawn icon
+// pictures for items and facilities: one sprite sheet built from img/items/<id>.png and img/facilities/<type>.png
+// (build.py fills PIC_ATLAS in). Anything without a picture keeps the drawn icon.
+const PIC_ATLAS = {"src":"img/atlas-1f93198f.webp","cell":96,"cols":16,"items":{"acridgen":0,"aketine":1,"aketine_powder":2,"aketine_seed":3,"amber_rice":4,"amber_rice_seed":5,"amethyst_bottle":6,"amethyst_component":7,"amethyst_fiber":8,"amethyst_ore":9,"amethyst_part":10,"amethyst_powder":11,"aquagen":12,"buck_capsule_a":13,"buck_capsule_b":14,"buck_capsule_c":15,"buckflower":16,"buckflower_powder":17,"buckflower_seed":18,"bumper_rich":19,"burdo_muck":20,"canned_citrome_a":21,"canned_citrome_b":22,"canned_citrome_c":23,"carbon":24,"carbon_powder":25,"citrome":26,"citrome_powder":27,"citrome_seed":28,"clean_water":29,"cryston_bottle":30,"cryston_component":31,"cryston_fiber":32,"cryston_part":33,"cryston_powder":34,"cuprium":35,"cuprium_bottle":36,"cuprium_canister":37,"cuprium_component":38,"cuprium_gas":39,"cuprium_ore":40,"cuprium_part":41,"cuprium_powder":42,"cuprium_solution":43,"dense_carbon_powder":44,"dense_ferrium_powder":45,"dense_originium_powder":46,"dense_origocrust_powder":47,"ferrium":48,"ferrium_bottle":49,"ferrium_component":50,"ferrium_ore":51,"ferrium_part":52,"ferrium_powder":53,"ground_buckflower_powder":54,"ground_citrome_powder":55,"hc_battery":56,"heavy_xiragen":57,"heavy_xiranite":58,"hetonite":59,"hetonite_bottle":60,"hetonite_component":61,"hetonite_gas":62,"hetonite_part":63,"hetonite_solution":64,"industrial_explosive":65,"inergen":66,"inert_xircon_effluent":67,"jincao":68,"jincao_drink":69,"jincao_powder":70,"jincao_seed":71,"jincao_solution":72,"jincao_tea":73,"lc_battery":74,"lc_wuling_battery":75,"liquid_heavy_xiranite":76,"liquid_xiranite":77,"originium_ore":78,"originium_powder":79,"origocrust":80,"origocrust_powder":81,"packed_origocrust":82,"precipitation_acid":83,"pyrrolite":84,"pyrrolite_component":85,"pyrrolite_gas":86,"pyrrolite_part":87,"redjade_ginseng":88,"redjade_ginseng_seed":89,"reed_rye":90,"reed_rye_seed":91,"sandleaf":92,"sandleaf_powder":93,"sandleaf_seed":94,"sc_battery":95,"sc_wuling_battery":96,"separator_core":97,"sewage":98,"stabilized_carbon":99,"steel":100,"steel_bottle":101,"steel_part":102,"tartpepper":103,"tartpepper_seed":104,"wood":105,"xiragen":106,"xiranite":107,"xiranite_component":108,"xircon":109,"xircon_effluent":110,"yazhen":111,"yazhen_powder":112,"yazhen_seed":113,"yazhen_solution":114,"yazhen_syringe_a":115,"yazhen_syringe_c":116},"facilities":{"belt":117,"bridge":118,"busport":119,"bussection":120,"cinlet":121,"cminlet":122,"cmoutlet":123,"control":124,"converger":125,"coutlet":126,"fgtrans":127,"fill":128,"fit":129,"forge":130,"gasdisp":131,"gastank":132,"gear":133,"globe":134,"grind":135,"loader":136,"mould":137,"pac":138,"pack":139,"pbridge":140,"pcontrol":141,"pconverger":142,"pipe":143,"plant":144,"psplitter":145,"purify":146,"pylon":147,"reactor":148,"refine":149,"relay":150,"seed":151,"separate":152,"sgtrans":153,"shred":154,"splitter":155,"stash":156,"tank":157,"thermal":158,"unloader":159,"wtreat":160,"xpylon":161,"xreactor":162,"xrelay":163}};
 const PICS = { items: new Map(), facs: new Map() };
-async function loadPics(){
-  if (location.protocol === 'file:' || location.protocol === 'blob:') return;   // pictures live next to the site page only
-  try {
-    const r = await fetch('img/manifest.json', { cache: 'no-cache' }); if (!r.ok) return;
-    const m = await r.json();
-    const load = (map, obj) => Object.entries(obj && typeof obj === 'object' ? obj : {})
-      .filter(([k, v]) => typeof v === 'string' && /^img\/[\w\-./]+$/.test(v) && !v.includes('..'))
-      .map(([k, v]) => new Promise(res => { const im = new Image(); im.onload = () => { map.set(k, im); res(); }; im.onerror = res; im.src = v; }));
-    await Promise.all([...load(PICS.items, m.items), ...load(PICS.facs, m.facilities)]);
-    if (PICS.items.size || PICS.facs.size){ iconCache.clear(); renderPalette(); renderStats(); renderInspector(true); renderDepot(true); renderRecipes(); }
-  } catch(e){ /* no pictures: drawn icons */ }
+function loadPics(){
+  const A = PIC_ATLAS; if (!A || !A.src) return;
+  const im = new Image();
+  im.onload = () => {
+    const put = (map, obj) => { for (const [k, i] of Object.entries(obj || {})) map.set(k, { im, sx: (i % A.cols) * A.cell, sy: Math.floor(i / A.cols) * A.cell, s: A.cell }); };
+    put(PICS.items, A.items); put(PICS.facs, A.facilities);
+    iconCache.clear(); renderPalette(); renderStats(); renderInspector(true); renderDepot(true); renderRecipes(); renderTools();
+  };
+  im.src = A.src;
 }
-// draw a picture scaled to fit a w×h box centred on (cx, cy)
-function drawPic(c, im, cx, cy, w, h){ const k = Math.min(w / im.naturalWidth, h / im.naturalHeight); const dw = im.naturalWidth * k, dh = im.naturalHeight * k; c.drawImage(im, cx - dw / 2, cy - dh / 2, dw, dh); }
+// draw a picture into a w×h box centred on (cx, cy) (the sheet cells are square)
+function drawPic(c, p, cx, cy, w, h){ const d = Math.min(w, h); c.drawImage(p.im, p.sx, p.sy, p.s, p.s, cx - d / 2, cy - d / 2, d, d); }
 function readColors(){
   const cs = getComputedStyle(document.documentElement);
   for (const k of ['cv-bg','cv-grid','cv-grid2','cv-belt','cv-rail','cv-belt-mark','cv-pipe','cv-pipe-core','cv-mach','cv-mach-ink','cv-range','cv-range-line','accent','ink','muted','power','ok','warn','bad','panel','panel-2','line'])
@@ -2359,6 +2358,10 @@ function poly(c, x, y, r, n, rot){ c.beginPath(); for(let i=0;i<n;i++){ const a=
 function drawItem(c, id, x, y, r){
   const it = ITEMS[id]; if (!it) return;
   const pic = PICS.items.get(id); if (pic){ drawPic(c, pic, x, y, r * 2.3, r * 2.3); return; }
+  if (it.cat === 'filled'){ // a filled bottle or canister: the empty container with the contents in the corner
+    const [base, inside] = id.split('__'), bp = PICS.items.get(base), ip = PICS.items.get(inside);
+    if (bp){ drawPic(c, bp, x - r * .2, y, r * 2.2, r * 2.2); if (ip){ drawPic(c, ip, x + r * .62, y + r * .55, r * 1.25, r * 1.25); } return; }
+  }
   const col = MAT[it.mat] || '#999';
   c.fillStyle = col; c.strokeStyle = 'rgba(0,0,0,.55)'; c.lineWidth = Math.max(.6, r*.16);
   switch(it.cat){
@@ -2607,10 +2610,10 @@ function toolButton(type){
   const t = TYPES[type], id = 'build:'+type;
   const b = document.createElement('button'); b.className='tool'; b.type='button'; b.dataset.tool = id;
   b.setAttribute('aria-pressed', ui.tool===id);
-  b.innerHTML = `<canvas width="72" height="72"></canvas><span class="nm">${esc(t.ko)}</span><span class="meta">${t.sizeLabel || (t.w+'×'+t.h)}</span>`;
+  b.innerHTML = `<canvas width="96" height="96"></canvas><span class="nm">${esc(t.ko)}</span><span class="meta">${t.sizeLabel || (t.w+'×'+t.h)}</span>`;
   b.title = `${t.ko} · ${t.en}`;
   b.onclick = () => setTool(id);
-  drawToolIcon(b.querySelector('canvas'), id, 72);
+  drawToolIcon(b.querySelector('canvas'), id, 96);
   return b;
 }
 // palette: a row of category tabs (namu.wiki categories in wiki order, blueprints last);
@@ -3877,7 +3880,7 @@ function drawOuterBus(){
   const strip = d => d===0 ? [0, -B, W, B] : d===1 ? [W, 0, B, H] : d===2 ? [0, H, W, B] : [-B, 0, B, H];
   for (const d of eb){
     const [x, y, w, h] = strip(d), horiz = d===0 || d===2;
-    ctx.fillStyle = C.accent; ctx.fillRect(x*S, y*S, w*S, h*S);
+    ctx.fillStyle = BUS_GREEN; ctx.fillRect(x*S, y*S, w*S, h*S);
     ctx.fillStyle = '#15191A'; ctx.globalAlpha = .8;
     for (let i = 0; i < (horiz ? w : h)*S; i += 8){ if (horiz) ctx.fillRect(x*S + i, y*S, 2, h*S); else ctx.fillRect(x*S, y*S + i, w*S, 2); }
     ctx.globalAlpha = 1; ctx.strokeStyle = C['cv-mach-ink']; ctx.lineWidth = 1.2/z;
@@ -3891,7 +3894,8 @@ function drawOuterBus(){
   }
   const [cx, cy] = outerBusCore();
   ctx.fillStyle = C['cv-mach']; ctx.strokeStyle = C['cv-mach-ink']; ctx.lineWidth = 1.4/z; ctx.fillRect(cx*S+2, cy*S+2, B*S-4, B*S-4); ctx.strokeRect(cx*S+2, cy*S+2, B*S-4, B*S-4);
-  ctx.fillStyle = C.accent; ctx.fillRect((cx+B/2)*S-7, (cy+B/2)*S-7, 14, 14);
+  corners(cx*S+2, cy*S+2, B*S-4, B*S-4, BUS_GREEN);
+  if (!facPic('busport', (cx+B/2)*S, (cy+B/2)*S + 5, B*S*.62, 1)){ ctx.fillStyle = BUS_GREEN; ctx.fillRect((cx+B/2)*S-7, (cy+B/2)*S-7, 14, 14); }
   label('창고 입출력 라인 (고정)', cx*S+5, cy*S+5, 8.5, 700, C['cv-mach-ink']);
 }
 function drawTiles(x0,y0,x1,y1){
@@ -3952,7 +3956,7 @@ function drawCarrierDetail(e, g, phase){
   if (k!=='belt'){
     ctx.fillStyle = fluid ? C['cv-pipe'] : C['cv-belt']; ctx.strokeStyle = fluid ? C['cv-pipe-core'] : C['cv-rail'];
     ctx.lineWidth = 1.5; ctx.beginPath(); ctx.roundRect(e.x*S+3, e.y*S+3, S-6, S-6, 3); ctx.fill(); ctx.stroke();
-    ctx.strokeStyle = '#EEF0EC'; ctx.lineWidth = 1.5; ctx.lineCap = 'round';
+    ctx.strokeStyle = facAcc(e.type); ctx.lineWidth = 1.8; ctx.lineCap = 'round';
     logiGlyph(ctx, k, cx, cy, 6, (e.f+2)&3); ctx.lineCap = 'butt';
     if (k==='control' && e.filter) drawItem(ctx, e.filter, e.x*S+S-5, e.y*S+5, 3.4);
     if (e.off){ ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.fillRect(e.x*S+3, e.y*S+3, S-6, S-6); }
@@ -4019,7 +4023,7 @@ function label(txt, x, y, size, weight, color, align){
 }
 // depot ports: input (into the depot) is teal with arrows pointing at the bus, output is amber with arrows
 // pointing away. The middle cell carries the single belt mouth on the side away from the bus.
-function portColor(k){ return k==='loader' ? C.power : C.warn; }
+function portColor(k){ return k==='loader' ? FAC_ACC.loader : FAC_ACC.unloader; }
 function drawDepotPort(e, x, y, w, h, live){
   const k = K(e.type), inp = k==='loader', col = portColor(k), f = e.f, back = opp(f), a = (f+1)&3;
   const cx = x+w/2, cy = y+h/2;
@@ -4040,18 +4044,39 @@ function drawDepotPort(e, x, y, w, h, live){
   else { ctx.strokeStyle = fg; ctx.lineWidth = 1.8; chevron(ctx, rx, ry, flow, 3.6); }
   if (live && !e.busOn) fitLabel('버스 없음', cx + DX[f]*S*.9, cy + DY[f]*S*.9 - 5, 3*S - 6, 8, 700, C.bad, 'center');
 }
+// accent colours taken from the facility pictures (the lit parts of each model); everything else is the default yellow
+const FAC_ACC = { refine:'#F08A4B', plant:'#5DC64C', seed:'#8CCF45', grind:'#4FC487', reactor:'#45CFE6', xreactor:'#7CD34A', forge:'#9BE15D', purify:'#4CC56E',
+  fgtrans:'#C9D83A', sgtrans:'#86C936', gasdisp:'#A9C4D6', gear:'#E8B23A', pylon:'#22A6EE', xpylon:'#22A6EE', relay:'#E8CF3E', xrelay:'#5CD05A', thermal:'#8FD3FF',
+  stash:'#C9CED0', loader:'#F2C230', unloader:'#F08A3A', tank:'#4FB8EC', gastank:'#D8CF5A', bussection:'#7CC546', busport:'#6BC33A',
+  cinlet:'#E8A640', coutlet:'#E8A640', cminlet:'#E8A640', cmoutlet:'#E8A640',
+  bridge:'#E9B44C', converger:'#E9B44C', splitter:'#E9B44C', control:'#E9C440', pbridge:'#C9D23E', pconverger:'#E58A3A', psplitter:'#E9B44C', pcontrol:'#C9D23E' };
+const BUS_GREEN = '#7CC546';
+const facAcc = type => FAC_ACC[type] || '#E8C930';
+// corner brackets in the accent colour
+function corners(x, y, w, h, col){
+  const l = Math.max(4, Math.min(11, w / 4, h / 4)), t = 2.5; ctx.fillStyle = col;
+  for (const [cx, cy, sx, sy] of [[x, y, 1, 1], [x + w, y, -1, 1], [x, y + h, 1, -1], [x + w, y + h, -1, -1]]){
+    ctx.fillRect(sx > 0 ? cx : cx - l, sy > 0 ? cy : cy - t, l, t); ctx.fillRect(sx > 0 ? cx : cx - t, sy > 0 ? cy : cy - l, t, l);
+  }
+}
+function facPic(type, cx, cy, d, alpha){ const p = PICS.facs.get(type); if (!p) return false; ctx.globalAlpha = alpha == null ? 1 : alpha; drawPic(ctx, p, cx, cy, d, d); ctx.globalAlpha = 1; return true; }
 function drawBuilding(e){
   const t = TYPES[e.type], k = t.kind, x = e.x*S+2, y = e.y*S+2, w = e.w*S-4, h = e.h*S-4;
   const ink = C['cv-mach-ink'];
   if (k==='pylon' || k==='relay'){
     ctx.fillStyle = C['cv-mach']; ctx.strokeStyle = ink; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.roundRect(x, y, w, h, 0); ctx.fill(); ctx.stroke();
+    const acc = facAcc(e.type); corners(x, y, w, h, e.powered ? acc : C.muted);
+    if (facPic(e.type, x+w/2, y+h/2 + (k==='relay' && prefs.labels ? 4 : 0), Math.min(w, h) * (k==='relay' ? .78 : .92), e.powered ? 1 : .45)){
+      if (k==='relay' && prefs.labels) fitLabel(t.short, x+4, y+3, w - 8, 9, 600);
+      return;
+    }
     ctx.fillStyle = e.powered ? C.power : C.muted; poly(ctx, x+w/2, y+h/2, Math.min(w,h)*.36, 4, 0); ctx.fill();
     ctx.strokeStyle = C['cv-mach']; ctx.lineWidth = 1.6; const mx = x+w/2, my = y+h/2; ctx.beginPath(); ctx.moveTo(mx+1.5,my-6); ctx.lineTo(mx-2,my+.5); ctx.lineTo(mx+2,my-.5); ctx.lineTo(mx-1.5,my+6); ctx.stroke();
     if (k==='relay' && prefs.labels) fitLabel(t.short, x+4, y+3, w - 8, 9, 600);
     return;
   }
   if (k==='bus'){
-    ctx.fillStyle = e.busOn ? C.accent : C['panel-2']; ctx.fillRect(x, y, w, h);
+    ctx.fillStyle = e.busOn ? BUS_GREEN : C['panel-2']; ctx.fillRect(x, y, w, h);
     ctx.fillStyle = '#15191A'; ctx.globalAlpha = e.busOn ? .85 : .3;
     const vert = e.h > e.w; for (let i = 0; i < (vert ? h : w); i += 8){ if (vert) ctx.fillRect(x, y+i, w, 2); else ctx.fillRect(x+i, y, 2, h); }
     ctx.globalAlpha = 1; ctx.strokeStyle = ink; ctx.lineWidth = 1.2; ctx.strokeRect(x, y, w, h);
@@ -4086,6 +4111,8 @@ function drawBuilding(e){
     portMarks(e, 'in', ink, true);
     ctx.textAlign='left'; if (e.off) offVeil(x,y,w,h); return;
   }
+  const acc = facAcc(e.type), pic = PICS.facs.has(e.type);
+  corners(x, y, w, h, acc);
   if (e.w * e.h > 4 && k !== 'loader' && k !== 'unloader' && k !== 'conduit'){ // 2×2 units are too small for a name: the icon and the hover text say what they are
     // keep the name clear of port marks on the top edge and of the status dots at the top right
     const top = ['in', 'out'].some(w2 => AIC.portCells(e, w2).some(c => c[1] === e.y && (c[2] === 0 || c[2] === 2)));
@@ -4098,8 +4125,18 @@ function drawBuilding(e){
     const pinR = e.pin != null ? RECIPES_BY_M[e.type][e.pin] : null;
     const show = e.cur ? rItem(e.cur) : pinR ? rItem(pinR) : (e.last ? rItem(e.last) : firstOut(e.type));
     if (pinR){ ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(x+w-14, y+6, 3, 0, 7); ctx.fill(); }
-    ctx.globalAlpha = e.cur ? 1 : .4; drawItem(ctx, show, x+w/2, y+h/2+3, Math.min(12, Math.min(w,h)*.16)); ctx.globalAlpha = 1;
-    if (e.cur){ ctx.fillStyle = C.ink; ctx.globalAlpha=.8; ctx.fillRect(x+5, y+h-8, (w-10)*Math.min(1, e.t/e.cur.t), 3); ctx.globalAlpha=1; }
+    if (pic){
+      // the machine's picture in the middle, what it is making in a badge at the bottom right
+      const top = prefs.labels ? 14 : 4, d = Math.min(w - 8, h - top - 6) * .9;
+      facPic(e.type, x + w/2, y + top + (h - top) / 2 - 1, d, e.cur ? 1 : .8);
+      if (show){ const b = Math.min(20, Math.max(12, Math.min(w, h) * .26)), bx = x + w - b - 4, by = y + h - b - 7;
+        ctx.fillStyle = C['cv-mach']; ctx.strokeStyle = acc; ctx.lineWidth = 1.2; ctx.fillRect(bx, by, b, b); ctx.strokeRect(bx, by, b, b);
+        ctx.globalAlpha = e.cur ? 1 : .45; drawItem(ctx, show, bx + b/2, by + b/2, b * .36); ctx.globalAlpha = 1; }
+      if (e.cur){ ctx.fillStyle = acc; ctx.fillRect(x+4, y+h-5, (w-8)*Math.min(1, e.t/e.cur.t), 3); }
+    } else {
+      ctx.globalAlpha = e.cur ? 1 : .4; drawItem(ctx, show, x+w/2, y+h/2+3, Math.min(12, Math.min(w,h)*.16)); ctx.globalAlpha = 1;
+      if (e.cur){ ctx.fillStyle = C.ink; ctx.globalAlpha=.8; ctx.fillRect(x+5, y+h-8, (w-10)*Math.min(1, e.t/e.cur.t), 3); ctx.globalAlpha=1; }
+    }
     const warnTxt = { nopower:'전력 없음', nogas:'기체 환경 필요', nocat:'촉매 부족' }[e.status];
     if (warnTxt) fitLabel(warnTxt, x+w/2, y+h-20, w - 8, 9, 700, C.bad, 'center');
   } else if (k==='miner' || k==='pump'){
@@ -4107,8 +4144,10 @@ function drawBuilding(e){
     const it = k==='miner' ? e.ore : t.makes; if (it) drawItem(ctx, it, x+w/2, y+h/2+3, 7);
     if (e.status==='working'){ ctx.fillStyle=C.ink; ctx.globalAlpha=.8; ctx.fillRect(x+5, y+h-7, (w-10)*Math.min(1,e.t/t.rate), 2.5); ctx.globalAlpha=1; }
   } else if (k==='thermal'){
-    const on = e.out > 0; ctx.fillStyle = on ? C.warn : C.muted; ctx.beginPath(); const fx = x+w/2, fy = y+h/2+1; ctx.moveTo(fx, fy-8); ctx.quadraticCurveTo(fx+8, fy, fx, fy+7); ctx.quadraticCurveTo(fx-8, fy, fx, fy-8); ctx.fill();
-    fitLabel(on ? '+'+e.out : '연료 없음', x+w/2, y+h-12, w - 6, 8.5, 600, ink, 'center', 6.5);
+    const on = e.out > 0;
+    if (facPic(e.type, x+w/2, y+h/2-4, Math.min(w, h) * .78, on ? 1 : .5)){ fitLabel(on ? '+'+e.out : '연료 없음', x+w/2, y+h-12, w - 6, 8.5, 700, ink, 'center', 6.5); }
+    else { ctx.fillStyle = on ? C.warn : C.muted; ctx.beginPath(); const fx = x+w/2, fy = y+h/2+1; ctx.moveTo(fx, fy-8); ctx.quadraticCurveTo(fx+8, fy, fx, fy+7); ctx.quadraticCurveTo(fx-8, fy, fx, fy-8); ctx.fill();
+    fitLabel(on ? '+'+e.out : '연료 없음', x+w/2, y+h-12, w - 6, 8.5, 600, ink, 'center', 6.5); }
   } else if (k==='stash'){
     portMarks(e, 'in', C.muted, false); portMarks(e, 'out', ink, true);
     // 3 × 2 slot grid; the green fill shows how full each slot is (50 max)
@@ -4122,14 +4161,23 @@ function drawBuilding(e){
     });
   } else if (k==='tank'){
     portMarks(e,'in',C.muted,false); portMarks(e,'out',ink,true);
+    if (pic){ // the picture, with a level gauge down the right edge
+      facPic(e.type, x+w/2 - 3, y+h/2 + (prefs.labels ? 5 : 0), Math.min(w - 14, h - (prefs.labels ? 18 : 8)), 1);
+      const gx = x+w-9, gy = y+(prefs.labels ? 14 : 6), gh = y+h-6-gy; ctx.fillStyle = C['panel-2']; ctx.fillRect(gx, gy, 5, gh);
+      if (e.fl){ const f = Math.min(1, e.amt/500); ctx.fillStyle = MAT[ITEMS[e.fl].mat]; ctx.fillRect(gx, gy + gh*(1-f), 5, gh*f); }
+      ctx.strokeStyle = ink; ctx.lineWidth = .8; ctx.strokeRect(gx, gy, 5, gh);
+    } else {
     ctx.fillStyle = C['panel-2']; ctx.fillRect(x+w/2-8, y+h/2-6, 16, 16);
     if (e.fl){ ctx.fillStyle = MAT[ITEMS[e.fl].mat]; const f = Math.min(1, e.amt/500); ctx.fillRect(x+w/2-8, y+h/2+10-16*f, 16, 16*f); }
     ctx.strokeStyle = ink; ctx.lineWidth = 1; ctx.strokeRect(x+w/2-8, y+h/2-6, 16, 16);
+    }
   } else if (k==='busport'){
-    ctx.fillStyle = C.accent; ctx.fillRect(x+w/2-7, y+h/2-5, 14, 14);
+    if (!facPic(e.type, x+w/2, y+h/2 + (prefs.labels ? 6 : 0), Math.min(w, h) * .72, 1)){ ctx.fillStyle = BUS_GREEN; ctx.fillRect(x+w/2-7, y+h/2-5, 14, 14); }
   } else if (k==='sink'){
     portMarks(e,'in',C.muted,false);
-    ctx.globalAlpha = e.status==='working' ? 1 : .4; drawItem(ctx, e.lastGas || 'xiragen', x+w/2, y+h/2+4, 12); ctx.globalAlpha = 1;
+    if (pic){ facPic(e.type, x+w/2, y+h/2 + (prefs.labels ? 5 : 0), Math.min(w, h) * .74, e.status==='working' ? 1 : .6);
+      ctx.globalAlpha = e.status==='working' ? 1 : .45; drawItem(ctx, e.lastGas || 'xiragen', x+w-10, y+h-12, 5); ctx.globalAlpha = 1; }
+    else { ctx.globalAlpha = e.status==='working' ? 1 : .4; drawItem(ctx, e.lastGas || 'xiragen', x+w/2, y+h/2+4, 12); ctx.globalAlpha = 1; }
     if (e.status==='working'){ ctx.fillStyle=C.ink; ctx.globalAlpha=.8; ctx.fillRect(x+5, y+h-8, (w-10)*Math.min(1,e.t/10), 3); ctx.globalAlpha=1; }
   } else if (k==='conduit'){
     const inl = t.dirn === 'in'; portMarks(e, inl ? 'in' : 'out', inl ? C.muted : ink, !inl);
