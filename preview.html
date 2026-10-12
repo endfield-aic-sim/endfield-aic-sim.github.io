@@ -3640,12 +3640,10 @@ $('#viewSw').onclick = ev => {
 };
 $('#viewSw').hidden = !acct.enabled();
 $('#bar').classList.toggle('site', acct.enabled());
+// the header always uses two rows on the factory screen: title, menu and account on top, factory controls below
 function fitHeader(){
-  const bar = $('#bar'), tb = bar.querySelector('.toolbar'), brand = bar.querySelector('.brand');
-  bar.classList.remove('tworow');
-  if (getComputedStyle(tb).display === 'none') return;
-  const ac = $('#acct'), low = el => el && !el.hidden && el.offsetTop > brand.offsetTop + brand.offsetHeight / 2;
-  if (low(tb) || low(ac)) bar.classList.add('tworow');
+  const bar = $('#bar'), tb = bar.querySelector('.toolbar');
+  bar.classList.toggle('tworow', getComputedStyle(tb).display !== 'none');
 }
 window.addEventListener('resize', fitHeader);
 if (document.fonts) document.fonts.ready.then(fitHeader);
