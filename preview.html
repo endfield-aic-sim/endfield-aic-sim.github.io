@@ -4166,11 +4166,18 @@ function drawBuilding(e){
     });
   } else if (k==='tank'){
     portMarks(e,'in',C.muted,false); portMarks(e,'out',ink,true);
-    if (pic){ // the picture, with a level gauge down the right edge
-      facPic(e.type, x+w/2 - 4, (picTop + y+h-6) / 2, Math.min(w - 20, y+h-6 - picTop), 1);
-      const gx = x+w-9, gy = picTop, gh = y+h-6-gy; ctx.fillStyle = C['panel-2']; ctx.fillRect(gx, gy, 5, gh);
-      if (e.fl){ const f = Math.min(1, e.amt/500); ctx.fillStyle = MAT[ITEMS[e.fl].mat]; ctx.fillRect(gx, gy + gh*(1-f), 5, gh*f); }
-      ctx.strokeStyle = ink; ctx.lineWidth = .8; ctx.strokeRect(gx, gy, 5, gh);
+    if (pic){ // the picture, with a level gauge along a side that has no port on it
+      const used = new Set([...AIC.portCells(e, 'in').map(c => opp(c[2])), ...AIC.portCells(e, 'out').map(c => c[2])]);
+      const side = [2, 1, 3, 0].find(d => !used.has(d)) ?? 2, horiz = side === 0 || side === 2;
+      let pl = x + 5, pr = x + w - 5, pt = picTop, pb = y + h - 6, gx, gy, gw, gh;
+      if (side === 2){ gx = x + 10; gw = w - 20; gh = 4; gy = y + h - 9; pb = gy - 3; }
+      else if (side === 0){ gx = x + 10; gw = w - 20; gh = 4; gy = picTop; pt = gy + 7; }
+      else if (side === 1){ gw = 4; gx = x + w - 9; gy = picTop; gh = y + h - 6 - gy; pr = gx - 3; }
+      else { gw = 4; gx = x + 5; gy = picTop; gh = y + h - 6 - gy; pl = gx + 7; }
+      facPic(e.type, (pl + pr) / 2, (pt + pb) / 2, Math.max(8, Math.min(pr - pl, pb - pt)), 1);
+      ctx.fillStyle = C['panel-2']; ctx.fillRect(gx, gy, gw, gh);
+      if (e.fl){ const f = Math.min(1, e.amt/500); ctx.fillStyle = MAT[ITEMS[e.fl].mat]; if (horiz) ctx.fillRect(gx, gy, gw*f, gh); else ctx.fillRect(gx, gy + gh*(1-f), gw, gh*f); }
+      ctx.strokeStyle = ink; ctx.lineWidth = .8; ctx.strokeRect(gx, gy, gw, gh);
     } else {
     ctx.fillStyle = C['panel-2']; ctx.fillRect(x+w/2-8, y+h/2-6, 16, 16);
     if (e.fl){ ctx.fillStyle = MAT[ITEMS[e.fl].mat]; const f = Math.min(1, e.amt/500); ctx.fillRect(x+w/2-8, y+h/2+10-16*f, 16, 16*f); }
