@@ -54,7 +54,7 @@ button{cursor:pointer}
 [hidden]{display:none!important}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
-.app{height:100%;display:grid;grid-template-columns:minmax(0,1fr) 350px;grid-template-rows:auto minmax(0,1fr) auto}
+.app{height:100%;display:grid;grid-template-columns:minmax(0,1fr) var(--side-w,350px);grid-template-rows:auto minmax(0,1fr) auto}
 header.bar{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:8px 16px;border-bottom:1px solid var(--line);background:var(--panel)}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
 .brand h1{font-family:var(--f-body);font-weight:700;font-size:17px;margin:0;line-height:1.1}
@@ -79,7 +79,7 @@ header.bar{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:1
 select.sel{border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:5px 8px;max-width:220px}
 input.num{width:58px;border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:4px 6px;font-family:var(--f-mono);font-size:12px}
 
-.build{grid-column:1;grid-row:3;border-top:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-width:0}
+.build{position:relative;grid-column:1;grid-row:3;border-top:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-width:0}
 .brow{display:flex;align-items:flex-end;gap:12px;padding:8px 12px 0;border-bottom:1px solid var(--line)}
 .tools{display:flex;gap:4px;padding-bottom:8px;flex:none}
 .tools button{display:flex;flex-direction:column;align-items:center;gap:1px;width:46px;border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:4px 2px 3px;font-size:10.5px;line-height:1.2}
@@ -130,7 +130,7 @@ main.stage{grid-column:1;grid-row:2;position:relative;min-width:0;min-height:0;b
 .hud .chip.warn{border-color:var(--bad);color:var(--bad);font-weight:600}
 .hud .mono{font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
 
-aside.side{grid-column:2;grid-row:2/4;border-left:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-height:0}
+aside.side{position:relative;grid-column:2;grid-row:2/4;border-left:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-height:0}
 .insp{padding:12px 14px;border-bottom:1px solid var(--line);max-height:50%;overflow-y:auto;flex:none}
 .insp h3{font-family:var(--f-display);font-size:16px;font-weight:600;margin:0;line-height:1.2}
 .insp .en{font-size:11.5px;color:var(--ink);opacity:.8}
@@ -257,6 +257,7 @@ dialog textarea{width:100%;height:200px;font-family:var(--f-mono);font-size:11px
 .msg{font-size:12px;color:var(--muted);min-height:1.4em;margin-top:6px}
 
 @media (max-width: 960px){
+  .rz,.rzrow{display:none}
   html,body{height:auto}
   .app{height:auto;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto auto}
   main.stage,.build,aside.side{grid-column:1;grid-row:auto}
@@ -500,6 +501,20 @@ header.bar{gap:8px 12px}
 .bugctx .kv{margin-top:6px;font-size:11.5px}
 .bugctx dd{overflow-wrap:anywhere}
 @media (prefers-reduced-motion: reduce){ .meter i,.switch input::after, }
+/* drag handles on panel edges: side panel width, facility strip height, inspector height (double-click resets) */
+.rz{position:absolute;z-index:6;touch-action:none}
+.rz::after{content:"";position:absolute;background:var(--accent);opacity:0;transition:opacity .12s}
+.rz:hover::after,.rz.on::after{opacity:1}
+.rz.col{top:0;bottom:0;left:-4px;width:8px;cursor:col-resize}
+.rz.col::after{top:0;bottom:0;left:3px;width:2px}
+.rz.row{left:0;right:0;height:8px;cursor:row-resize}
+.rz.row::after{left:0;right:0;top:3px;height:2px}
+.rz.top{top:-4px}
+.rzrow{position:relative;height:0;flex:none}
+.rzrow .rz.row{top:-4px}
+body.resizing{user-select:none}
+body.resizing.rcol{cursor:col-resize} body.resizing.rrow{cursor:row-resize}
+.build.wrap .strip{flex-wrap:wrap;overflow-x:hidden;overflow-y:auto;align-content:flex-start}
 .note:empty{display:none}
 </style>
 
@@ -546,6 +561,7 @@ header.bar{gap:8px 12px}
   </main>
 
   <section class="build" aria-label="설비">
+    <div class="rz row top" id="rzBuild" title="드래그해서 높이 조절" aria-hidden="true"></div>
     <div class="brow">
       <div class="tools" id="tools" aria-label="도구"></div>
       <div class="cats" id="cats" role="tablist" aria-label="설비 분류"></div>
@@ -556,7 +572,9 @@ header.bar{gap:8px 12px}
   </section>
 
   <aside class="side">
+    <div class="rz col" id="rzSide" title="드래그해서 너비 조절" aria-hidden="true"></div>
     <section class="insp" id="insp" aria-live="polite"></section>
+    <div class="rzrow" id="rzInspRow"><div class="rz row" id="rzInsp" title="드래그해서 높이 조절" aria-hidden="true"></div></div>
     <div class="tabs" role="tablist">
       <button role="tab" aria-selected="true" data-tab="stats">생산 현황</button>
       <button role="tab" aria-selected="false" data-tab="facs">설비</button>
@@ -4116,15 +4134,18 @@ function drawBuilding(e){
   }
   const acc = facAcc(e.type), pic = PICS.facs.has(e.type);
   corners(x, y, w, h, acc);
-  let picTop = y + 5; // pictures go below the name
-  // the largest square between picTop and bot, centred
-  const picIn = (bot, alpha, dx) => facPic(e.type, x + w/2 + (dx || 0), (picTop + bot) / 2, Math.max(8, Math.min(w - 10, bot - picTop)), alpha);
+  // layout that does not depend on rotation: margins as deep as the deepest port mark (pipe sockets reach 12px in),
+  // name size and picture size from the short side, so turning a unit only moves things along its long side
+  const fluidPorts = ['in', 'out'].some(w2 => AIC.portCells(e, w2).some(c => c[3] && c[3] !== 's'));
+  const pad = fluidPorts ? 12 : 5, short = Math.min(w, h);
+  const tiny = fluidPorts && short < 4*S - 4; // 3×3 units with pipe sockets: no room for a name between the sockets, the picture says what it is
+  let picTop = y + pad;
   if (e.w * e.h > 4 && k !== 'loader' && k !== 'unloader' && k !== 'conduit'){ // 2×2 units are too small for a name: the icon and the hover text say what they are
-    // keep the name clear of port marks on the top edge and of the status dots at the top right
-    const top = ['in', 'out'].some(w2 => AIC.portCells(e, w2).some(c => c[1] === e.y && (c[2] === 0 || c[2] === 2)));
     const right = e.status ? (e.pin != null ? 22 : 14) : 4;
-    if (prefs.labels){ fitLabel(t.short, x+4, y + (top ? 12 : 4), w - 4 - right, t.w>=5 ? 11 : 9.5, 600, ink, 'left', 6.5); picTop = fitBottom + 3; }
+    if (prefs.labels && !tiny){ fitLabel(t.short, x + pad, y + pad + 1, short - pad - Math.max(pad, right), t.w>=5 ? 11 : 9.5, 600, ink, 'left', 6.5); picTop = fitBottom + 3; }
   }
+  // the picture: the same size in every rotation, centred between the name and a bottom row of rowH
+  const picIn = (rowH, alpha) => { const bot = y + h - pad - rowH, d = Math.max(8, Math.min(short - 2 * pad, short - (picTop - y) - pad - rowH)); return facPic(e.type, x + w/2, (picTop + bot) / 2, d, alpha); };
   if (e.status){ ctx.fillStyle = STCOL()[e.status] || C.muted; ctx.beginPath(); ctx.arc(x+w-6, y+6, 3, 0, 7); ctx.fill(); }
   if (k==='machine'){
     portMarks(e, 'in', C.muted, false); portMarks(e, 'out', ink, true);
@@ -4134,16 +4155,18 @@ function drawBuilding(e){
     const warnTxt = { nopower:'전력 없음', nogas:'기체 환경 필요', nocat:'촉매 부족' }[e.status];
     if (pic){
       // the machine's picture between the name and the bottom row (warning text / progress), what it is making in a badge at the bottom right
-      picIn(y + h - (warnTxt ? 17 : 8), e.cur ? 1 : .8);
-      if (show){ const b = Math.min(20, Math.max(12, Math.min(w, h) * .26)), bx = x + w - b - 4, by = y + h - b - 7;
+      const rowH = tiny ? 0 : 16, rowTop = y + h - pad - (tiny ? 15 : rowH);
+      picIn(rowH, e.cur ? 1 : .8);
+      if (show){ const b = 14, bx = x + w - pad - b, by = rowTop + 1;
         ctx.fillStyle = C['cv-mach']; ctx.strokeStyle = acc; ctx.lineWidth = 1.2; ctx.fillRect(bx, by, b, b); ctx.strokeRect(bx, by, b, b);
         ctx.globalAlpha = e.cur ? 1 : .45; drawItem(ctx, show, bx + b/2, by + b/2, b * .36); ctx.globalAlpha = 1; }
-      if (e.cur){ ctx.fillStyle = acc; ctx.fillRect(x+4, y+h-5, (w-8)*Math.min(1, e.t/e.cur.t), 3); }
+      if (e.cur){ ctx.fillStyle = acc; ctx.fillRect(x + pad, rowTop + rowH - 1, (w - 2*pad)*Math.min(1, e.t/e.cur.t), 2.5); }
+      if (warnTxt && !tiny) fitLabel(warnTxt, x + pad + 1, rowTop + 3, w - 2*pad - 20, 9, 700, C.bad, 'left');
     } else {
       ctx.globalAlpha = e.cur ? 1 : .4; drawItem(ctx, show, x+w/2, y+h/2+3, Math.min(12, Math.min(w,h)*.16)); ctx.globalAlpha = 1;
       if (e.cur){ ctx.fillStyle = C.ink; ctx.globalAlpha=.8; ctx.fillRect(x+5, y+h-8, (w-10)*Math.min(1, e.t/e.cur.t), 3); ctx.globalAlpha=1; }
     }
-    if (warnTxt) fitLabel(warnTxt, pic ? x + 6 : x+w/2, pic ? y+h-15 : y+h-20, pic ? w - 34 : w - 8, 9, 700, C.bad, pic ? 'left' : 'center');
+    if (warnTxt && !pic) fitLabel(warnTxt, x+w/2, y+h-20, w - 8, 9, 700, C.bad, 'center');
   } else if (k==='miner' || k==='pump'){
     portMarks(e, 'out', ink, true); if (t.ports.in) portMarks(e, 'in', C.muted, false);
     const it = k==='miner' ? e.ore : t.makes; if (it) drawItem(ctx, it, x+w/2, y+h/2+3, 7);
@@ -4166,17 +4189,11 @@ function drawBuilding(e){
     });
   } else if (k==='tank'){
     portMarks(e,'in',C.muted,false); portMarks(e,'out',ink,true);
-    if (pic){ // the picture, with a level gauge along a side that has no port on it
-      const used = new Set([...AIC.portCells(e, 'in').map(c => opp(c[2])), ...AIC.portCells(e, 'out').map(c => c[2])]);
-      const side = [2, 1, 3, 0].find(d => !used.has(d)) ?? 2, horiz = side === 0 || side === 2;
-      let pl = x + 5, pr = x + w - 5, pt = picTop, pb = y + h - 6, gx, gy, gw, gh;
-      if (side === 2){ gx = x + 10; gw = w - 20; gh = 4; gy = y + h - 9; pb = gy - 3; }
-      else if (side === 0){ gx = x + 10; gw = w - 20; gh = 4; gy = picTop; pt = gy + 7; }
-      else if (side === 1){ gw = 4; gx = x + w - 9; gy = picTop; gh = y + h - 6 - gy; pr = gx - 3; }
-      else { gw = 4; gx = x + 5; gy = picTop; gh = y + h - 6 - gy; pl = gx + 7; }
-      facPic(e.type, (pl + pr) / 2, (pt + pb) / 2, Math.max(8, Math.min(pr - pl, pb - pt)), 1);
+    if (pic){ // the picture, with a level gauge as the bottom row
+      picIn(9, 1);
+      const gx = x + pad, gw = w - 2*pad, gh = 4, gy = y + h - pad - 5, horiz = true;
       ctx.fillStyle = C['panel-2']; ctx.fillRect(gx, gy, gw, gh);
-      if (e.fl){ const f = Math.min(1, e.amt/500); ctx.fillStyle = MAT[ITEMS[e.fl].mat]; if (horiz) ctx.fillRect(gx, gy, gw*f, gh); else ctx.fillRect(gx, gy + gh*(1-f), gw, gh*f); }
+      if (e.fl){ const f = Math.min(1, e.amt/500); ctx.fillStyle = MAT[ITEMS[e.fl].mat]; ctx.fillRect(gx, gy, gw*f, gh); }
       ctx.strokeStyle = ink; ctx.lineWidth = .8; ctx.strokeRect(gx, gy, gw, gh);
     } else {
     ctx.fillStyle = C['panel-2']; ctx.fillRect(x+w/2-8, y+h/2-6, 16, 16);
@@ -4184,11 +4201,11 @@ function drawBuilding(e){
     ctx.strokeStyle = ink; ctx.lineWidth = 1; ctx.strokeRect(x+w/2-8, y+h/2-6, 16, 16);
     }
   } else if (k==='busport'){
-    if (!picIn(y + h - 8, 1)){ ctx.fillStyle = BUS_GREEN; ctx.fillRect(x+w/2-7, y+h/2-5, 14, 14); }
+    if (!picIn(0, 1)){ ctx.fillStyle = BUS_GREEN; ctx.fillRect(x+w/2-7, y+h/2-5, 14, 14); }
   } else if (k==='sink'){
     portMarks(e,'in',C.muted,false);
-    if (pic){ picIn(y + h - 8, e.status==='working' ? 1 : .6, -4);
-      ctx.globalAlpha = e.status==='working' ? 1 : .45; drawItem(ctx, e.lastGas || 'xiragen', x+w-10, y+h-12, 5); ctx.globalAlpha = 1; }
+    if (pic){ picIn(0, e.status==='working' ? 1 : .6);
+      ctx.globalAlpha = e.status==='working' ? 1 : .45; drawItem(ctx, e.lastGas || 'xiragen', x+w-pad-6, y+h-pad-6, 5); ctx.globalAlpha = 1; }
     else { ctx.globalAlpha = e.status==='working' ? 1 : .4; drawItem(ctx, e.lastGas || 'xiragen', x+w/2, y+h/2+4, 12); ctx.globalAlpha = 1; }
     if (e.status==='working'){ ctx.fillStyle=C.ink; ctx.globalAlpha=.8; ctx.fillRect(x+5, y+h-8, (w-10)*Math.min(1,e.t/10), 3); ctx.globalAlpha=1; }
   } else if (k==='conduit'){
@@ -4648,7 +4665,7 @@ function renderInspector(force){
   const e = ui.sel ? world.ents.get(ui.sel) : null;
   const key = ui.multi.size ? 'm'+[...ui.multi].join(',') : e ? 'e'+e.id+':'+e.f+':'+e.off : 't'+ui.tool+':'+ui.presetNote;
   if (!force && key === inspKey){ updateInspectorDynamic(e); return; }
-  inspKey = key; el.hidden = false;
+  inspKey = key; el.hidden = false; $('#rzInspRow').hidden = false;
   if (ui.multi.size){
     const cnt = {}; let pw = 0;
     for (const id of ui.multi){ const x = world.ents.get(id); if (x){ cnt[x.type] = (cnt[x.type]||0)+1; if (!x.off) pw += TYPES[x.type].power; } }
@@ -4665,7 +4682,7 @@ function renderInspector(force){
       el.innerHTML = `<h3>붙여넣기</h3><div class="en">Blueprint</div><p>클릭해서 놓기 · R 회전 · Esc 끝내기</p>`;
     } else {
       // nothing selected and no tool to explain: the panel stays out of the way
-      el.innerHTML = ''; el.hidden = true;
+      el.innerHTML = ''; el.hidden = true; $('#rzInspRow').hidden = true;
     }
     return;
   }
@@ -5105,6 +5122,38 @@ const retheme = () => { readColors(); renderTools(); renderPalette(); renderInsp
 if (mq.addEventListener) mq.addEventListener('change', retheme);
 new MutationObserver(retheme).observe(document.documentElement, { attributes:true, attributeFilter:['data-theme'] });
 window.addEventListener('resize', () => { resize(); board.redraw(); syncSitesH(); });
+// ---------- resizable panels: drag the edge of the side panel, the facility strip or the inspector ----------
+const layout = (() => { try { const v = JSON.parse(localStorage.getItem('aic-layout')); return v && typeof v === 'object' ? v : {}; } catch(e){ return {}; } })();
+function applyLayout(){
+  const app = $('#app'), strip = $('#plist'), insp = $('#insp');
+  if (layout.side) app.style.setProperty('--side-w', layout.side + 'px'); else app.style.removeProperty('--side-w');
+  strip.style.height = layout.strip ? layout.strip + 'px' : '';
+  $('.build').classList.toggle('wrap', (layout.strip || 0) > 170);
+  insp.style.height = layout.insp ? layout.insp + 'px' : ''; insp.style.maxHeight = layout.insp ? 'none' : '';
+  $('#rzInspRow').hidden = insp.hidden;
+}
+const zoomOf = el => parseFloat(getComputedStyle(el).zoom) || 1;
+function saveLayout(){ try { localStorage.setItem('aic-layout', JSON.stringify(layout)); } catch(e){} }
+function dragEdge(handle, key, cls, start, move){
+  handle.addEventListener('pointerdown', ev => {
+    if (ev.button !== 0) return; ev.preventDefault(); handle.setPointerCapture(ev.pointerId);
+    const s0 = start(ev); handle.classList.add('on'); document.body.classList.add('resizing', cls);
+    const mv = e => { layout[key] = Math.round(move(e, s0)); applyLayout(); };
+    const up = () => { handle.removeEventListener('pointermove', mv); handle.removeEventListener('pointerup', up); handle.removeEventListener('pointercancel', up);
+      handle.classList.remove('on'); document.body.classList.remove('resizing', cls); saveLayout(); };
+    handle.addEventListener('pointermove', mv); handle.addEventListener('pointerup', up); handle.addEventListener('pointercancel', up);
+  });
+  handle.addEventListener('dblclick', () => { delete layout[key]; applyLayout(); saveLayout(); });
+}
+const clampN = (v, a, b) => Math.max(a, Math.min(b, v));
+dragEdge($('#rzSide'), 'side', 'rcol', () => null, e => clampN(innerWidth - e.clientX, 260, Math.max(260, Math.min(820, innerWidth - 420))));
+dragEdge($('#rzBuild'), 'strip', 'rrow', ev => ({ y: ev.clientY, h: $('#plist').getBoundingClientRect().height, z: zoomOf($('.build')) }),
+  (e, s) => clampN((s.h + (s.y - e.clientY)) / s.z, 90, innerHeight * .6 / s.z));
+dragEdge($('#rzInsp'), 'insp', 'rrow', ev => ({ top: $('#insp').getBoundingClientRect().top, z: zoomOf($('aside.side')) }),
+  (e, s) => clampN((e.clientY - s.top) / s.z, 60, innerHeight * .85 / s.z));
+applyLayout();
+// the canvas follows whatever size the stage ends up
+if (window.ResizeObserver) new ResizeObserver(() => { resize(); render(); }).observe($('#stage'));
 // save right away when the tab is closed, reloaded or hidden (the periodic save runs every 6 s)
 const saveNow = () => { if (ui.touched) store.saveLayout(); };
 window.addEventListener('pagehide', saveNow);
