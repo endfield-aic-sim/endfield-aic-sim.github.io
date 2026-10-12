@@ -13,23 +13,23 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
 <style>
 :root{
-  --bg:#E3E6E2; --panel:#F3F4F1; --panel-2:#E9ECE7; --ink:#15191A; --muted:#58615C; --line:#C6CBC4;
+  --bg:#E3E6E2; --panel:#F3F4F1; --panel-2:#E9ECE7; --ink:#15191A; --muted:#15191A; --cv-muted:#58615C; --line:#C6CBC4;
   --accent:#F2D300; --accent-ink:#6B5C00; --on-accent:#15191A;
   --power:#12806F; --ok:#2B8A3E; --warn:#C26A00; --bad:#C0262D;
   --cv-bg:#D5D9D3; --cv-grid:rgba(21,25,26,.055); --cv-grid2:rgba(21,25,26,.12);
   --cv-belt:#3B4241; --cv-rail:#262B2A; --cv-belt-mark:#8C9591; --cv-pipe:#2E6F72; --cv-pipe-core:#7FC4C4;
   --cv-mach:#F8F9F6; --cv-mach-ink:#1B2021; --cv-range:rgba(18,128,111,.09); --cv-range-line:rgba(18,128,111,.45);
-  --f-display:"Chakra Petch","IBM Plex Sans KR",system-ui,sans-serif;
-  --f-body:"IBM Plex Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
-  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --f-display:"Noto Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-body:"Noto Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-mono:"Noto Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     color-scheme:dark;
-    --bg:#101312; --panel:#171B1A; --panel-2:#1E2321; --ink:#E5E8E3; --muted:#8D9690; --line:#2B312F;
+    --bg:#101312; --panel:#171B1A; --panel-2:#1E2321; --ink:#E5E8E3; --muted:#E5E8E3; --cv-muted:#8D9690; --line:#2B312F;
     --accent:#F2D300; --accent-ink:#F2D300; --on-accent:#15191A;
     --power:#2DB3A0; --ok:#51CF66; --warn:#F59F00; --bad:#FF6B6B;
     --cv-bg:#0D100F; --cv-grid:rgba(229,232,227,.035); --cv-grid2:rgba(229,232,227,.075);
@@ -39,7 +39,7 @@
 }
 :root[data-theme="dark"]{
   color-scheme:dark;
-  --bg:#101312; --panel:#171B1A; --panel-2:#1E2321; --ink:#E5E8E3; --muted:#8D9690; --line:#2B312F;
+  --bg:#101312; --panel:#171B1A; --panel-2:#1E2321; --ink:#E5E8E3; --muted:#E5E8E3; --cv-muted:#8D9690; --line:#2B312F;
   --accent:#F2D300; --accent-ink:#F2D300; --on-accent:#15191A;
   --power:#2DB3A0; --ok:#51CF66; --warn:#F59F00; --bad:#FF6B6B;
   --cv-bg:#0D100F; --cv-grid:rgba(229,232,227,.035); --cv-grid2:rgba(229,232,227,.075);
@@ -57,35 +57,32 @@ button{cursor:pointer}
 .app{height:100%;display:grid;grid-template-columns:minmax(0,1fr) 350px;grid-template-rows:auto minmax(0,1fr) auto}
 header.bar{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:8px 16px;border-bottom:1px solid var(--line);background:var(--panel)}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
-.brand .mark{width:30px;height:30px;flex:none;background:repeating-linear-gradient(135deg,var(--accent) 0 5px,var(--ink) 5px 10px);border-radius:3px;position:relative}
-.brand .mark::after{content:"";position:absolute;inset:6px;background:var(--panel);border-radius:1px}
-.brand h1{font-family:var(--f-display);font-weight:700;font-size:17px;letter-spacing:.02em;margin:0;line-height:1.1}
-.brand small{display:block;font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.brand h1{font-family:var(--f-body);font-weight:700;font-size:17px;margin:0;line-height:1.1}
 .ctl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.btn{border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:5px 10px;line-height:1.2;white-space:nowrap}
+.btn{border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:5px 10px;line-height:1.2;white-space:nowrap}
 .btn:hover{border-color:var(--muted)}
 .btn.primary{background:var(--accent);color:var(--on-accent);border-color:transparent;font-weight:600}
 .btn.danger{color:var(--bad)}
 .btn.sm{padding:3px 8px;font-size:12px}
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:2px;overflow:hidden}
 .seg button{border:0;background:var(--panel-2);padding:5px 9px;font-family:var(--f-mono);font-size:12px}
 .seg button+button{border-left:1px solid var(--line)}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--panel)}
 .clock{font-family:var(--f-mono);font-size:12px;color:var(--muted);min-width:64px;font-variant-numeric:tabular-nums}
 .pwr{display:flex;align-items:center;gap:8px;min-width:190px}
-.pwr .lbl{font-size:11px;color:var(--muted);letter-spacing:.04em}
+.pwr .lbl{font-size:12px;color:var(--ink)}
 .meter{position:relative;flex:1;height:10px;background:var(--panel-2);border:1px solid var(--line);border-radius:2px;overflow:hidden;min-width:80px}
 .meter i{position:absolute;inset:0 auto 0 0;background:var(--power);transition:width .3s}
 .meter.over i{background:var(--bad)}
 .pwr b{font-family:var(--f-mono);font-weight:500;font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
 .spacer{flex:1}
-select.sel{border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:5px 8px;max-width:220px}
-input.num{width:58px;border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:4px 6px;font-family:var(--f-mono);font-size:12px}
+select.sel{border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:5px 8px;max-width:220px}
+input.num{width:58px;border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:4px 6px;font-family:var(--f-mono);font-size:12px}
 
 .build{grid-column:1;grid-row:3;border-top:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-width:0}
 .brow{display:flex;align-items:flex-end;gap:12px;padding:8px 12px 0;border-bottom:1px solid var(--line)}
 .tools{display:flex;gap:4px;padding-bottom:8px;flex:none}
-.tools button{display:flex;flex-direction:column;align-items:center;gap:1px;width:46px;border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:4px 2px 3px;font-size:10.5px;line-height:1.2}
+.tools button{display:flex;flex-direction:column;align-items:center;gap:1px;width:46px;border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:4px 2px 3px;font-size:10.5px;line-height:1.2}
 .tools button canvas{width:18px;height:18px}
 .tools button[aria-pressed="true"]{border-color:var(--ink);background:var(--panel);box-shadow:inset 0 0 0 1px var(--ink),inset 0 -3px 0 var(--accent);font-weight:600}
 .cats{display:flex;gap:2px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
@@ -95,14 +92,14 @@ input.num{width:58px;border:1px solid var(--line);background:var(--panel-2);bord
 .cats button[aria-selected="true"]{background:var(--panel-2);border-color:var(--line);color:var(--ink);font-weight:600;box-shadow:inset 0 3px 0 var(--accent)}
 .cats .cnt{font-family:var(--f-mono);font-size:10.5px;font-weight:500;color:var(--muted)}
 .search{flex:none;width:210px;padding-bottom:8px}
-.search input{width:100%;border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:5px 8px;font-size:12.5px}
+.search input{width:100%;border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:5px 8px;font-size:12.5px}
 .strip{display:flex;align-items:stretch;gap:6px;overflow-x:auto;overflow-y:hidden;padding:10px 12px;background:var(--panel-2);min-height:124px;scroll-padding-inline:12px;overscroll-behavior-x:contain}
 .tool{flex:none;width:104px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:4px;text-align:center;border:1px solid var(--line);background:var(--panel);border-radius:5px;padding:9px 6px 7px}
 .tool:hover{border-color:var(--muted)}
 .tool[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 .tool canvas{width:36px;height:36px;flex:none}
 .tool .nm{font-size:12px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.5em;word-break:keep-all;overflow-wrap:anywhere}
-.tool .meta{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);white-space:nowrap;margin-top:auto}
+.tool .meta{font-size:11.5px;color:var(--ink);white-space:nowrap;margin-top:auto}
 .tool.addbp{justify-content:center;border-style:dashed}
 .tool.addbp .plus{font-size:24px;line-height:1;color:var(--muted)}
 .tool.addbp .nm{min-height:0}
@@ -112,33 +109,31 @@ input.num{width:58px;border:1px solid var(--line);background:var(--panel-2);bord
 .bp .row{gap:4px;margin-top:auto}
 .snote{flex:none;align-self:center;max-width:260px;margin:0 4px;font-size:11.5px}
 .keys{font-size:11px;color:var(--muted);padding:5px 12px 6px;line-height:1.6;border-top:1px solid var(--line)}
-kbd{font-family:var(--f-mono);font-size:10.5px;border:1px solid var(--line);border-bottom-width:2px;border-radius:3px;padding:0 4px;background:var(--panel-2);color:var(--ink)}
+kbd{font:inherit;font-weight:700;color:var(--ink)}
 
 main.stage{grid-column:1;grid-row:2;position:relative;min-width:0;min-height:0;background:var(--cv-bg);overflow:hidden}
 #cv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
-.float{position:absolute;right:12px;top:12px;display:flex;gap:6px}
-.float .btn{background:var(--panel)}
-.sites{position:absolute;left:12px;top:12px;right:290px;display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start;pointer-events:none}
+.sites{position:absolute;left:12px;top:12px;right:12px;display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start;pointer-events:none}
 .sites .rg{display:flex;align-items:center;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:3px;pointer-events:auto;max-width:100%;overflow-x:auto}
 .sites .rg>b{font-size:11px;color:var(--muted);padding:0 6px 0 5px;font-weight:600;white-space:nowrap}
-.sites .rg button{border:0;background:transparent;border-radius:4px;padding:4px 8px;font-size:12px;color:var(--ink);white-space:nowrap;line-height:1.2}
+.sites .rg button{border:0;background:transparent;border-radius:2px;padding:4px 8px;font-size:12px;color:var(--ink);white-space:nowrap;line-height:1.2}
 .sites .rg button:hover{background:var(--panel-2)}
 .sites .rg button[aria-pressed="true"]{background:var(--ink);color:var(--panel);font-weight:600}
 .sites .rg button small{opacity:.65;font-family:var(--f-mono);font-size:10.5px;margin-left:5px;font-weight:400}
 .sites .rg button i{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--accent);margin-left:5px;vertical-align:middle}
-.sites .rg input{width:90px;font-size:12px;padding:3px 6px;border:1px solid var(--accent);border-radius:4px;background:var(--panel-2);color:var(--ink)}
+.sites .rg input{width:90px;font-size:12px;padding:3px 6px;border:1px solid var(--accent);border-radius:2px;background:var(--panel-2);color:var(--ink)}
 .selbar{position:absolute;left:12px;top:calc(var(--sites-h, 0px) + 20px);right:190px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 8px;box-shadow:0 2px 0 rgba(0,0,0,.06);max-width:760px}
 .selbar b{font-weight:600;font-size:12.5px;margin-right:4px}
-.selbar input{border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:3px 7px;font-size:12px;width:160px}
+.selbar input{border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:3px 7px;font-size:12px;width:160px}
 .hud{position:absolute;left:12px;bottom:12px;right:12px;display:flex;gap:8px;align-items:flex-end;pointer-events:none;flex-wrap:wrap}
-.hud .chip{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:4px 8px;font-size:12px;max-width:100%}
+.hud .chip{background:var(--panel);border:1px solid var(--line);border-radius:2px;padding:4px 8px;font-size:12px;max-width:100%}
 .hud .chip.warn{border-color:var(--bad);color:var(--bad);font-weight:600}
 .hud .mono{font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
 
 aside.side{grid-column:2;grid-row:2/4;border-left:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-height:0}
 .insp{padding:12px 14px;border-bottom:1px solid var(--line);max-height:50%;overflow-y:auto;flex:none}
 .insp h3{font-family:var(--f-display);font-size:16px;font-weight:600;margin:0;line-height:1.2}
-.insp .en{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.03em}
+.insp .en{font-size:11.5px;color:var(--ink);opacity:.8}
 .insp p{margin:6px 0 0;color:var(--muted);max-width:60ch}
 .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;border:1px solid currentColor;white-space:nowrap}
@@ -152,8 +147,8 @@ aside.side{grid-column:2;grid-row:2/4;border-left:1px solid var(--line);backgrou
 .switch input:checked::after{left:15px}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;margin-top:10px;font-size:12px}
 .kv dt{color:var(--muted)} .kv dd{margin:0;font-variant-numeric:tabular-nums}
-.sub{font-family:var(--f-display);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:12px 0 5px}
-.sub span{text-transform:none;letter-spacing:0;font-family:var(--f-body)}
+.sub{font-family:var(--f-body);font-size:12px;font-weight:700;color:var(--ink);margin:12px 0 5px}
+.sub span{font-weight:400}
 .bufs{display:flex;flex-wrap:wrap;gap:5px}
 .buf{display:inline-flex;align-items:center;gap:5px;background:var(--panel-2);border:1px solid var(--line);border-radius:3px;padding:2px 6px 2px 3px;font-size:11.5px;font-variant-numeric:tabular-nums}
 .buf img{width:16px;height:16px}
@@ -175,7 +170,7 @@ aside.side{grid-column:2;grid-row:2/4;border-left:1px solid var(--line);backgrou
 .tabs button{flex:1;border:0;background:transparent;padding:8px 4px;font-weight:500;border-bottom:2px solid transparent;color:var(--muted);font-size:12.5px;white-space:nowrap}
 .tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
 .pane{flex:1;min-height:0;overflow-y:auto;padding:10px 14px 16px}
-.pane h4{font-family:var(--f-display);font-size:12px;font-weight:600;letter-spacing:.06em;margin:14px 0 4px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.pane h4{font-family:var(--f-body);font-size:13px;font-weight:700;letter-spacing:0;margin:14px 0 4px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
 .pane h4 small{font-family:var(--f-body);font-weight:400;letter-spacing:0;color:var(--muted);font-size:11px}
 .tscroll{overflow-x:auto}
 button.linkish{border:0;background:transparent;padding:0;font:inherit;color:inherit;cursor:pointer;border-bottom:1px dashed var(--muted)}
@@ -197,6 +192,11 @@ table.depl tr.picked td{background:color-mix(in srgb, var(--accent) 14%, transpa
 .refill .form{margin-top:6px;flex-wrap:wrap}
 .refill .btn[aria-pressed="true"]{border-color:var(--ink)}
 .refill .btn:disabled{opacity:.45;cursor:default}
+.setgrp{border:0;margin:0 0 14px;padding:0;display:flex;flex-wrap:wrap;gap:6px 18px}
+.setgrp legend{font-weight:700;font-size:13px;margin-bottom:6px;padding:0}
+.setgrp.col{flex-direction:column;align-items:flex-start}
+.setgrp label{display:inline-flex;align-items:center;gap:6px;font-size:13px;cursor:pointer}
+.bar,.build,aside.side,section.board,dialog{zoom:var(--ui-zoom,1)}
 .newopts{display:flex;flex-direction:column;gap:8px;margin:10px 0}
 .newopt{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;border:1px solid var(--line);border-radius:6px;padding:10px;cursor:pointer}
 .newopt:has(input:checked){border-color:var(--ink);background:var(--panel-2)}
@@ -214,7 +214,7 @@ table.dep tr.empty td{color:var(--muted);text-align:left;font-family:var(--f-bod
 .pos{color:var(--ok)} .neg{color:var(--warn)} .dim{color:var(--muted)}
 .note{font-size:11.5px;color:var(--muted);margin:8px 0 0;max-width:60ch}
 details{margin-top:12px}
-details summary{cursor:pointer;font-family:var(--f-display);font-size:12px;font-weight:600;letter-spacing:.06em}
+details summary{cursor:pointer;font-family:var(--f-body);font-size:13px;font-weight:700}
 .form{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .form select,.form input{border:1px solid var(--line);background:var(--panel-2);border-radius:3px;padding:4px 6px;font-size:12px}
 .form input[type=number]{width:72px;font-family:var(--f-mono)}
@@ -235,16 +235,16 @@ button.mchip{cursor:pointer;color:inherit} button.mchip:hover{border-color:var(-
 .acct a.who:hover{text-decoration:underline;text-underline-offset:2px}
 .acct .who{color:inherit;text-decoration:none;font-size:12.5px;font-weight:600;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lg{display:grid;grid-template-columns:auto 1fr;gap:8px 10px;align-items:center;margin:10px 0}
-.lg input{border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:6px 8px;font-size:13px;min-width:0}
+.lg input{border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:6px 8px;font-size:13px;min-width:0}
 .lgrow{display:contents}
 .lgrow[hidden]{display:none!important}
 .btn.on{border-color:var(--ok);color:var(--ok);font-weight:600}
-.bp.sharedsearch input{border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:3px 6px;font-size:12px;min-width:0;flex:1}
+.bp.sharedsearch input{border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:3px 6px;font-size:12px;min-width:0;flex:1}
 .bp.shared{width:230px}
 .slots{display:grid;gap:4px;margin:6px 0 8px}
 .slot{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:6px;align-items:center;font-size:12px;min-height:26px}
 .slot .sn{font-family:var(--f-mono);color:var(--muted);text-align:right}
-.slot select{border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:3px 5px;font-size:12px;min-width:0}
+.slot select{border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:3px 5px;font-size:12px;min-width:0}
 .slot .sc{font-family:var(--f-mono);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sfill input{width:64px}
 .tree .r{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
@@ -253,7 +253,7 @@ button.mchip{cursor:pointer;color:inherit} button.mchip:hover{border-color:var(-
 dialog{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px;padding:16px;width:min(560px,calc(100vw - 32px))}
 dialog::backdrop{background:rgba(0,0,0,.35)}
 dialog h3{font-family:var(--f-display);margin:0 0 8px;font-size:16px}
-dialog textarea{width:100%;height:200px;font-family:var(--f-mono);font-size:11px;border:1px solid var(--line);border-radius:4px;background:var(--panel-2);padding:8px;resize:vertical}
+dialog textarea{width:100%;height:200px;font-family:var(--f-mono);font-size:11px;border:1px solid var(--line);border-radius:2px;background:var(--panel-2);padding:8px;resize:vertical}
 .msg{font-size:12px;color:var(--muted);min-height:1.4em;margin-top:6px}
 
 @media (max-width: 960px){
@@ -268,7 +268,6 @@ dialog textarea{width:100%;height:200px;font-family:var(--f-mono);font-size:11px
   main.stage{height:62vh;min-height:360px}
   .selbar{right:12px;top:auto;bottom:48px}
   .sites{right:12px}
-  .float{top:calc(var(--sites-h, 0px) + 20px)}
   aside.side{border-left:0;border-top:1px solid var(--line)}
   .insp{max-height:none;padding-inline:16px}
   .pane{max-height:none;overflow:visible;padding-inline:16px}
@@ -277,7 +276,13 @@ dialog textarea{width:100%;height:200px;font-family:var(--f-mono);font-size:11px
 }
 
 /* board: the page turns into the board (#board, #post/ID, #write, #edit/ID) */
-.seg.view button{font-family:var(--f-body);font-size:12.5px;padding:5px 12px}
+.seg.view{border:0;border-radius:0;overflow:visible;gap:16px;margin-left:8px}
+.seg.view button,.hlinks button{font-family:var(--f-body);font-size:13px;padding:4px 0;background:none;border:0;color:var(--ink);font-weight:500;border-bottom:2px solid transparent;border-radius:0;cursor:pointer}
+.seg.view button+button{border-left:0}
+.seg.view button[aria-pressed="true"]{background:none;color:var(--ink);font-weight:700;border-bottom-color:var(--accent)}
+.seg.view button:hover,.hlinks button:hover{border-bottom-color:var(--line)}
+.seg.view button[aria-pressed="true"]:hover{border-bottom-color:var(--accent)}
+.hlinks{display:flex;gap:16px;align-items:center}
 .board{display:none}
 .app.boardmode main.stage,.app.boardmode .build,.app.boardmode aside.side,.app.boardmode .simonly{display:none!important}
 .app.boardmode .board{display:block;grid-column:1/-1;grid-row:2/4;overflow-y:auto;min-height:0;background:var(--bg)}
@@ -288,7 +293,7 @@ dialog textarea{width:100%;height:200px;font-family:var(--f-mono);font-size:11px
 .btool{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
 .btool .seg button{font-family:var(--f-body);font-size:12.5px;padding:5px 12px}
 .bsearch{display:flex;gap:6px;flex:1 1 240px;min-width:0}
-.bsearch input{flex:1;min-width:0;border:1px solid var(--line);background:var(--panel);border-radius:4px;padding:5px 9px}
+.bsearch input{flex:1;min-width:0;border:1px solid var(--line);background:var(--panel);border-radius:2px;padding:5px 9px}
 .blist{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:6px;background:var(--panel);overflow:hidden}
 .bempty{padding:28px 16px;margin:0;text-align:center;max-width:none}
 .prow{position:relative;display:grid;grid-template-columns:128px minmax(0,1fr) auto;gap:14px;align-items:center;padding:10px 14px 10px 10px;border-top:1px solid var(--line)}
@@ -300,7 +305,7 @@ dialog textarea{width:100%;height:200px;font-family:var(--f-mono);font-size:11px
 .prow:hover{background:var(--panel-2)}
 .prow:hover .ptitle b{text-decoration:underline;text-underline-offset:3px}
 .prow.k-notice{background:color-mix(in srgb,var(--accent) 9%,var(--panel))}
-.pthumb{width:128px;height:80px;border-radius:4px;overflow:hidden;background:var(--panel-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.pthumb{width:128px;height:80px;border-radius:2px;overflow:hidden;background:var(--panel-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--muted)}
 .pthumb img{width:100%;height:100%;object-fit:cover;display:block}
 .pthumb canvas{width:100%;height:100%;display:block}
 .pmain{display:flex;flex-direction:column;gap:3px;min-width:0}
@@ -340,7 +345,7 @@ dialog textarea{width:100%;height:200px;font-family:var(--f-mono);font-size:11px
 .phead .pmeta{font-size:12.5px}
 .phead .pmeta b{color:var(--ink);font-weight:600}
 .bpfig{margin:0 0 18px;border:1px solid var(--line);border-radius:6px;background:var(--panel);padding:10px;display:flex;flex-direction:column;gap:8px}
-#bBig{width:100%;height:clamp(240px,52vw,460px);border-radius:4px;display:block}
+#bBig{width:100%;height:clamp(240px,52vw,460px);border-radius:2px;display:block}
 .bpfig figcaption{font-size:12.5px}
 .fchips{display:flex;flex-wrap:wrap}
 .pbody{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.7;margin:0 0 18px;max-width:72ch}
@@ -358,7 +363,7 @@ a.btn{color:inherit;text-decoration:none;display:inline-block}
 .cbody{white-space:pre-wrap;overflow-wrap:anywhere;margin-top:3px;font-size:13.5px}
 .cnone{padding:6px 0}
 .cform{display:flex;flex-direction:column;gap:6px}
-.cform textarea,.pwrite input,.pwrite textarea{width:100%;border:1px solid var(--line);background:var(--panel);border-radius:4px;padding:8px 10px;font-size:13.5px;resize:vertical}
+.cform textarea,.pwrite input,.pwrite textarea{width:100%;border:1px solid var(--line);background:var(--panel);border-radius:2px;padding:8px 10px;font-size:13.5px;resize:vertical}
 .linkbtn{border:0;background:none;padding:0;color:var(--ink);text-decoration:underline;text-underline-offset:2px;font-size:inherit}
 .linkbtn.danger{color:var(--bad);margin-left:auto;font-size:11.5px}
 .pwrite h2{margin-bottom:16px}
@@ -369,7 +374,7 @@ a.btn{color:inherit;text-decoration:none;display:inline-block}
 .wbp{display:flex;flex-direction:column;gap:8px;min-width:0}
 .wbp .sel{max-width:100%}
 .wbp textarea{font-family:var(--f-mono);font-size:11.5px}
-#wPrev{width:100%;height:220px;border:1px solid var(--line);border-radius:4px;display:block}
+#wPrev{width:100%;height:220px;border:1px solid var(--line);border-radius:2px;display:block}
 .wbp .note{margin:0}
 .pwrite .acts{margin-left:82px}
 @media (max-width: 960px){
@@ -396,10 +401,10 @@ a.btn{color:inherit;text-decoration:none;display:inline-block}
 .rpi{display:flex;align-items:center;gap:7px;font-size:12.5px;padding:3px 0;cursor:pointer;min-width:0}
 .rpi input[type=checkbox]{margin:0;flex:none;accent-color:var(--bad)}
 .rpetc{grid-column:1/-1;flex-wrap:wrap}
-.rpetc input[type=text]{flex:1;min-width:160px;border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:4px 7px;font-size:12.5px}
+.rpetc input[type=text]{flex:1;min-width:160px;border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:4px 7px;font-size:12.5px}
 .rpetc input[type=text]:disabled{opacity:.5}
 .rpdl{display:block;font-size:12.5px;font-weight:600;margin:12px 0 4px}
-#rpDetail{height:auto;min-height:64px;font-family:var(--f-body);width:100%;border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:6px 8px;font-size:12.5px;resize:vertical}
+#rpDetail{height:auto;min-height:64px;font-family:var(--f-body);width:100%;border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:6px 8px;font-size:12.5px;resize:vertical}
 .rpbadge{font-size:11.5px;font-weight:600;color:var(--muted);text-decoration:none;border:1px solid var(--line);border-radius:99px;padding:1px 8px}
 .rpbadge.hot{background:var(--bad);border-color:var(--bad);color:#fff}
 .seg a.segb{display:inline-block;color:inherit;text-decoration:none;background:var(--panel-2);padding:5px 12px;font-size:12.5px}
@@ -438,7 +443,7 @@ a.btn{color:inherit;text-decoration:none;display:inline-block}
 .banform{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:10px;border:1px dashed var(--bad);border-radius:5px;font-size:12.5px}
 .banform label{display:inline-flex;align-items:center;gap:6px}
 .banform .grow{flex:1 1 240px}
-.banform .grow input{flex:1;min-width:0;border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:4px 7px;font-size:12.5px}
+.banform .grow input{flex:1;min-width:0;border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:4px 7px;font-size:12.5px}
 .banform .row{width:100%}
 .banform .msg{margin:0;min-height:0}
 .facmode{display:flex;flex-direction:column;gap:4px;margin:0 0 8px;font-size:12.5px}
@@ -463,19 +468,18 @@ a.btn{color:inherit;text-decoration:none;display:inline-block}
 header.bar{gap:8px 12px}
 .toolbar{display:flex;flex-wrap:nowrap;align-items:center;gap:8px 12px;flex:1 0 auto;order:1}
 .toolbar .ctl{flex-wrap:nowrap;gap:6px}
-.bar .acct{order:2;margin-left:auto;flex:none}
+.bar .hlinks{order:2;margin-left:auto;flex:none}
+.bar .acct{order:2;flex:none}
 /* compact controls so everything fits on one line on wide screens */
 .bar .btn{padding:4px 9px;font-size:12px}
 .bar .seg button{padding:4px 8px;font-size:11.5px}
-.bar .seg.view button{padding:4px 11px;font-size:12px}
+.bar .seg.view button{padding:4px 0;font-size:13px}
 .bar select.sel{padding:4px 6px;font-size:12px;max-width:160px}
-.bar #preset{max-width:140px}
 .bar .pwr{min-width:150px}
 .bar .meter{min-width:56px}
 .brand h1{font-size:16px}
 /* long nicknames are cut with … (full name on hover); the 관리자 badge always shows */
 .acct .who{max-width:112px}
-.bar.site:not(.tworow) .brand small{display:none}
 .acct .kbadge{flex:none}
 /* when it does not fit, the factory controls move to their own row */
 .bar.tworow .toolbar{order:3;flex:1 1 100%;flex-wrap:wrap;margin:0 -16px;padding:8px 16px 0;border-top:1px solid var(--line)}
@@ -501,11 +505,9 @@ header.bar{gap:8px 12px}
 <body>
 <div class="app" id="app">
   <header class="bar" id="bar">
-    <div class="brand">
-      <div class="mark" aria-hidden="true"></div>
-      <div><h1>AIC 공장 시뮬레이터</h1><small>Arknights: Endfield · 협곡 IV / 무릉</small></div>
-    </div>
+    <div class="brand"><h1>AIC 공장 시뮬레이터</h1></div>
     <nav class="seg view" id="viewSw" aria-label="화면" hidden><button data-v="sim" aria-pressed="true">공장</button><button data-v="board" aria-pressed="false">게시판</button><button data-v="admin" aria-pressed="false" hidden>관리자</button></nav>
+    <nav class="hlinks" aria-label="도움"><button id="bugBtn" hidden title="문제를 운영자에게 알리기">버그 제보</button><button id="setBtn" title="화면 설정">설정</button></nav>
     <span class="acct" id="acct" hidden></span>
     <div class="toolbar simonly">
       <div class="ctl">
@@ -526,7 +528,6 @@ header.bar{gap:8px 12px}
         <select class="sel" id="site" aria-label="부지 크기"></select>
         <span class="row" id="siteCustom" hidden style="gap:4px"><input id="sw" type="number" min="12" max="120" aria-label="부지 가로 칸 수" class="num"> × <input id="sh" type="number" min="12" max="120" aria-label="부지 세로 칸 수" class="num"><button class="btn sm primary" id="siteApply">적용</button><button class="btn sm" id="siteCancel">취소</button></span>
         <button class="btn" id="newFac" title="빈 공장으로 새로 시작">새 공장</button>
-        <select class="sel" id="preset" aria-label="예시 공장 불러오기"><option value="">예시 공장 불러오기…</option></select>
         <button class="btn" id="io">레이아웃 코드</button>
         <button class="btn" id="facSave" hidden title="지금 공장을 내 계정에 저장">공장 저장</button>
       </div>
@@ -537,11 +538,6 @@ header.bar{gap:8px 12px}
     <canvas id="cv" aria-label="공장 부지. 설비를 골라 클릭해서 배치합니다."></canvas>
     <nav class="sites" id="sites" aria-label="부지 (지역마다 창고를 함께 씀)"></nav>
     <div class="selbar" id="selbar" hidden></div>
-    <div class="float">
-      <button class="btn" id="rotBtn" title="회전 (R)">회전</button>
-      <button class="btn" id="fitBtn" title="부지 전체 보기">전체 보기</button>
-      <button class="btn" id="bugBtn" hidden title="문제를 운영자에게 알리기">버그 제보</button>
-    </div>
     <div class="hud"><span class="chip warn" id="warn" hidden></span><span class="chip mono" id="siteInfo">부지</span><span class="chip mono" id="hover">—</span></div>
   </main>
 
@@ -552,7 +548,7 @@ header.bar{gap:8px 12px}
       <div class="search"><input id="q" type="search" placeholder="설비 찾기 (예: 반응기)" aria-label="설비 검색"></div>
     </div>
     <div class="strip" id="plist" role="tabpanel" aria-label="설비 목록"></div>
-    <div class="keys"><kbd>E</kbd> 컨베이어 벨트 · <kbd>Q</kbd> 파이프 · <kbd>R</kbd> 회전 · <kbd>M</kbd> 이동 (설비를 끌어도 됨) · <kbd>Esc</kbd> 취소 · <kbd>Del</kbd> 철거 · 범위 드래그 = 선택 · <kbd>Shift</kbd>+드래그 = 선택에서 빼기 · <kbd>Ctrl</kbd>+드래그 = 더하기 · <kbd>Ctrl</kbd>+<kbd>C</kbd>/<kbd>V</kbd> 복사·붙여넣기</div>
+    <div class="keys"><kbd>E</kbd> 컨베이어 벨트 · <kbd>Q</kbd> 파이프 · <kbd>R</kbd> 회전 · <kbd>M</kbd> 이동 (설비를 끌어도 됨) · <kbd>Esc</kbd> 취소 · <kbd>Del</kbd> 철거 · 범위 드래그 = 선택 · <kbd>Shift</kbd> + 드래그 = 선택에서 빼기 · <kbd>Ctrl</kbd> + 드래그 = 더하기 · <kbd>Ctrl</kbd> + <kbd>C</kbd> / <kbd>V</kbd> 복사·붙여넣기</div>
   </section>
 
   <aside class="side">
@@ -650,6 +646,28 @@ header.bar{gap:8px 12px}
   </form>
 </dialog>
 
+<dialog id="setDlg" aria-labelledby="setTitle">
+  <form method="dialog" id="setForm">
+    <h3 id="setTitle">설정</h3>
+    <fieldset class="setgrp"><legend>화면 테마</legend>
+      <label><input type="radio" name="theme" value="system"> 컴퓨터 설정 따라가기</label>
+      <label><input type="radio" name="theme" value="dark"> 어둡게</label>
+      <label><input type="radio" name="theme" value="light"> 밝게</label>
+    </fieldset>
+    <fieldset class="setgrp"><legend>글자 크기</legend>
+      <label><input type="radio" name="size" value="s"> 작게</label>
+      <label><input type="radio" name="size" value="m"> 보통</label>
+      <label><input type="radio" name="size" value="l"> 크게</label>
+    </fieldset>
+    <fieldset class="setgrp col"><legend>공장 화면</legend>
+      <label class="switch"><input type="checkbox" id="setGrid"> 격자 줄 보이기</label>
+      <label class="switch"><input type="checkbox" id="setLabels"> 설비 이름 보이기</label>
+      <label class="switch"><input type="checkbox" id="setItems"> 벨트·파이프 위 물건 보이기</label>
+    </fieldset>
+    <p class="note">이 브라우저에만 저장됩니다.</p>
+    <div class="acts"><button class="btn" type="button" id="setReset">처음 설정으로</button><span class="spacer"></span><button class="btn primary" type="button" id="setClose">닫기</button></div>
+  </form>
+</dialog>
 <dialog id="newDlg" aria-labelledby="newTitle">
   <form method="dialog" id="newForm">
     <h3 id="newTitle">새 공장</h3>
@@ -2311,10 +2329,28 @@ const CARRIER = new Set(['belt','splitter','converger','bridge','control']);
 const MAT = { ori:'#E2683B', ame:'#9A6AE0', fer:'#5A8CB8', cup:'#C8763A', buck:'#E0628B', cit:'#E6B51F', sand:'#C3A165', ake:'#5CAD60', jin:'#D4A93A', yaz:'#7FB069', wood:'#8B6A45', carb:'#56585A', cry:'#3CBFCD', steel:'#8F9CA8', xir:'#4FD1A5', het:'#B04A6F', pyr:'#E24A2C', water:'#4BA3E3', sew:'#7D7A52', acid:'#B7D334', iner:'#A9B8C9' };
 let C = {};
 const iconCache = new Map();
+// pictures for items and facilities, when the site has them: img/manifest.json = {"items":{"<item id>":"img/items/…png"},"facilities":{"<type>":"img/facilities/…png"}}
+// anything without a picture keeps the drawn icon
+const PICS = { items: new Map(), facs: new Map() };
+async function loadPics(){
+  if (location.protocol === 'file:' || location.protocol === 'blob:') return;   // pictures live next to the site page only
+  try {
+    const r = await fetch('img/manifest.json', { cache: 'no-cache' }); if (!r.ok) return;
+    const m = await r.json();
+    const load = (map, obj) => Object.entries(obj && typeof obj === 'object' ? obj : {})
+      .filter(([k, v]) => typeof v === 'string' && /^img\/[\w\-./]+$/.test(v) && !v.includes('..'))
+      .map(([k, v]) => new Promise(res => { const im = new Image(); im.onload = () => { map.set(k, im); res(); }; im.onerror = res; im.src = v; }));
+    await Promise.all([...load(PICS.items, m.items), ...load(PICS.facs, m.facilities)]);
+    if (PICS.items.size || PICS.facs.size){ iconCache.clear(); renderPalette(); renderStats(); renderInspector(true); renderDepot(true); renderRecipes(); renderPlan(); }
+  } catch(e){ /* no pictures: drawn icons */ }
+}
+// draw a picture scaled to fit a w×h box centred on (cx, cy)
+function drawPic(c, im, cx, cy, w, h){ const k = Math.min(w / im.naturalWidth, h / im.naturalHeight); const dw = im.naturalWidth * k, dh = im.naturalHeight * k; c.drawImage(im, cx - dw / 2, cy - dh / 2, dw, dh); }
 function readColors(){
   const cs = getComputedStyle(document.documentElement);
   for (const k of ['cv-bg','cv-grid','cv-grid2','cv-belt','cv-rail','cv-belt-mark','cv-pipe','cv-pipe-core','cv-mach','cv-mach-ink','cv-range','cv-range-line','accent','ink','muted','power','ok','warn','bad','panel','panel-2','line'])
     C[k] = cs.getPropertyValue('--'+k).trim();
+  C.muted = cs.getPropertyValue('--cv-muted').trim() || C.muted;   // the canvas keeps a softer grey for idle marks
   C.fDisplay = cs.getPropertyValue('--f-display').trim(); C.fMono = cs.getPropertyValue('--f-mono').trim(); C.fBody = cs.getPropertyValue('--f-body').trim();
   iconCache.clear();
 }
@@ -2323,6 +2359,7 @@ function readColors(){
 function poly(c, x, y, r, n, rot){ c.beginPath(); for(let i=0;i<n;i++){ const a=rot+i*2*Math.PI/n; const px=x+r*Math.cos(a), py=y+r*Math.sin(a); i?c.lineTo(px,py):c.moveTo(px,py);} c.closePath(); }
 function drawItem(c, id, x, y, r){
   const it = ITEMS[id]; if (!it) return;
+  const pic = PICS.items.get(id); if (pic){ drawPic(c, pic, x, y, r * 2.3, r * 2.3); return; }
   const col = MAT[it.mat] || '#999';
   c.fillStyle = col; c.strokeStyle = 'rgba(0,0,0,.55)'; c.lineWidth = Math.max(.6, r*.16);
   switch(it.cat){
@@ -2357,7 +2394,18 @@ let space, world;   // the whole Endfield space, and the site on screen (one of 
 const ui = { site:'valley:0', tool:'select', rot:2, sel:null, multi:new Set(), paste:null, clip:null, playing:true, speed:1, cam:{x:0,y:0,z:1}, hover:null, drag:null, tab:'stats', cat:'prod1', q:'', acc:0, touched:false, presetNote:null, view:'sim' };
 
 // ---------- persistence: account storage when the page has it, browser storage otherwise ----------
-const LS_LAYOUT = 'aic-sim-v2', LS_BP = 'aic-bp-v2';
+const LS_LAYOUT = 'aic-sim-v2', LS_BP = 'aic-bp-v2', LS_PREFS = 'aic-prefs';
+// screen settings, kept per browser: theme, text size, and what the factory canvas draws
+const PREF_DEF = { theme: 'system', size: 'm', grid: true, labels: true, items: true };
+const prefs = (() => { let o = null; try { o = JSON.parse(localStorage.getItem(LS_PREFS) || 'null'); } catch(e){} return Object.assign({}, PREF_DEF, o && typeof o === 'object' ? o : {}); })();
+function applyPrefs(first){
+  const r = document.documentElement;
+  // "system" leaves the attribute alone on load (the page host may have set it); switching back to it clears ours
+  if (prefs.theme === 'dark' || prefs.theme === 'light') r.dataset.theme = prefs.theme; else if (!first) delete r.dataset.theme;
+  r.style.setProperty('--ui-zoom', { s: '0.92', m: '1', l: '1.12' }[prefs.size] || '1');
+}
+function savePrefs(){ try { localStorage.setItem(LS_PREFS, JSON.stringify(prefs)); } catch(e){} }
+applyPrefs(true);
 const store = {
   db: null, uid: null, bps: [],
   lsGet(k){ try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch(e){ return null; } },
@@ -2457,11 +2505,7 @@ function boot(){
     else if (saved && saved.world && saved.world.v >= 3){ const w = AIC.deserialize(saved.world); space = AIC.Space.fresh(); ui.site = AIC.legacyKey(w); space.set(ui.site, w); AIC.ensureInf(w); }
     else if (saved) ui.oldSave = true;
   } catch(e){ space = null; }
-  if (!space){
-    space = AIC.Space.fresh(); ui.site = 'valley:0';
-    const r = AIC.loadPreset('capsule', 70, 70); r.world.edgeBus = [0, 3]; r.world.dirtyPower = true;
-    space.set(ui.site, r.world); AIC.ensureInf(r.world); ui.presetNote = 'capsule';
-  }
+  if (!space){ space = AIC.Space.fresh(); ui.site = 'valley:0'; }
   world = space.get(ui.site);
 }
 
@@ -2564,7 +2608,7 @@ function toolButton(type){
   const t = TYPES[type], id = 'build:'+type;
   const b = document.createElement('button'); b.className='tool'; b.type='button'; b.dataset.tool = id;
   b.setAttribute('aria-pressed', ui.tool===id);
-  b.innerHTML = `<canvas width="72" height="72"></canvas><span class="nm">${esc(t.ko)}</span><span class="meta">${t.sizeLabel || (t.w+'×'+t.h)}${t.power?' · 전력 '+t.power:''}</span>`;
+  b.innerHTML = `<canvas width="72" height="72"></canvas><span class="nm">${esc(t.ko)}</span><span class="meta">${t.sizeLabel || (t.w+'×'+t.h)}</span>`;
   b.title = `${t.ko} · ${t.en}`;
   b.onclick = () => setTool(id);
   drawToolIcon(b.querySelector('canvas'), id, 72);
@@ -3658,7 +3702,7 @@ function drawToolIcon(c, id, px){
   else if (id==='area'){ g.setLineDash([2.5,2]); g.strokeRect(4,5,16,14); g.setLineDash([]); g.fillRect(15,14,5,5); }
   else if (id==='pan'){ for (const d of [0,1,2,3]){ g.beginPath(); g.moveTo(12,12); g.lineTo(12+DX[d]*8,12+DY[d]*8); g.stroke(); poly(g,12+DX[d]*8,12+DY[d]*8,2.6,3,Math.atan2(DY[d],DX[d])); g.fill(); } }
   else if (id==='delete'){ g.strokeStyle = C.bad; g.beginPath(); g.moveTo(6,6); g.lineTo(18,18); g.moveTo(18,6); g.lineTo(6,18); g.stroke(); }
-  else drawMini(g, id.slice(6));
+  else { const pic = PICS.facs.get(id.slice(6)); if (pic){ g.restore(); drawPic(g, pic, px / 2, px / 2, px, px); return; } drawMini(g, id.slice(6)); }
   g.restore();
 }
 function drawMini(g, type){
@@ -3675,12 +3719,12 @@ function drawMini(g, type){
   else if (k==='loader' || k==='unloader'){
     // bus strip on top, the 1×3 port under it, arrow into (input) or out of (output) the bus
     g.fillStyle = C.accent; g.fillRect(2,2,20,5); g.fillStyle = '#15191A'; for (let x=4;x<22;x+=4) g.fillRect(x,2,1.5,5);
-    g.fillStyle = portColor(k); g.beginPath(); g.roundRect(2,8,20,9,2); g.fill();
+    g.fillStyle = portColor(k); g.beginPath(); g.roundRect(2,8,20,9, 0); g.fill();
     g.strokeStyle = C.panel; g.lineWidth = 1.8; chevron(g, 12, 12.5, k==='loader' ? 0 : 2, 3.4);
     g.strokeStyle = portColor(k); g.lineWidth = 1.6; g.beginPath(); g.moveTo(12,17); g.lineTo(12,22); g.stroke();
   }
   else {
-    g.fillStyle = C['cv-mach']; g.strokeStyle = ink; const w = Math.min(20, 5+t.w*2.6), h = Math.min(20, 5+t.h*2.6); g.beginPath(); g.roundRect(12-w/2,12-h/2,w,h,2); g.fill(); g.stroke();
+    g.fillStyle = C['cv-mach']; g.strokeStyle = ink; const w = Math.min(20, 5+t.w*2.6), h = Math.min(20, 5+t.h*2.6); g.beginPath(); g.roundRect(12-w/2,12-h/2,w,h, 0); g.fill(); g.stroke();
     if (k==='thermal'){ g.fillStyle = C.warn; g.beginPath(); g.moveTo(12,7); g.quadraticCurveTo(17,12,12,17); g.quadraticCurveTo(7,12,12,7); g.fill(); }
     else if (k==='miner') drawItem(g, t.ores[t.ores.length-1], 12, 12, 4.2);
     else if (k==='pump') drawItem(g, t.makes, 12, 12, 4.5);
@@ -3775,6 +3819,7 @@ function render(){
   const x1 = Math.min(world.W-1, Math.ceil((ui.cam.x + vw/z)/S)), y1 = Math.min(world.H-1, Math.ceil((ui.cam.y + vh/z)/S));
   ctx.fillStyle = C['panel']; ctx.globalAlpha = .35; ctx.fillRect(0,0,world.W*S,world.H*S); ctx.globalAlpha = 1;
   ctx.lineWidth = 1/z;
+  if (prefs.grid){
   ctx.strokeStyle = C['cv-grid']; ctx.beginPath();
   for (let x=x0; x<=x1+1; x++){ ctx.moveTo(x*S, y0*S); ctx.lineTo(x*S, (y1+1)*S); }
   for (let y=y0; y<=y1+1; y++){ ctx.moveTo(x0*S, y*S); ctx.lineTo((x1+1)*S, y*S); }
@@ -3783,6 +3828,7 @@ function render(){
   for (let x=Math.ceil(x0/4)*4; x<=x1+1; x+=4){ ctx.moveTo(x*S, y0*S); ctx.lineTo(x*S, (y1+1)*S); }
   for (let y=Math.ceil(y0/4)*4; y<=y1+1; y+=4){ ctx.moveTo(x0*S, y*S); ctx.lineTo((x1+1)*S, y*S); }
   ctx.stroke();
+  }
   ctx.strokeStyle = C['cv-mach-ink']; ctx.globalAlpha=.35; ctx.lineWidth = 1.5/z; ctx.strokeRect(0,0,world.W*S,world.H*S); ctx.globalAlpha=1;
   drawTiles(x0,y0,x1,y1);
   drawOuterBus();
@@ -3802,7 +3848,7 @@ function render(){
   const belts = carriers.filter(e => TYPES[e.type].carrier !== 'fluid'), pipes = carriers.filter(e => TYPES[e.type].carrier === 'fluid');
   drawCarrierBeds(belts, geo);
   for (const e of belts) drawCarrierDetail(e, geo.get(e.id), phase);
-  for (const e of belts) drawCarrierItems(e);
+  if (prefs.items) for (const e of belts) drawCarrierItems(e);
   for (const e of vis) if (!CARRIER.has(K(e.type))) drawBuilding(e);
   // belts may butt against the depot bus anywhere, but only link through a port's middle cell: mark the dead ends
   for (const e of belts){
@@ -3811,7 +3857,7 @@ function render(){
   }
   drawCarrierBeds(pipes, geo);
   for (const e of pipes) drawCarrierDetail(e, geo.get(e.id), phase);
-  for (const e of pipes) drawCarrierItems(e);
+  if (prefs.items) for (const e of pipes) drawCarrierItems(e);
   ctx.strokeStyle = C.accent; ctx.lineWidth = 2.5/z; ctx.setLineDash([6/z,4/z]);
   if (ui.sel){ const e = world.ents.get(ui.sel); if (e) ctx.strokeRect(e.x*S-2, e.y*S-2, e.w*S+4, e.h*S+4); }
   ctx.setLineDash([]);
@@ -3986,13 +4032,13 @@ function drawDepotPort(e, x, y, w, h, live){
   const cx = x+w/2, cy = y+h/2;
   // body flush against the bus side, slightly inset elsewhere
   const bx = x + (back===3 ? 0 : 2), by = y + (back===0 ? 0 : 2), bw = w - (back===3||back===1 ? 2 : 4), bh = h - (back===0||back===2 ? 2 : 4);
-  ctx.fillStyle = col; ctx.beginPath(); ctx.roundRect(bx, by, bw, bh, 3); ctx.fill();
+  ctx.fillStyle = col; ctx.beginPath(); ctx.roundRect(bx, by, bw, bh, 0); ctx.fill();
   ctx.fillStyle = 'rgba(0,0,0,.28)'; // seam on the bus side
   if (back===0) ctx.fillRect(bx, by, bw, 3); else if (back===2) ctx.fillRect(bx, by+bh-3, bw, 3); else if (back===3) ctx.fillRect(bx, by, 3, bh); else ctx.fillRect(bx+bw-3, by, 3, bh);
   const flow = inp ? back : f, fg = C.panel;
   // middle cell: the mouth, a light socket on the outer edge
   const mx = cx + DX[f]*S*.22, my = cy + DY[f]*S*.22;
-  ctx.fillStyle = fg; ctx.beginPath(); ctx.roundRect(mx - S*.3, my - S*.3, S*.6, S*.6, 3); ctx.fill();
+  ctx.fillStyle = fg; ctx.beginPath(); ctx.roundRect(mx - S*.3, my - S*.3, S*.6, S*.6, 0); ctx.fill();
   ctx.strokeStyle = col; ctx.lineWidth = 2.2; chevron(ctx, mx, my, flow, 4.2);
   // end cells: label on one, direction arrow (or the chosen item) on the other
   const lx = cx - DX[a]*S, ly = cy - DY[a]*S, rx = cx + DX[a]*S, ry = cy + DY[a]*S;
@@ -4005,10 +4051,10 @@ function drawBuilding(e){
   const t = TYPES[e.type], k = t.kind, x = e.x*S+2, y = e.y*S+2, w = e.w*S-4, h = e.h*S-4;
   const ink = C['cv-mach-ink'];
   if (k==='pylon' || k==='relay'){
-    ctx.fillStyle = C['cv-mach']; ctx.strokeStyle = ink; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.roundRect(x, y, w, h, 4); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = C['cv-mach']; ctx.strokeStyle = ink; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.roundRect(x, y, w, h, 0); ctx.fill(); ctx.stroke();
     ctx.fillStyle = e.powered ? C.power : C.muted; poly(ctx, x+w/2, y+h/2, Math.min(w,h)*.36, 4, 0); ctx.fill();
     ctx.strokeStyle = C['cv-mach']; ctx.lineWidth = 1.6; const mx = x+w/2, my = y+h/2; ctx.beginPath(); ctx.moveTo(mx+1.5,my-6); ctx.lineTo(mx-2,my+.5); ctx.lineTo(mx+2,my-.5); ctx.lineTo(mx-1.5,my+6); ctx.stroke();
-    if (k==='relay') fitLabel(t.short, x+4, y+3, w - 8, 9, 600);
+    if (k==='relay' && prefs.labels) fitLabel(t.short, x+4, y+3, w - 8, 9, 600);
     return;
   }
   if (k==='bus'){
@@ -4020,9 +4066,9 @@ function drawBuilding(e){
   }
   if (k==='loader' || k==='unloader'){ drawDepotPort(e, e.x*S, e.y*S, e.w*S, e.h*S, true); return; }
   ctx.fillStyle = C['cv-mach']; ctx.strokeStyle = ink; ctx.lineWidth = 1.4;
-  ctx.beginPath(); ctx.roundRect(x, y, w, h, 3); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.roundRect(x, y, w, h, 0); ctx.fill(); ctx.stroke();
   if (k==='pac'){
-    ctx.save(); ctx.beginPath(); ctx.roundRect(x,y,w,h,3); ctx.clip();
+    ctx.save(); ctx.beginPath(); ctx.roundRect(x,y,w,h, 0); ctx.clip();
     ctx.fillStyle = C.accent; ctx.fillRect(x,y,w,h); ctx.fillStyle = '#15191A';
     for (let q=-h; q<w; q+=12){ ctx.beginPath(); ctx.moveTo(x+q,y); ctx.lineTo(x+q+6,y); ctx.lineTo(x+q+6+h,y+h); ctx.lineTo(x+q+h,y+h); ctx.closePath(); ctx.fill(); }
     ctx.fillStyle = C['cv-mach']; ctx.fillRect(x+7,y+7,w-14,h-14); ctx.restore();
@@ -4034,7 +4080,7 @@ function drawBuilding(e){
       ctx.fillStyle = C.accent;
       if (d === 1 || d === 3){ const tx = d === 3 ? cx*S - 3 : cx*S + S - 4; ctx.fillRect(tx, cy*S + 2, 7, S - 4); }
       else { const ty = d === 0 ? cy*S - 3 : cy*S + S - 4; ctx.fillRect(cx*S + 2, ty, S - 4, 7); }
-      ctx.fillStyle = C['cv-mach']; ctx.strokeStyle = ink; ctx.lineWidth = 1; ctx.beginPath(); ctx.roundRect(cx*S + 3, cy*S + 3, S - 6, S - 6, 3); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = C['cv-mach']; ctx.strokeStyle = ink; ctx.lineWidth = 1; ctx.beginPath(); ctx.roundRect(cx*S + 3, cy*S + 3, S - 6, S - 6, 0); ctx.fill(); ctx.stroke();
       if (e.ports[i]) drawItem(ctx, e.ports[i], px, py, 5.4);
       else { ctx.fillStyle = C.muted; ctx.font = `700 9px ${C.fMono}`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(String(i+1), px, py); }
       if (e.ports[i]){ ctx.fillStyle = ink; ctx.font = `700 7.5px ${C.fMono}`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(String(i+1), px + DX[opp(d)]*S*.72, py - S*.36); }
@@ -4051,7 +4097,7 @@ function drawBuilding(e){
     // keep the name clear of port marks on the top edge and of the status dots at the top right
     const top = ['in', 'out'].some(w2 => AIC.portCells(e, w2).some(c => c[1] === e.y && (c[2] === 0 || c[2] === 2)));
     const right = e.status ? (e.pin != null ? 22 : 14) : 4;
-    fitLabel(t.short, x+4, y + (top ? 12 : 4), w - 4 - right, t.w>=5 ? 11 : 9.5, 600, ink, 'left', 6.5);
+    if (prefs.labels) fitLabel(t.short, x+4, y + (top ? 12 : 4), w - 4 - right, t.w>=5 ? 11 : 9.5, 600, ink, 'left', 6.5);
   }
   if (e.status){ ctx.fillStyle = STCOL()[e.status] || C.muted; ctx.beginPath(); ctx.arc(x+w-6, y+6, 3, 0, 7); ctx.fill(); }
   if (k==='machine'){
@@ -4102,7 +4148,7 @@ function drawBuilding(e){
     }
     const far = inl ? e.f : opp(e.f), len = (far & 1) ? w : h;
     const dx = x+w/2 + DX[far]*(len/2 - S*.62), dy = y+h/2 + DY[far]*(len/2 - S*.62), rr = S*.42;
-    fitLabel(t.short, x+w/2, (far & 1) ? y+4 : y+h/2 - 5, w - 8, 8.5, 600, ink, 'center'); // sideways: the top row is free
+    if (prefs.labels) fitLabel(t.short, x+w/2, (far & 1) ? y+4 : y+h/2 - 5, w - 8, 8.5, 600, ink, 'center'); // sideways: the top row is free
     ctx.fillStyle = C['cv-pipe']; ctx.beginPath(); ctx.arc(dx, dy, rr, 0, 7); ctx.fill();
     ctx.strokeStyle = ink; ctx.globalAlpha = .5; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(dx, dy, rr + 2.5, 0, 7); ctx.stroke(); ctx.globalAlpha = 1;
     if (e.src){ drawItem(ctx, e.src, dx, dy, rr*.62); }
@@ -4388,33 +4434,12 @@ function rotateAction(){
   if (ui.tool.startsWith('build:')){ ui.rot = (ui.rot + 1) & 3; return; }
   if (ui.sel){ if (world.rotate(ui.sel) === false) flash('회전할 공간이 없습니다'); markTouched(); renderInspector(true); }
 }
-$('#rotBtn').onclick = rotateAction;
-$('#fitBtn').onclick = fitView;
 
 // ---------- header ----------
 function togglePlay(){ ui.playing = !ui.playing; $('#play').textContent = ui.playing ? '일시정지' : '재생'; }
 $('#play').onclick = togglePlay;
 function setSpeed(s){ ui.speed = s; document.querySelectorAll('#speed button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.s === s)); }
 document.querySelectorAll('#speed button').forEach(b => b.onclick = () => setSpeed(+b.dataset.s));
-const presetSel = $('#preset');
-for (const k in PRESETS){ if (k === 'empty') continue; const o = document.createElement('option'); o.value = k; o.textContent = PRESETS[k].ko; presetSel.appendChild(o); }
-presetSel.onchange = () => {
-  const k = presetSel.value; if (!k) return; presetSel.value = '';
-  let W = world.W, H = world.H, r = AIC.loadPreset(k, W, H);
-  // keep the site's fixed outer depot bus (and core) when the example lands on the same site
-  let eb = (world.edgeBus || []).slice(), ec = world.edgeCore;
-  if (!r.world){
-    const need = AIC.presetSize(k);
-    const site = siteChoices().find(s => s.w >= need.w && s.h >= need.h);
-    W = site ? site.w : Math.max(W, need.w); H = site ? site.h : Math.max(H, need.h);
-    r = AIC.loadPreset(k, W, H);
-    eb = site && site.edgeBus ? site.edgeBus.slice() : []; ec = site ? site.edgeCore !== false : true;
-    flash(`이 예시는 ${need.w}×${need.h}칸이 필요해서 부지를 ${W}×${H}로 넓혔습니다`);
-  }
-  if (eb.length){ r.world.edgeBus = eb.sort(); if (ec === false) r.world.edgeCore = false; r.world.dirtyPower = true; }
-  ui.presetNote = k; loadWorld(r.world); setTool('select'); markTouched();
-};
-
 // ---------- new factory: empty the site on screen, or start the whole space over ----------
 function emptySite(){
   const W = world.W, H = world.H, eb = (world.edgeBus || []).slice(), ec = world.edgeCore;
@@ -4438,6 +4463,25 @@ $('#newDlg').addEventListener('close', () => {
   else { const d = space.siteDef(ui.site); loadWorld(emptySite()); flash(`${space.regionOf(ui.site).ko} ${d.name} 부지를 비웠습니다`); }
   setTool('select'); markTouched();
 });
+
+// ---------- settings ----------
+function openSettings(){
+  const d = $('#setDlg'), f = $('#setForm');
+  f.querySelectorAll('input[name="theme"]').forEach(i => i.checked = i.value === prefs.theme);
+  f.querySelectorAll('input[name="size"]').forEach(i => i.checked = i.value === prefs.size);
+  $('#setGrid').checked = prefs.grid; $('#setLabels').checked = prefs.labels; $('#setItems').checked = prefs.items;
+  d.showModal();
+}
+$('#setBtn').onclick = openSettings;
+$('#setForm').addEventListener('change', () => {
+  const f = $('#setForm');
+  prefs.theme = (f.querySelector('input[name="theme"]:checked') || {}).value || 'system';
+  prefs.size = (f.querySelector('input[name="size"]:checked') || {}).value || 'm';
+  prefs.grid = $('#setGrid').checked; prefs.labels = $('#setLabels').checked; prefs.items = $('#setItems').checked;
+  applyPrefs(); savePrefs(); resize(); fitHeader(); syncSitesH();
+});
+$('#setReset').onclick = () => { Object.assign(prefs, PREF_DEF); applyPrefs(); savePrefs(); openSettings(); resize(); fitHeader(); };
+$('#setClose').onclick = () => $('#setDlg').close();
 
 // ---------- site size ----------
 const siteSel = $('#site');
@@ -4551,7 +4595,7 @@ function renderInspector(force){
   const e = ui.sel ? world.ents.get(ui.sel) : null;
   const key = ui.multi.size ? 'm'+[...ui.multi].join(',') : e ? 'e'+e.id+':'+e.f+':'+e.off : 't'+ui.tool+':'+ui.presetNote;
   if (!force && key === inspKey){ updateInspectorDynamic(e); return; }
-  inspKey = key;
+  inspKey = key; el.hidden = false;
   if (ui.multi.size){
     const cnt = {}; let pw = 0;
     for (const id of ui.multi){ const x = world.ents.get(id); if (x){ cnt[x.type] = (cnt[x.type]||0)+1; if (!x.off) pw += TYPES[x.type].power; } }
@@ -4566,11 +4610,9 @@ function renderInspector(force){
       el.innerHTML = `<h3>PAC 옮기기</h3><div class="en">Protocol Automation-Core</div><p>부지 위를 클릭하면 그 자리로 옮깁니다. 초록색이면 놓을 수 있습니다. 연결된 벨트는 그대로 남으니 다시 이어 주세요. Esc로 취소합니다.</p>`;
     } else if (ui.tool==='paste'){
       el.innerHTML = `<h3>붙여넣기</h3><div class="en">Blueprint</div><p>부지 위를 클릭하면 그 자리에 놓입니다. 초록색이면 놓을 수 있고 빨간색이면 겹칩니다. R로 회전, Esc로 끝냅니다.</p>`;
-    } else if (ui.presetNote && PRESETS[ui.presetNote]){
-      const p = PRESETS[ui.presetNote];
-      el.innerHTML = `<h3>${esc(p.ko)}</h3><div class="en">예시 공장</div><p>${esc(p.note)}</p><p>설비를 클릭하면 안에 든 재료와 상태를 볼 수 있습니다.</p>`;
     } else {
-      el.innerHTML = `<h3>공장 부지</h3><div class="en">Core AIC Area</div><p>설비를 클릭하면 상태와 내용물을 볼 수 있습니다. 왼쪽에서 분류별로 설비를 골라 배치하고, 벨트로 PAC 출력 포트와 설비의 입력 쪽을 이으세요.</p>`;
+      // nothing selected and no tool to explain: the panel stays out of the way
+      el.innerHTML = ''; el.hidden = true;
     }
     return;
   }
@@ -5055,6 +5097,7 @@ syncSite(); renderSites(); fitView();
 renderInspector(true); renderStats(); renderRecipes(); renderPlan();
 store.init();
 acct.init();
+loadPics();
 route();
 if (document.fonts) document.fonts.ready.then(() => render());
 if (ui.oldSave) setTimeout(() => flash('PAC 포트 배치가 바뀌어 이전 공장 대신 예시 공장을 열었습니다. 청사진은 그대로 있습니다.'), 600);
