@@ -13,23 +13,23 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
 <style>
 :root{
-  --bg:#E3E6E2; --panel:#F3F4F1; --panel-2:#E9ECE7; --ink:#15191A; --muted:#58615C; --line:#C6CBC4;
+  --bg:#E3E6E2; --panel:#F3F4F1; --panel-2:#E9ECE7; --ink:#15191A; --muted:#15191A; --cv-muted:#58615C; --line:#C6CBC4;
   --accent:#F2D300; --accent-ink:#6B5C00; --on-accent:#15191A;
   --power:#12806F; --ok:#2B8A3E; --warn:#C26A00; --bad:#C0262D;
   --cv-bg:#D5D9D3; --cv-grid:rgba(21,25,26,.055); --cv-grid2:rgba(21,25,26,.12);
   --cv-belt:#3B4241; --cv-rail:#262B2A; --cv-belt-mark:#8C9591; --cv-pipe:#2E6F72; --cv-pipe-core:#7FC4C4;
   --cv-mach:#F8F9F6; --cv-mach-ink:#1B2021; --cv-range:rgba(18,128,111,.09); --cv-range-line:rgba(18,128,111,.45);
-  --f-display:"Chakra Petch","IBM Plex Sans KR",system-ui,sans-serif;
-  --f-body:"IBM Plex Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
-  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --f-display:"Noto Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-body:"Noto Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-mono:"Noto Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     color-scheme:dark;
-    --bg:#101312; --panel:#171B1A; --panel-2:#1E2321; --ink:#E5E8E3; --muted:#8D9690; --line:#2B312F;
+    --bg:#101312; --panel:#171B1A; --panel-2:#1E2321; --ink:#E5E8E3; --muted:#E5E8E3; --cv-muted:#8D9690; --line:#2B312F;
     --accent:#F2D300; --accent-ink:#F2D300; --on-accent:#15191A;
     --power:#2DB3A0; --ok:#51CF66; --warn:#F59F00; --bad:#FF6B6B;
     --cv-bg:#0D100F; --cv-grid:rgba(229,232,227,.035); --cv-grid2:rgba(229,232,227,.075);
@@ -39,7 +39,7 @@
 }
 :root[data-theme="dark"]{
   color-scheme:dark;
-  --bg:#101312; --panel:#171B1A; --panel-2:#1E2321; --ink:#E5E8E3; --muted:#8D9690; --line:#2B312F;
+  --bg:#101312; --panel:#171B1A; --panel-2:#1E2321; --ink:#E5E8E3; --muted:#E5E8E3; --cv-muted:#8D9690; --line:#2B312F;
   --accent:#F2D300; --accent-ink:#F2D300; --on-accent:#15191A;
   --power:#2DB3A0; --ok:#51CF66; --warn:#F59F00; --bad:#FF6B6B;
   --cv-bg:#0D100F; --cv-grid:rgba(229,232,227,.035); --cv-grid2:rgba(229,232,227,.075);
@@ -54,38 +54,35 @@ button{cursor:pointer}
 [hidden]{display:none!important}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
-.app{height:100%;display:grid;grid-template-columns:minmax(0,1fr) 350px;grid-template-rows:auto minmax(0,1fr) auto}
+.app{height:100%;display:grid;grid-template-columns:minmax(0,1fr) var(--side-w,350px);grid-template-rows:auto minmax(0,1fr) auto}
 header.bar{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:8px 16px;border-bottom:1px solid var(--line);background:var(--panel)}
 .brand{display:flex;align-items:center;gap:10px;min-width:0}
-.brand .mark{width:30px;height:30px;flex:none;background:repeating-linear-gradient(135deg,var(--accent) 0 5px,var(--ink) 5px 10px);border-radius:3px;position:relative}
-.brand .mark::after{content:"";position:absolute;inset:6px;background:var(--panel);border-radius:1px}
-.brand h1{font-family:var(--f-display);font-weight:700;font-size:17px;letter-spacing:.02em;margin:0;line-height:1.1}
-.brand small{display:block;font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.brand h1{font-family:var(--f-body);font-weight:700;font-size:17px;margin:0;line-height:1.1}
 .ctl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.btn{border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:5px 10px;line-height:1.2;white-space:nowrap}
+.btn{border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:5px 10px;line-height:1.2;white-space:nowrap}
 .btn:hover{border-color:var(--muted)}
 .btn.primary{background:var(--accent);color:var(--on-accent);border-color:transparent;font-weight:600}
 .btn.danger{color:var(--bad)}
 .btn.sm{padding:3px 8px;font-size:12px}
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:2px;overflow:hidden}
 .seg button{border:0;background:var(--panel-2);padding:5px 9px;font-family:var(--f-mono);font-size:12px}
 .seg button+button{border-left:1px solid var(--line)}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--panel)}
 .clock{font-family:var(--f-mono);font-size:12px;color:var(--muted);min-width:64px;font-variant-numeric:tabular-nums}
 .pwr{display:flex;align-items:center;gap:8px;min-width:190px}
-.pwr .lbl{font-size:11px;color:var(--muted);letter-spacing:.04em}
+.pwr .lbl{font-size:12px;color:var(--ink)}
 .meter{position:relative;flex:1;height:10px;background:var(--panel-2);border:1px solid var(--line);border-radius:2px;overflow:hidden;min-width:80px}
 .meter i{position:absolute;inset:0 auto 0 0;background:var(--power);transition:width .3s}
 .meter.over i{background:var(--bad)}
 .pwr b{font-family:var(--f-mono);font-weight:500;font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap}
 .spacer{flex:1}
-select.sel{border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:5px 8px;max-width:220px}
-input.num{width:58px;border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:4px 6px;font-family:var(--f-mono);font-size:12px}
+select.sel{border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:5px 8px;max-width:220px}
+input.num{width:58px;border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:4px 6px;font-family:var(--f-mono);font-size:12px}
 
-.build{grid-column:1;grid-row:3;border-top:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-width:0}
+.build{position:relative;grid-column:1;grid-row:3;border-top:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-width:0}
 .brow{display:flex;align-items:flex-end;gap:12px;padding:8px 12px 0;border-bottom:1px solid var(--line)}
 .tools{display:flex;gap:4px;padding-bottom:8px;flex:none}
-.tools button{display:flex;flex-direction:column;align-items:center;gap:1px;width:46px;border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:4px 2px 3px;font-size:10.5px;line-height:1.2}
+.tools button{display:flex;flex-direction:column;align-items:center;gap:1px;width:46px;border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:4px 2px 3px;font-size:10.5px;line-height:1.2}
 .tools button canvas{width:18px;height:18px}
 .tools button[aria-pressed="true"]{border-color:var(--ink);background:var(--panel);box-shadow:inset 0 0 0 1px var(--ink),inset 0 -3px 0 var(--accent);font-weight:600}
 .cats{display:flex;gap:2px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
@@ -95,14 +92,14 @@ input.num{width:58px;border:1px solid var(--line);background:var(--panel-2);bord
 .cats button[aria-selected="true"]{background:var(--panel-2);border-color:var(--line);color:var(--ink);font-weight:600;box-shadow:inset 0 3px 0 var(--accent)}
 .cats .cnt{font-family:var(--f-mono);font-size:10.5px;font-weight:500;color:var(--muted)}
 .search{flex:none;width:210px;padding-bottom:8px}
-.search input{width:100%;border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:5px 8px;font-size:12.5px}
+.search input{width:100%;border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:5px 8px;font-size:12.5px}
 .strip{display:flex;align-items:stretch;gap:6px;overflow-x:auto;overflow-y:hidden;padding:10px 12px;background:var(--panel-2);min-height:124px;scroll-padding-inline:12px;overscroll-behavior-x:contain}
-.tool{flex:none;width:104px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:4px;text-align:center;border:1px solid var(--line);background:var(--panel);border-radius:5px;padding:9px 6px 7px}
+.tool{flex:none;width:104px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:4px;text-align:center;border:1px solid var(--line);background:var(--panel);border-radius:2px;padding:7px 6px 6px}
 .tool:hover{border-color:var(--muted)}
 .tool[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
-.tool canvas{width:36px;height:36px;flex:none}
+.tool canvas{width:48px;height:48px;flex:none}
 .tool .nm{font-size:12px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.5em;word-break:keep-all;overflow-wrap:anywhere}
-.tool .meta{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);white-space:nowrap;margin-top:auto}
+.tool .meta{font-size:11.5px;color:var(--ink);white-space:nowrap;margin-top:auto}
 .tool.addbp{justify-content:center;border-style:dashed}
 .tool.addbp .plus{font-size:24px;line-height:1;color:var(--muted)}
 .tool.addbp .nm{min-height:0}
@@ -112,33 +109,31 @@ input.num{width:58px;border:1px solid var(--line);background:var(--panel-2);bord
 .bp .row{gap:4px;margin-top:auto}
 .snote{flex:none;align-self:center;max-width:260px;margin:0 4px;font-size:11.5px}
 .keys{font-size:11px;color:var(--muted);padding:5px 12px 6px;line-height:1.6;border-top:1px solid var(--line)}
-kbd{font-family:var(--f-mono);font-size:10.5px;border:1px solid var(--line);border-bottom-width:2px;border-radius:3px;padding:0 4px;background:var(--panel-2);color:var(--ink)}
+kbd{font:inherit;font-weight:700;color:var(--ink)}
 
 main.stage{grid-column:1;grid-row:2;position:relative;min-width:0;min-height:0;background:var(--cv-bg);overflow:hidden}
 #cv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
-.float{position:absolute;right:12px;top:12px;display:flex;gap:6px}
-.float .btn{background:var(--panel)}
-.sites{position:absolute;left:12px;top:12px;right:290px;display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start;pointer-events:none}
+.sites{position:absolute;left:12px;top:12px;right:12px;display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start;pointer-events:none}
 .sites .rg{display:flex;align-items:center;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:3px;pointer-events:auto;max-width:100%;overflow-x:auto}
 .sites .rg>b{font-size:11px;color:var(--muted);padding:0 6px 0 5px;font-weight:600;white-space:nowrap}
-.sites .rg button{border:0;background:transparent;border-radius:4px;padding:4px 8px;font-size:12px;color:var(--ink);white-space:nowrap;line-height:1.2}
+.sites .rg button{border:0;background:transparent;border-radius:2px;padding:4px 8px;font-size:12px;color:var(--ink);white-space:nowrap;line-height:1.2}
 .sites .rg button:hover{background:var(--panel-2)}
 .sites .rg button[aria-pressed="true"]{background:var(--ink);color:var(--panel);font-weight:600}
 .sites .rg button small{opacity:.65;font-family:var(--f-mono);font-size:10.5px;margin-left:5px;font-weight:400}
 .sites .rg button i{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--accent);margin-left:5px;vertical-align:middle}
-.sites .rg input{width:90px;font-size:12px;padding:3px 6px;border:1px solid var(--accent);border-radius:4px;background:var(--panel-2);color:var(--ink)}
+.sites .rg input{width:90px;font-size:12px;padding:3px 6px;border:1px solid var(--accent);border-radius:2px;background:var(--panel-2);color:var(--ink)}
 .selbar{position:absolute;left:12px;top:calc(var(--sites-h, 0px) + 20px);right:190px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 8px;box-shadow:0 2px 0 rgba(0,0,0,.06);max-width:760px}
 .selbar b{font-weight:600;font-size:12.5px;margin-right:4px}
-.selbar input{border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:3px 7px;font-size:12px;width:160px}
+.selbar input{border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:3px 7px;font-size:12px;width:160px}
 .hud{position:absolute;left:12px;bottom:12px;right:12px;display:flex;gap:8px;align-items:flex-end;pointer-events:none;flex-wrap:wrap}
-.hud .chip{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:4px 8px;font-size:12px;max-width:100%}
+.hud .chip{background:var(--panel);border:1px solid var(--line);border-radius:2px;padding:4px 8px;font-size:12px;max-width:100%}
 .hud .chip.warn{border-color:var(--bad);color:var(--bad);font-weight:600}
 .hud .mono{font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
 
-aside.side{grid-column:2;grid-row:2/4;border-left:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-height:0}
+aside.side{position:relative;grid-column:2;grid-row:2/4;border-left:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-height:0}
 .insp{padding:12px 14px;border-bottom:1px solid var(--line);max-height:50%;overflow-y:auto;flex:none}
 .insp h3{font-family:var(--f-display);font-size:16px;font-weight:600;margin:0;line-height:1.2}
-.insp .en{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.03em}
+.insp .en{font-size:11.5px;color:var(--ink);opacity:.8}
 .insp p{margin:6px 0 0;color:var(--muted);max-width:60ch}
 .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;border:1px solid currentColor;white-space:nowrap}
@@ -152,8 +147,8 @@ aside.side{grid-column:2;grid-row:2/4;border-left:1px solid var(--line);backgrou
 .switch input:checked::after{left:15px}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;margin-top:10px;font-size:12px}
 .kv dt{color:var(--muted)} .kv dd{margin:0;font-variant-numeric:tabular-nums}
-.sub{font-family:var(--f-display);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:12px 0 5px}
-.sub span{text-transform:none;letter-spacing:0;font-family:var(--f-body)}
+.sub{font-family:var(--f-body);font-size:12px;font-weight:700;color:var(--ink);margin:12px 0 5px}
+.sub span{font-weight:400}
 .bufs{display:flex;flex-wrap:wrap;gap:5px}
 .buf{display:inline-flex;align-items:center;gap:5px;background:var(--panel-2);border:1px solid var(--line);border-radius:3px;padding:2px 6px 2px 3px;font-size:11.5px;font-variant-numeric:tabular-nums}
 .buf img{width:16px;height:16px}
@@ -165,7 +160,7 @@ aside.side{grid-column:2;grid-row:2/4;border-left:1px solid var(--line);backgrou
 .rec .ar{color:var(--muted)}
 .rec .t{margin-left:auto;font-family:var(--f-mono);font-size:10.5px;color:var(--muted)}
 .ic{display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
-.ic img{width:15px;height:15px}
+.ic img{width:20px;height:20px}
 .ports{display:grid;grid-template-columns:auto 1fr;gap:5px 8px;align-items:center;margin-top:6px}
 .ports label{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
 .ports select,.ports input{width:100%;border:1px solid var(--line);background:var(--panel-2);border-radius:3px;padding:3px 5px;font-size:12px}
@@ -175,7 +170,7 @@ aside.side{grid-column:2;grid-row:2/4;border-left:1px solid var(--line);backgrou
 .tabs button{flex:1;border:0;background:transparent;padding:8px 4px;font-weight:500;border-bottom:2px solid transparent;color:var(--muted);font-size:12.5px;white-space:nowrap}
 .tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
 .pane{flex:1;min-height:0;overflow-y:auto;padding:10px 14px 16px}
-.pane h4{font-family:var(--f-display);font-size:12px;font-weight:600;letter-spacing:.06em;margin:14px 0 4px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.pane h4{font-family:var(--f-body);font-size:13px;font-weight:700;letter-spacing:0;margin:14px 0 4px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
 .pane h4 small{font-family:var(--f-body);font-weight:400;letter-spacing:0;color:var(--muted);font-size:11px}
 .tscroll{overflow-x:auto}
 button.linkish{border:0;background:transparent;padding:0;font:inherit;color:inherit;cursor:pointer;border-bottom:1px dashed var(--muted)}
@@ -197,6 +192,11 @@ table.depl tr.picked td{background:color-mix(in srgb, var(--accent) 14%, transpa
 .refill .form{margin-top:6px;flex-wrap:wrap}
 .refill .btn[aria-pressed="true"]{border-color:var(--ink)}
 .refill .btn:disabled{opacity:.45;cursor:default}
+.setgrp{border:0;margin:0 0 14px;padding:0;display:flex;flex-wrap:wrap;gap:6px 18px}
+.setgrp legend{font-weight:700;font-size:13px;margin-bottom:6px;padding:0}
+.setgrp.col{flex-direction:column;align-items:flex-start}
+.setgrp label{display:inline-flex;align-items:center;gap:6px;font-size:13px;cursor:pointer}
+.bar,.build,aside.side,section.board,section.craft,dialog{zoom:var(--ui-zoom,1)}
 .newopts{display:flex;flex-direction:column;gap:8px;margin:10px 0}
 .newopt{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;border:1px solid var(--line);border-radius:6px;padding:10px;cursor:pointer}
 .newopt:has(input:checked){border-color:var(--ink);background:var(--panel-2)}
@@ -209,12 +209,12 @@ table.dep th{font-weight:500;color:var(--muted);font-size:11px;text-align:right;
 table.dep th:first-child{text-align:left}
 table.dep td{padding:4px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;text-align:right;font-family:var(--f-mono);font-size:11.5px;white-space:nowrap}
 table.dep td:first-child{text-align:left;font-family:var(--f-body);font-size:12px;white-space:normal}
-td .ic img{width:16px;height:16px}
+td .ic img{width:20px;height:20px}
 table.dep tr.empty td{color:var(--muted);text-align:left;font-family:var(--f-body)}
 .pos{color:var(--ok)} .neg{color:var(--warn)} .dim{color:var(--muted)}
 .note{font-size:11.5px;color:var(--muted);margin:8px 0 0;max-width:60ch}
 details{margin-top:12px}
-details summary{cursor:pointer;font-family:var(--f-display);font-size:12px;font-weight:600;letter-spacing:.06em}
+details summary{cursor:pointer;font-family:var(--f-body);font-size:13px;font-weight:700}
 .form{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .form select,.form input{border:1px solid var(--line);background:var(--panel-2);border-radius:3px;padding:4px 6px;font-size:12px}
 .form input[type=number]{width:72px;font-family:var(--f-mono)}
@@ -235,16 +235,16 @@ button.mchip{cursor:pointer;color:inherit} button.mchip:hover{border-color:var(-
 .acct a.who:hover{text-decoration:underline;text-underline-offset:2px}
 .acct .who{color:inherit;text-decoration:none;font-size:12.5px;font-weight:600;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lg{display:grid;grid-template-columns:auto 1fr;gap:8px 10px;align-items:center;margin:10px 0}
-.lg input{border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:6px 8px;font-size:13px;min-width:0}
+.lg input{border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:6px 8px;font-size:13px;min-width:0}
 .lgrow{display:contents}
 .lgrow[hidden]{display:none!important}
 .btn.on{border-color:var(--ok);color:var(--ok);font-weight:600}
-.bp.sharedsearch input{border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:3px 6px;font-size:12px;min-width:0;flex:1}
+.bp.sharedsearch input{border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:3px 6px;font-size:12px;min-width:0;flex:1}
 .bp.shared{width:230px}
 .slots{display:grid;gap:4px;margin:6px 0 8px}
 .slot{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:6px;align-items:center;font-size:12px;min-height:26px}
 .slot .sn{font-family:var(--f-mono);color:var(--muted);text-align:right}
-.slot select{border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:3px 5px;font-size:12px;min-width:0}
+.slot select{border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:3px 5px;font-size:12px;min-width:0}
 .slot .sc{font-family:var(--f-mono);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sfill input{width:64px}
 .tree .r{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
@@ -253,10 +253,11 @@ button.mchip{cursor:pointer;color:inherit} button.mchip:hover{border-color:var(-
 dialog{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px;padding:16px;width:min(560px,calc(100vw - 32px))}
 dialog::backdrop{background:rgba(0,0,0,.35)}
 dialog h3{font-family:var(--f-display);margin:0 0 8px;font-size:16px}
-dialog textarea{width:100%;height:200px;font-family:var(--f-mono);font-size:11px;border:1px solid var(--line);border-radius:4px;background:var(--panel-2);padding:8px;resize:vertical}
+dialog textarea{width:100%;height:200px;font-family:var(--f-mono);font-size:11px;border:1px solid var(--line);border-radius:2px;background:var(--panel-2);padding:8px;resize:vertical}
 .msg{font-size:12px;color:var(--muted);min-height:1.4em;margin-top:6px}
 
 @media (max-width: 960px){
+  .rz,.rzrow{display:none}
   html,body{height:auto}
   .app{height:auto;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto auto}
   main.stage,.build,aside.side{grid-column:1;grid-row:auto}
@@ -268,7 +269,6 @@ dialog textarea{width:100%;height:200px;font-family:var(--f-mono);font-size:11px
   main.stage{height:62vh;min-height:360px}
   .selbar{right:12px;top:auto;bottom:48px}
   .sites{right:12px}
-  .float{top:calc(var(--sites-h, 0px) + 20px)}
   aside.side{border-left:0;border-top:1px solid var(--line)}
   .insp{max-height:none;padding-inline:16px}
   .pane{max-height:none;overflow:visible;padding-inline:16px}
@@ -277,8 +277,17 @@ dialog textarea{width:100%;height:200px;font-family:var(--f-mono);font-size:11px
 }
 
 /* board: the page turns into the board (#board, #post/ID, #write, #edit/ID) */
-.seg.view button{font-family:var(--f-body);font-size:12.5px;padding:5px 12px}
+.seg.view{border:0;border-radius:0;overflow:visible;gap:16px;margin-left:8px}
+.seg.view button,.hlinks button{font-family:var(--f-body);font-size:13px;padding:4px 0;background:none;border:0;color:var(--ink);font-weight:500;border-bottom:2px solid transparent;border-radius:0;cursor:pointer}
+.seg.view button+button{border-left:0}
+.seg.view button[aria-pressed="true"]{background:none;color:var(--ink);font-weight:700;border-bottom-color:var(--accent)}
+.seg.view button:hover,.hlinks button:hover{border-bottom-color:var(--line)}
+.seg.view button[aria-pressed="true"]:hover{border-bottom-color:var(--accent)}
+.hlinks{display:flex;gap:16px;align-items:center}
 .board{display:none}
+.craft{display:none}
+.app.craftmode main.stage,.app.craftmode .build,.app.craftmode aside.side,.app.craftmode .simonly{display:none!important}
+.app.craftmode .craft{display:flex;flex-direction:column;grid-column:1/-1;grid-row:2/4;min-height:0;background:var(--bg);position:relative}
 .app.boardmode main.stage,.app.boardmode .build,.app.boardmode aside.side,.app.boardmode .simonly{display:none!important}
 .app.boardmode .board{display:block;grid-column:1/-1;grid-row:2/4;overflow-y:auto;min-height:0;background:var(--bg)}
 .bwrap{max-width:960px;margin:0 auto;padding:22px 16px 56px}
@@ -286,9 +295,12 @@ dialog textarea{width:100%;height:200px;font-family:var(--f-mono);font-size:11px
 .bhead{display:flex;align-items:flex-end;gap:12px;margin-bottom:14px}
 .bhead p{margin:3px 0 0;font-size:12.5px}
 .btool{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
-.btool .seg button{font-family:var(--f-body);font-size:12.5px;padding:5px 12px}
+.btool .seg{border:0;overflow:visible;gap:16px}
+.btool .seg button{font-family:var(--f-body);font-size:13px;padding:4px 0;background:none;border:0;border-bottom:2px solid transparent;border-radius:0;color:var(--ink);font-weight:500}
+.btool .seg button+button{border-left:0}
+.btool .seg button[aria-pressed="true"]{background:none;color:var(--ink);font-weight:700;border-bottom-color:var(--accent)}
 .bsearch{display:flex;gap:6px;flex:1 1 240px;min-width:0}
-.bsearch input{flex:1;min-width:0;border:1px solid var(--line);background:var(--panel);border-radius:4px;padding:5px 9px}
+.bsearch input{flex:1;min-width:0;border:1px solid var(--line);background:var(--panel);border-radius:2px;padding:5px 9px}
 .blist{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:6px;background:var(--panel);overflow:hidden}
 .bempty{padding:28px 16px;margin:0;text-align:center;max-width:none}
 .prow{position:relative;display:grid;grid-template-columns:128px minmax(0,1fr) auto;gap:14px;align-items:center;padding:10px 14px 10px 10px;border-top:1px solid var(--line)}
@@ -300,7 +312,7 @@ dialog textarea{width:100%;height:200px;font-family:var(--f-mono);font-size:11px
 .prow:hover{background:var(--panel-2)}
 .prow:hover .ptitle b{text-decoration:underline;text-underline-offset:3px}
 .prow.k-notice{background:color-mix(in srgb,var(--accent) 9%,var(--panel))}
-.pthumb{width:128px;height:80px;border-radius:4px;overflow:hidden;background:var(--panel-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.pthumb{width:128px;height:80px;border-radius:2px;overflow:hidden;background:var(--panel-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--muted)}
 .pthumb img{width:100%;height:100%;object-fit:cover;display:block}
 .pthumb canvas{width:100%;height:100%;display:block}
 .pmain{display:flex;flex-direction:column;gap:3px;min-width:0}
@@ -340,7 +352,7 @@ dialog textarea{width:100%;height:200px;font-family:var(--f-mono);font-size:11px
 .phead .pmeta{font-size:12.5px}
 .phead .pmeta b{color:var(--ink);font-weight:600}
 .bpfig{margin:0 0 18px;border:1px solid var(--line);border-radius:6px;background:var(--panel);padding:10px;display:flex;flex-direction:column;gap:8px}
-#bBig{width:100%;height:clamp(240px,52vw,460px);border-radius:4px;display:block}
+#bBig{width:100%;height:clamp(240px,52vw,460px);border-radius:2px;display:block}
 .bpfig figcaption{font-size:12.5px}
 .fchips{display:flex;flex-wrap:wrap}
 .pbody{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.7;margin:0 0 18px;max-width:72ch}
@@ -358,7 +370,7 @@ a.btn{color:inherit;text-decoration:none;display:inline-block}
 .cbody{white-space:pre-wrap;overflow-wrap:anywhere;margin-top:3px;font-size:13.5px}
 .cnone{padding:6px 0}
 .cform{display:flex;flex-direction:column;gap:6px}
-.cform textarea,.pwrite input,.pwrite textarea{width:100%;border:1px solid var(--line);background:var(--panel);border-radius:4px;padding:8px 10px;font-size:13.5px;resize:vertical}
+.cform textarea,.pwrite input,.pwrite textarea{width:100%;border:1px solid var(--line);background:var(--panel);border-radius:2px;padding:8px 10px;font-size:13.5px;resize:vertical}
 .linkbtn{border:0;background:none;padding:0;color:var(--ink);text-decoration:underline;text-underline-offset:2px;font-size:inherit}
 .linkbtn.danger{color:var(--bad);margin-left:auto;font-size:11.5px}
 .pwrite h2{margin-bottom:16px}
@@ -369,11 +381,13 @@ a.btn{color:inherit;text-decoration:none;display:inline-block}
 .wbp{display:flex;flex-direction:column;gap:8px;min-width:0}
 .wbp .sel{max-width:100%}
 .wbp textarea{font-family:var(--f-mono);font-size:11.5px}
-#wPrev{width:100%;height:220px;border:1px solid var(--line);border-radius:4px;display:block}
+#wPrev{width:100%;height:220px;border:1px solid var(--line);border-radius:2px;display:block}
 .wbp .note{margin:0}
 .pwrite .acts{margin-left:82px}
 @media (max-width: 960px){
   .app.boardmode .board{grid-row:auto;overflow:visible}
+  .app.craftmode .craft{grid-row:auto;height:calc(100vh - 56px)}
+  .cbar{flex-wrap:wrap} .csearch{width:100%}
 }
 @media (max-width: 640px){
   .prow{grid-template-columns:84px minmax(0,1fr);gap:10px}
@@ -396,10 +410,10 @@ a.btn{color:inherit;text-decoration:none;display:inline-block}
 .rpi{display:flex;align-items:center;gap:7px;font-size:12.5px;padding:3px 0;cursor:pointer;min-width:0}
 .rpi input[type=checkbox]{margin:0;flex:none;accent-color:var(--bad)}
 .rpetc{grid-column:1/-1;flex-wrap:wrap}
-.rpetc input[type=text]{flex:1;min-width:160px;border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:4px 7px;font-size:12.5px}
+.rpetc input[type=text]{flex:1;min-width:160px;border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:4px 7px;font-size:12.5px}
 .rpetc input[type=text]:disabled{opacity:.5}
 .rpdl{display:block;font-size:12.5px;font-weight:600;margin:12px 0 4px}
-#rpDetail{height:auto;min-height:64px;font-family:var(--f-body);width:100%;border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:6px 8px;font-size:12.5px;resize:vertical}
+#rpDetail{height:auto;min-height:64px;font-family:var(--f-body);width:100%;border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:6px 8px;font-size:12.5px;resize:vertical}
 .rpbadge{font-size:11.5px;font-weight:600;color:var(--muted);text-decoration:none;border:1px solid var(--line);border-radius:99px;padding:1px 8px}
 .rpbadge.hot{background:var(--bad);border-color:var(--bad);color:#fff}
 .seg a.segb{display:inline-block;color:inherit;text-decoration:none;background:var(--panel-2);padding:5px 12px;font-size:12.5px}
@@ -418,9 +432,9 @@ a.btn{color:inherit;text-decoration:none;display:inline-block}
 
 /* admin tab, bans, saved factories */
 .subtabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin:0 0 14px}
-.subtabs a{color:var(--muted);text-decoration:none;padding:8px 14px;font-size:13px;font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px}
+.subtabs a{color:var(--ink);text-decoration:none;padding:8px 14px;font-size:13px;font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px}
 .subtabs a:hover{color:var(--ink)}
-.subtabs a[aria-current="page"]{color:var(--ink);font-weight:600;border-bottom-color:var(--accent)}
+.subtabs a[aria-current="page"]{color:var(--ink);font-weight:700;border-bottom-color:var(--accent)}
 .subtabs #amRpCount{margin-left:4px;color:var(--bad);font-family:var(--f-mono);font-size:12px}
 .amsub{margin:0 0 10px;font-size:12.5px}
 .banbar{border:1px solid var(--bad);background:color-mix(in srgb,var(--bad) 10%,var(--panel));color:var(--ink);border-radius:6px;padding:10px 12px;margin-bottom:14px;font-size:12.5px;line-height:1.6}
@@ -438,7 +452,7 @@ a.btn{color:inherit;text-decoration:none;display:inline-block}
 .banform{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:10px;border:1px dashed var(--bad);border-radius:5px;font-size:12.5px}
 .banform label{display:inline-flex;align-items:center;gap:6px}
 .banform .grow{flex:1 1 240px}
-.banform .grow input{flex:1;min-width:0;border:1px solid var(--line);background:var(--panel-2);border-radius:4px;padding:4px 7px;font-size:12.5px}
+.banform .grow input{flex:1;min-width:0;border:1px solid var(--line);background:var(--panel-2);border-radius:2px;padding:4px 7px;font-size:12.5px}
 .banform .row{width:100%}
 .banform .msg{margin:0;min-height:0}
 .facmode{display:flex;flex-direction:column;gap:4px;margin:0 0 8px;font-size:12.5px}
@@ -463,19 +477,18 @@ a.btn{color:inherit;text-decoration:none;display:inline-block}
 header.bar{gap:8px 12px}
 .toolbar{display:flex;flex-wrap:nowrap;align-items:center;gap:8px 12px;flex:1 0 auto;order:1}
 .toolbar .ctl{flex-wrap:nowrap;gap:6px}
-.bar .acct{order:2;margin-left:auto;flex:none}
+.bar .hlinks{order:2;margin-left:auto;flex:none}
+.bar .acct{order:2;flex:none}
 /* compact controls so everything fits on one line on wide screens */
 .bar .btn{padding:4px 9px;font-size:12px}
 .bar .seg button{padding:4px 8px;font-size:11.5px}
-.bar .seg.view button{padding:4px 11px;font-size:12px}
+.bar .seg.view button{padding:4px 0;font-size:13px}
 .bar select.sel{padding:4px 6px;font-size:12px;max-width:160px}
-.bar #preset{max-width:140px}
 .bar .pwr{min-width:150px}
 .bar .meter{min-width:56px}
 .brand h1{font-size:16px}
 /* long nicknames are cut with … (full name on hover); the 관리자 badge always shows */
 .acct .who{max-width:112px}
-.bar.site:not(.tworow) .brand small{display:none}
 .acct .kbadge{flex:none}
 /* when it does not fit, the factory controls move to their own row */
 .bar.tworow .toolbar{order:3;flex:1 1 100%;flex-wrap:wrap;margin:0 -16px;padding:8px 16px 0;border-top:1px solid var(--line)}
@@ -493,6 +506,78 @@ header.bar{gap:8px 12px}
 .bugctx .kv{margin-top:6px;font-size:11.5px}
 .bugctx dd{overflow-wrap:anywhere}
 @media (prefers-reduced-motion: reduce){ .meter i,.switch input::after, }
+/* drag handles on panel edges: side panel width, facility strip height, inspector height (double-click resets) */
+.rz{position:absolute;z-index:6;touch-action:none}
+.rz::after{content:"";position:absolute;background:var(--accent);opacity:0;transition:opacity .12s}
+.rz:hover::after,.rz.on::after{opacity:1}
+.rz.col{top:0;bottom:0;left:-4px;width:8px;cursor:col-resize}
+.rz.col::after{top:0;bottom:0;left:3px;width:2px}
+.rz.row{left:0;right:0;height:8px;cursor:row-resize}
+.rz.row::after{left:0;right:0;top:3px;height:2px}
+.rz.top{top:-4px}
+.rzrow{position:relative;height:0;flex:none}
+.rzrow .rz.row{top:-4px}
+body.resizing{user-select:none}
+body.resizing.rcol{cursor:col-resize} body.resizing.rrow{cursor:row-resize}
+.build.wrap .strip{flex-wrap:wrap;overflow-x:hidden;overflow-y:auto;align-content:flex-start}
+/* item card */
+.ic[data-item]{cursor:pointer}
+.ic[data-item]:hover>span:last-child{text-decoration:underline}
+.itdlg{width:min(560px,94vw);max-height:86vh;padding:0;display:none;flex-direction:column}
+.itdlg[open]{display:flex}
+.ithead{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.ithead img{width:44px;height:44px}
+.ithead h3{margin:0}
+#itBody{overflow-y:auto;padding:4px 16px 16px}
+#itBody h4{margin:14px 0 6px}
+.itrec{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:4px 8px}
+.itm{grid-column:1/-1;display:flex;align-items:center;gap:8px;margin-top:2px}
+.itmach{display:inline-flex;align-items:center;gap:4px;border:0;background:transparent;padding:0;font:inherit;color:inherit;cursor:pointer}
+.itmach img{width:22px;height:22px}
+.itmach:hover b{text-decoration:underline}
+.itx{margin-top:14px}
+/* crafting chains */
+.cbar{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);flex:none}
+.ccrumb{display:flex;align-items:center;gap:6px;font-size:14px;flex:1;min-width:0}
+.ccrumb a{color:inherit;text-decoration:none} .ccrumb a:hover{text-decoration:underline} .ccrumb span{opacity:.6}
+.csearch{position:relative;width:min(320px,50vw)}
+.csearch input{width:100%}
+.cres{position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:20;background:var(--panel);border:1px solid var(--line);max-height:60vh;overflow-y:auto;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.cres a{display:flex;align-items:center;gap:8px;padding:5px 6px;color:inherit;text-decoration:none}
+.cres a:hover{background:var(--panel-2)} .cres img{width:24px;height:24px}
+.cpick{overflow-y:auto;padding:12px 16px 24px;flex:1;min-height:0}
+.cgrp{margin:0 0 14px} .cgrp h4,.cgrp summary{margin:0 0 8px;cursor:default} .cgrp summary{cursor:pointer;font-weight:700}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px}
+.cpi{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;border:1px solid var(--line);background:var(--panel);color:inherit;text-decoration:none;font-size:12px;text-align:center;line-height:1.25}
+.cpi:hover{border-color:var(--ink)} .cpi img{width:40px;height:40px}
+.cstage{position:relative;flex:1;min-height:0;overflow:hidden;cursor:grab;background:var(--cv-bg);touch-action:none}
+.cstage.drag{cursor:grabbing}
+.cplane{position:absolute;left:0;top:0;transform-origin:0 0}
+.clines{position:absolute;left:0;top:0;overflow:visible}
+.clines path{fill:none;stroke:var(--ink);stroke-opacity:.55;stroke-width:2}
+.cnode{position:absolute;width:64px;cursor:pointer}
+.cimg{width:64px;height:64px;background:var(--panel-2);border:1px solid var(--line);box-shadow:inset 0 -4px 0 var(--mc);display:flex;align-items:center;justify-content:center}
+.cimg img{width:52px;height:52px}
+.cnode:hover .cimg{border-color:var(--ink)}
+.cnode.root .cimg{border:2px solid var(--accent)}
+.cnode.dep .cimg{filter:grayscale(1);opacity:.55}
+.cnode.flash .cimg{animation:cflash 1s 2}
+@keyframes cflash{50%{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent)}}
+.cname{position:absolute;top:68px;left:50%;transform:translateX(-50%);width:110px;text-align:center;font-size:11px;line-height:1.25}
+.cq{position:absolute;top:-8px;left:-8px;background:var(--ink);color:var(--bg);font-size:10.5px;font-weight:700;padding:1px 4px}
+.ceye{position:absolute;left:-30px;top:20px;width:22px;height:22px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:12px;line-height:1;padding:0;cursor:pointer}
+.cloop{position:absolute;left:-24px;top:22px;font-weight:700}
+.cpill{position:absolute;height:38px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--panel);border:1.5px solid var(--ink);font-size:12px;line-height:1.2}
+.cpill b{display:flex;align-items:center;gap:4px;max-width:124px;overflow:hidden;white-space:nowrap}
+.cpill b img{width:18px;height:18px}
+.cpill>span:last-child{font-size:10.5px;opacity:.75}
+.cgas{position:absolute;bottom:calc(100% + 3px);left:-1.5px;right:-1.5px;background:var(--gc);color:#111;font-size:10.5px;font-weight:700;text-align:center;padding:1px 0}
+.clines .calt path{stroke-dasharray:5 4;stroke-opacity:.4}
+.cpill.alt{border-style:dashed;border-color:var(--cv-muted)}
+.caltag{position:absolute;top:-8px;right:6px;background:var(--panel);font-size:10px;padding:0 4px;color:var(--cv-muted);font-weight:700}
+.cnode.alt .cimg{opacity:.8}
+.czoom{position:absolute;right:12px;bottom:12px;display:flex;gap:4px}
+.note:empty{display:none}
 </style>
 
 <!-- 내 디자인: custom.css (이 파일에 적은 CSS가 기본 디자인을 덮어씀) -->
@@ -501,11 +586,9 @@ header.bar{gap:8px 12px}
 <body>
 <div class="app" id="app">
   <header class="bar" id="bar">
-    <div class="brand">
-      <div class="mark" aria-hidden="true"></div>
-      <div><h1>AIC 공장 시뮬레이터</h1><small>Arknights: Endfield · 협곡 IV / 무릉</small></div>
-    </div>
-    <nav class="seg view" id="viewSw" aria-label="화면" hidden><button data-v="sim" aria-pressed="true">공장</button><button data-v="board" aria-pressed="false">게시판</button><button data-v="admin" aria-pressed="false" hidden>관리자</button></nav>
+    <div class="brand"><h1>AIC 공장 시뮬레이터</h1></div>
+    <nav class="seg view" id="viewSw" aria-label="화면"><button data-v="sim" aria-pressed="true">공장</button><button data-v="board" aria-pressed="false">게시판</button><button data-v="craft" aria-pressed="false">조합식</button><button data-v="admin" aria-pressed="false" hidden>관리자</button></nav>
+    <nav class="hlinks" aria-label="도움"><button id="bugBtn" hidden title="문제를 운영자에게 알리기">버그 제보</button><button id="setBtn" title="화면 설정">설정</button></nav>
     <span class="acct" id="acct" hidden></span>
     <div class="toolbar simonly">
       <div class="ctl">
@@ -526,7 +609,6 @@ header.bar{gap:8px 12px}
         <select class="sel" id="site" aria-label="부지 크기"></select>
         <span class="row" id="siteCustom" hidden style="gap:4px"><input id="sw" type="number" min="12" max="120" aria-label="부지 가로 칸 수" class="num"> × <input id="sh" type="number" min="12" max="120" aria-label="부지 세로 칸 수" class="num"><button class="btn sm primary" id="siteApply">적용</button><button class="btn sm" id="siteCancel">취소</button></span>
         <button class="btn" id="newFac" title="빈 공장으로 새로 시작">새 공장</button>
-        <select class="sel" id="preset" aria-label="예시 공장 불러오기"><option value="">예시 공장 불러오기…</option></select>
         <button class="btn" id="io">레이아웃 코드</button>
         <button class="btn" id="facSave" hidden title="지금 공장을 내 계정에 저장">공장 저장</button>
       </div>
@@ -537,41 +619,38 @@ header.bar{gap:8px 12px}
     <canvas id="cv" aria-label="공장 부지. 설비를 골라 클릭해서 배치합니다."></canvas>
     <nav class="sites" id="sites" aria-label="부지 (지역마다 창고를 함께 씀)"></nav>
     <div class="selbar" id="selbar" hidden></div>
-    <div class="float">
-      <button class="btn" id="rotBtn" title="회전 (R)">회전</button>
-      <button class="btn" id="fitBtn" title="부지 전체 보기">전체 보기</button>
-      <button class="btn" id="bugBtn" hidden title="문제를 운영자에게 알리기">버그 제보</button>
-    </div>
     <div class="hud"><span class="chip warn" id="warn" hidden></span><span class="chip mono" id="siteInfo">부지</span><span class="chip mono" id="hover">—</span></div>
   </main>
 
   <section class="build" aria-label="설비">
+    <div class="rz row top" id="rzBuild" title="드래그해서 높이 조절" aria-hidden="true"></div>
     <div class="brow">
       <div class="tools" id="tools" aria-label="도구"></div>
       <div class="cats" id="cats" role="tablist" aria-label="설비 분류"></div>
-      <div class="search"><input id="q" type="search" placeholder="설비 찾기 (예: 반응기)" aria-label="설비 검색"></div>
+      <div class="search"><input id="q" type="search" placeholder="설비 찾기" aria-label="설비 검색"></div>
     </div>
     <div class="strip" id="plist" role="tabpanel" aria-label="설비 목록"></div>
-    <div class="keys"><kbd>E</kbd> 컨베이어 벨트 · <kbd>Q</kbd> 파이프 · <kbd>R</kbd> 회전 · <kbd>M</kbd> 이동 (설비를 끌어도 됨) · <kbd>Esc</kbd> 취소 · <kbd>Del</kbd> 철거 · 범위 드래그 = 선택 · <kbd>Shift</kbd>+드래그 = 선택에서 빼기 · <kbd>Ctrl</kbd>+드래그 = 더하기 · <kbd>Ctrl</kbd>+<kbd>C</kbd>/<kbd>V</kbd> 복사·붙여넣기</div>
+    <div class="keys"><kbd>E</kbd> 컨베이어 벨트 · <kbd>Q</kbd> 파이프 · <kbd>R</kbd> 회전 · <kbd>M</kbd> 이동 · <kbd>Esc</kbd> 취소 · <kbd>Del</kbd> 철거 · 범위 드래그 = 선택 · <kbd>Shift</kbd> + 드래그 = 선택에서 빼기 · <kbd>Ctrl</kbd> + 드래그 = 더하기 · <kbd>Ctrl</kbd> + <kbd>C</kbd> / <kbd>V</kbd> 복사·붙여넣기</div>
   </section>
 
   <aside class="side">
+    <div class="rz col" id="rzSide" title="드래그해서 너비 조절" aria-hidden="true"></div>
     <section class="insp" id="insp" aria-live="polite"></section>
+    <div class="rzrow" id="rzInspRow"><div class="rz row" id="rzInsp" title="드래그해서 높이 조절" aria-hidden="true"></div></div>
     <div class="tabs" role="tablist">
       <button role="tab" aria-selected="true" data-tab="stats">생산 현황</button>
       <button role="tab" aria-selected="false" data-tab="facs">설비</button>
       <button role="tab" aria-selected="false" data-tab="depot">창고</button>
       <button role="tab" aria-selected="false" data-tab="recipes">레시피</button>
-      <button role="tab" aria-selected="false" data-tab="plan">생산 계획</button>
     </div>
     <div class="pane" id="pane-stats"></div>
     <div class="pane" id="pane-facs" hidden></div>
     <div class="pane" id="pane-depot" hidden></div>
     <div class="pane" id="pane-recipes" hidden></div>
-    <div class="pane" id="pane-plan" hidden></div>
   </aside>
 
   <section class="board" id="board" aria-label="게시판"></section>
+  <section class="craft" id="craft" aria-label="조합식"></section>
   <div class="ucard" id="ucard" role="tooltip" hidden></div>
 </div>
 
@@ -579,11 +658,11 @@ header.bar{gap:8px 12px}
   <form id="loginForm">
     <h3 id="lgTitle">로그인</h3>
     <div class="lg">
-      <label for="lgUser">아이디</label><input id="lgUser" autocomplete="username" maxlength="20" placeholder="영어 소문자·숫자·_ 3–20자" required>
+      <label for="lgUser">아이디</label><input id="lgUser" autocomplete="username" maxlength="20" placeholder="영문 소문자·숫자·_ 3–20자" required>
       <label for="lgPw">비밀번호</label><input id="lgPw" type="password" autocomplete="current-password" minlength="6" required>
       <span id="lgPw2Row" class="lgrow" hidden><label for="lgPw2">비밀번호 확인</label><input id="lgPw2" type="password" autocomplete="new-password"></span>
     </div>
-    <p class="note">이메일은 받지 않아서 비밀번호를 잊으면 찾을 수 없습니다. <b>다른 사이트에서 쓰는 비밀번호는 쓰지 마세요.</b> 저장하는 정보는 아이디, 암호화된 비밀번호, 내가 올린 청사진뿐입니다.</p>
+    <p class="note">비밀번호는 찾을 수 없습니다. 다른 사이트와 다른 비밀번호를 쓰세요.</p>
     <div class="msg" id="lgMsg" role="alert"></div>
     <div class="acts"><button class="btn primary" id="lgGo" type="submit">로그인</button><button class="btn" id="lgSwitch" type="button">가입하기</button><span class="spacer"></span><button class="btn" id="lgClose" type="button">닫기</button></div>
   </form>
@@ -593,9 +672,9 @@ header.bar{gap:8px 12px}
   <form id="rpForm">
     <h3 id="rpTitle">신고하기</h3>
     <p class="note rpwhat" id="rpWhat"></p>
-    <fieldset class="rpset"><legend>어떤 운영 원칙을 어겼나요? <span class="dim">(여러 개 고를 수 있음)</span></legend><div class="rplist" id="rpList"></div></fieldset>
+    <fieldset class="rpset"><legend>어긴 운영 원칙</legend><div class="rplist" id="rpList"></div></fieldset>
     <label class="rpdl" for="rpDetail">추가 설명 <span class="dim">(선택)</span></label>
-    <textarea id="rpDetail" maxlength="1000" rows="3" placeholder="운영자가 판단하는 데 도움이 되는 내용을 적어 주세요"></textarea>
+    <textarea id="rpDetail" maxlength="1000" rows="3"></textarea>
     <div class="msg" id="rpMsg" role="alert"></div>
     <div class="acts"><button class="btn primary" type="submit" id="rpGo">신고 보내기</button><span class="spacer"></span><button class="btn" type="button" id="rpClose">취소</button></div>
   </form>
@@ -610,8 +689,8 @@ header.bar{gap:8px 12px}
       <label><input type="radio" name="facm" id="facModeNew"> 새 공장으로 저장</label>
     </div>
     <div class="lg">
-      <label for="facName">이름</label><input id="facName" maxlength="60" placeholder="예: 배터리 라인 1차" required>
-      <label for="facDesc">설명</label><textarea id="facDesc" maxlength="1000" rows="4" placeholder="무엇을 만드는 공장인지, 메모 (선택)"></textarea>
+      <label for="facName">이름</label><input id="facName" maxlength="60" required>
+      <label for="facDesc">설명</label><textarea id="facDesc" maxlength="1000" rows="4"></textarea>
     </div>
     <div class="msg" id="facMsg" role="alert"></div>
     <div class="acts"><button class="btn primary" type="submit" id="facGo">저장</button><span class="spacer"></span><button class="btn" type="button" id="facClose">취소</button></div>
@@ -628,8 +707,7 @@ header.bar{gap:8px 12px}
       <label for="pwNew2">새 비밀번호 확인</label><input id="pwNew2" type="password" autocomplete="new-password">
     </div>
     <label class="switch pwothers"><input type="checkbox" id="pwOthers" checked> 다른 기기에서 로그아웃</label>
-    <p class="note">6자 이상이면 되지만, 길수록 안전합니다. 관리자라면 16자 이상, 다른 사이트에서 쓰지 않는 비밀번호를 권합니다. 이메일을 받지 않아서 잊으면 찾을 수 없으니 잘 보관하세요.</p>
-    <div class="msg" id="pwMsg" role="alert"></div>
+        <div class="msg" id="pwMsg" role="alert"></div>
     <div class="acts"><button class="btn primary" type="submit" id="pwGo">바꾸기</button><span class="spacer"></span><button class="btn" type="button" id="pwClose">취소</button></div>
   </form>
 </dialog>
@@ -637,29 +715,53 @@ header.bar{gap:8px 12px}
 <dialog id="bugDlg" aria-labelledby="bugTitleH">
   <form id="bugForm">
     <h3 id="bugTitleH">버그 제보</h3>
-    <p class="note" style="margin:0 0 10px">이상하게 동작하는 부분을 알려 주세요. 운영자에게 바로 전달됩니다.</p>
-    <div class="lg">
+        <div class="lg">
       <label for="bugCat">분류</label><select class="sel" id="bugCat"></select>
-      <label for="bugTitle">제목</label><input id="bugTitle" maxlength="100" placeholder="예: 정련로에 벨트가 연결되지 않음">
-      <label for="bugBody">내용</label><textarea id="bugBody" maxlength="3000" rows="6" placeholder="무엇을 했을 때 → 어떻게 됐는지 → 원래 어떻게 되어야 하는지 적어 주세요"></textarea>
+      <label for="bugTitle">제목</label><input id="bugTitle" maxlength="100">
+      <label for="bugBody">내용</label><textarea id="bugBody" maxlength="3000" rows="6"></textarea>
     </div>
-    <label class="switch"><input type="checkbox" id="bugLayout"> 지금 공장 배치 첨부 (문제를 다시 확인하는 데 도움이 됩니다)</label>
-    <p class="note">브라우저 종류, 화면 크기, 지금 보던 화면, 최근 오류 메시지가 함께 전달됩니다. 개인정보는 보내지 않습니다.</p>
+    <label class="switch"><input type="checkbox" id="bugLayout"> 공장 배치 첨부</label>
+    <p class="note">브라우저·화면 정보가 함께 전달됩니다.</p>
     <div class="msg" id="bugMsg" role="alert"></div>
     <div class="acts"><button class="btn primary" type="submit" id="bugGo">보내기</button><span class="spacer"></span><button class="btn" type="button" id="bugClose">취소</button></div>
   </form>
 </dialog>
 
+<dialog id="setDlg" aria-labelledby="setTitle">
+  <form method="dialog" id="setForm">
+    <h3 id="setTitle">설정</h3>
+    <fieldset class="setgrp"><legend>화면 테마</legend>
+      <label><input type="radio" name="theme" value="system"> 컴퓨터 설정 따라가기</label>
+      <label><input type="radio" name="theme" value="dark"> 어둡게</label>
+      <label><input type="radio" name="theme" value="light"> 밝게</label>
+    </fieldset>
+    <fieldset class="setgrp"><legend>글자 크기</legend>
+      <label><input type="radio" name="size" value="s"> 작게</label>
+      <label><input type="radio" name="size" value="m"> 보통</label>
+      <label><input type="radio" name="size" value="l"> 크게</label>
+    </fieldset>
+    <fieldset class="setgrp col"><legend>공장 화면</legend>
+      <label class="switch"><input type="checkbox" id="setGrid"> 격자 줄 보이기</label>
+      <label class="switch"><input type="checkbox" id="setLabels"> 설비 이름 보이기</label>
+      <label class="switch"><input type="checkbox" id="setItems"> 벨트·파이프 위 물건 보이기</label>
+    </fieldset>
+        <div class="acts"><button class="btn" type="button" id="setReset">처음 설정으로</button><span class="spacer"></span><button class="btn primary" type="button" id="setClose">닫기</button></div>
+  </form>
+</dialog>
 <dialog id="newDlg" aria-labelledby="newTitle">
   <form method="dialog" id="newForm">
     <h3 id="newTitle">새 공장</h3>
     <div class="newopts">
-      <label class="newopt"><input type="radio" name="newScope" value="site" checked><span><b id="newSiteName">이 부지만 비우기</b><small>지금 보는 부지의 설비를 모두 철거하고 PAC만 남깁니다. 부지 크기·다른 부지·지역 창고는 그대로입니다.</small></span></label>
-      <label class="newopt"><input type="radio" name="newScope" value="all"><span><b>전체 새로 시작</b><small>협곡 IV·무릉 부지 8곳을 모두 비우고 크기를 최대 확장으로, 창고 재고·무한 설정·무재고 전송·부지 이름을 처음 상태로 되돌립니다.</small></span></label>
+      <label class="newopt"><input type="radio" name="newScope" value="site" checked><span><b id="newSiteName">이 부지만 비우기</b><small>PAC만 남기고 철거</small></span></label>
+      <label class="newopt"><input type="radio" name="newScope" value="all"><span><b>전체 새로 시작</b><small>부지 8곳·창고·설정 초기화</small></span></label>
     </div>
-    <p class="note" id="newNote">되돌릴 수 없습니다. 지금 공장을 남기려면 먼저 "공장 저장"이나 "레이아웃 코드"로 보관하세요.</p>
+    <p class="note" id="newNote">되돌릴 수 없습니다.</p>
     <div class="acts"><button class="btn primary" value="go" id="newGo">비우기</button><span class="spacer"></span><button class="btn" value="cancel" formnovalidate>취소</button></div>
   </form>
+</dialog>
+<dialog id="itemDlg" class="itdlg" aria-labelledby="itTitle">
+  <div class="ithead"><button class="btn sm" type="button" id="itBack" hidden aria-label="이전 품목">←</button><img id="itImg" alt=""><div><h3 id="itTitle"></h3><div class="dim" id="itEn"></div></div><span class="spacer"></span><button class="btn" type="button" id="itClose">닫기</button></div>
+  <div id="itBody"></div>
 </dialog>
 <dialog id="dlg">
   <h3 id="dlgTitle">레이아웃 코드</h3>
@@ -1009,8 +1111,8 @@ const TYPES = {
   loader:    { ko: '창고 입력 포트', en: 'Depot Loader', short: '입력 포트', w: 3, h: 1, sizeLabel: '1×3', power: 0, kind: 'loader', group: 'depot', local: { in: [[1, 0, 0]], out: [] } },
   unloader:  { ko: '창고 출력 포트', en: 'Depot Unloader', short: '출력 포트', w: 3, h: 1, sizeLabel: '1×3', power: 0, kind: 'unloader', group: 'depot', local: { out: [[1, 0, 2]], in: [] } },
   tank:      { ko: '액체 저장 탱크', en: 'Fluid Tank', short: '저장 탱크', w: 3, h: 3, power: 0, kind: 'tank', holds: 'fluid', group: 'depot' },
-  bussection:{ ko: '창고 입출력 라인 기초 장치', en: 'Depot Bus Section', short: '버스', w: 4, h: 8, power: 0, kind: 'bus', group: 'depot', ports: { in: null, out: null } },
-  busport:   { ko: '창고 입출력 라인 핵심 장치', en: 'Depot Bus Port', short: '버스 핵심', w: 4, h: 4, power: 0, kind: 'busport', group: 'depot', ports: { in: null, out: null } },
+  bussection:{ ko: '창고 입출력 라인 기초 장치', en: 'Depot Bus Section', short: '기초 장치', w: 4, h: 8, power: 0, kind: 'bus', group: 'depot', ports: { in: null, out: null } },
+  busport:   { ko: '창고 입출력 라인 핵심 장치', en: 'Depot Bus Port', short: '핵심 장치', w: 4, h: 4, power: 0, kind: 'busport', group: 'depot', ports: { in: null, out: null } },
   cinlet:    { ko: '암관 입구', en: 'Conduit Inlet', short: '암관 입구', w: 3, h: 3, power: 0, kind: 'conduit', dirn: 'in', group: 'depot', gas: true, local: { in: [[1, 0, 2]], out: [] } },
   coutlet:   { ko: '암관 출구', en: 'Conduit Outlet', short: '암관 출구', w: 3, h: 3, power: 0, kind: 'conduit', dirn: 'out', group: 'depot', gas: true, local: { out: [[1, 2, 2]], in: [] } },
   cminlet:   { ko: '다중 암관 입구', en: 'Conduit Inlet Manifold', short: '다중 암관 입구', w: 5, h: 3, sizeLabel: '3×5', power: 0, kind: 'conduit', dirn: 'in', multi: true, group: 'depot', gas: true, local: { in: [[1, 0, 2], [3, 0, 2]], out: [] } },
@@ -2311,10 +2413,28 @@ const CARRIER = new Set(['belt','splitter','converger','bridge','control']);
 const MAT = { ori:'#E2683B', ame:'#9A6AE0', fer:'#5A8CB8', cup:'#C8763A', buck:'#E0628B', cit:'#E6B51F', sand:'#C3A165', ake:'#5CAD60', jin:'#D4A93A', yaz:'#7FB069', wood:'#8B6A45', carb:'#56585A', cry:'#3CBFCD', steel:'#8F9CA8', xir:'#4FD1A5', het:'#B04A6F', pyr:'#E24A2C', water:'#4BA3E3', sew:'#7D7A52', acid:'#B7D334', iner:'#A9B8C9' };
 let C = {};
 const iconCache = new Map();
+// pictures for items and facilities: one sprite sheet built from img/items/<id>.png and img/facilities/<type>.png
+// (build.py fills PIC_ATLAS in). Anything without a picture keeps the drawn icon.
+const PIC_ATLAS = {"src":"img/atlas-1f93198f.webp","cell":96,"cols":16,"items":{"acridgen":0,"aketine":1,"aketine_powder":2,"aketine_seed":3,"amber_rice":4,"amber_rice_seed":5,"amethyst_bottle":6,"amethyst_component":7,"amethyst_fiber":8,"amethyst_ore":9,"amethyst_part":10,"amethyst_powder":11,"aquagen":12,"buck_capsule_a":13,"buck_capsule_b":14,"buck_capsule_c":15,"buckflower":16,"buckflower_powder":17,"buckflower_seed":18,"bumper_rich":19,"burdo_muck":20,"canned_citrome_a":21,"canned_citrome_b":22,"canned_citrome_c":23,"carbon":24,"carbon_powder":25,"citrome":26,"citrome_powder":27,"citrome_seed":28,"clean_water":29,"cryston_bottle":30,"cryston_component":31,"cryston_fiber":32,"cryston_part":33,"cryston_powder":34,"cuprium":35,"cuprium_bottle":36,"cuprium_canister":37,"cuprium_component":38,"cuprium_gas":39,"cuprium_ore":40,"cuprium_part":41,"cuprium_powder":42,"cuprium_solution":43,"dense_carbon_powder":44,"dense_ferrium_powder":45,"dense_originium_powder":46,"dense_origocrust_powder":47,"ferrium":48,"ferrium_bottle":49,"ferrium_component":50,"ferrium_ore":51,"ferrium_part":52,"ferrium_powder":53,"ground_buckflower_powder":54,"ground_citrome_powder":55,"hc_battery":56,"heavy_xiragen":57,"heavy_xiranite":58,"hetonite":59,"hetonite_bottle":60,"hetonite_component":61,"hetonite_gas":62,"hetonite_part":63,"hetonite_solution":64,"industrial_explosive":65,"inergen":66,"inert_xircon_effluent":67,"jincao":68,"jincao_drink":69,"jincao_powder":70,"jincao_seed":71,"jincao_solution":72,"jincao_tea":73,"lc_battery":74,"lc_wuling_battery":75,"liquid_heavy_xiranite":76,"liquid_xiranite":77,"originium_ore":78,"originium_powder":79,"origocrust":80,"origocrust_powder":81,"packed_origocrust":82,"precipitation_acid":83,"pyrrolite":84,"pyrrolite_component":85,"pyrrolite_gas":86,"pyrrolite_part":87,"redjade_ginseng":88,"redjade_ginseng_seed":89,"reed_rye":90,"reed_rye_seed":91,"sandleaf":92,"sandleaf_powder":93,"sandleaf_seed":94,"sc_battery":95,"sc_wuling_battery":96,"separator_core":97,"sewage":98,"stabilized_carbon":99,"steel":100,"steel_bottle":101,"steel_part":102,"tartpepper":103,"tartpepper_seed":104,"wood":105,"xiragen":106,"xiranite":107,"xiranite_component":108,"xircon":109,"xircon_effluent":110,"yazhen":111,"yazhen_powder":112,"yazhen_seed":113,"yazhen_solution":114,"yazhen_syringe_a":115,"yazhen_syringe_c":116},"facilities":{"belt":117,"bridge":118,"busport":119,"bussection":120,"cinlet":121,"cminlet":122,"cmoutlet":123,"control":124,"converger":125,"coutlet":126,"fgtrans":127,"fill":128,"fit":129,"forge":130,"gasdisp":131,"gastank":132,"gear":133,"globe":134,"grind":135,"loader":136,"mould":137,"pac":138,"pack":139,"pbridge":140,"pcontrol":141,"pconverger":142,"pipe":143,"plant":144,"psplitter":145,"purify":146,"pylon":147,"reactor":148,"refine":149,"relay":150,"seed":151,"separate":152,"sgtrans":153,"shred":154,"splitter":155,"stash":156,"tank":157,"thermal":158,"unloader":159,"wtreat":160,"xpylon":161,"xreactor":162,"xrelay":163}};
+const PICS = { items: new Map(), facs: new Map() };
+function loadPics(){
+  const A = PIC_ATLAS; if (!A || !A.src) return;
+  const im = new Image();
+  im.onload = () => {
+    const put = (map, obj) => { for (const [k, i] of Object.entries(obj || {})) map.set(k, { im, sx: (i % A.cols) * A.cell, sy: Math.floor(i / A.cols) * A.cell, s: A.cell }); };
+    put(PICS.items, A.items); put(PICS.facs, A.facilities);
+    iconCache.clear(); renderPalette(); renderStats(); renderInspector(true); renderDepot(true); renderRecipes(); renderTools();
+    facIconCache.clear(); if (ui.view === 'craft') craft.target ? craft.draw(false) : craft.picker();
+  };
+  im.src = A.src;
+}
+// draw a picture into a w×h box centred on (cx, cy) (the sheet cells are square)
+function drawPic(c, p, cx, cy, w, h){ const d = Math.min(w, h); c.drawImage(p.im, p.sx, p.sy, p.s, p.s, cx - d / 2, cy - d / 2, d, d); }
 function readColors(){
   const cs = getComputedStyle(document.documentElement);
   for (const k of ['cv-bg','cv-grid','cv-grid2','cv-belt','cv-rail','cv-belt-mark','cv-pipe','cv-pipe-core','cv-mach','cv-mach-ink','cv-range','cv-range-line','accent','ink','muted','power','ok','warn','bad','panel','panel-2','line'])
     C[k] = cs.getPropertyValue('--'+k).trim();
+  C.muted = cs.getPropertyValue('--cv-muted').trim() || C.muted;   // the canvas keeps a softer grey for idle marks
   C.fDisplay = cs.getPropertyValue('--f-display').trim(); C.fMono = cs.getPropertyValue('--f-mono').trim(); C.fBody = cs.getPropertyValue('--f-body').trim();
   iconCache.clear();
 }
@@ -2323,6 +2443,11 @@ function readColors(){
 function poly(c, x, y, r, n, rot){ c.beginPath(); for(let i=0;i<n;i++){ const a=rot+i*2*Math.PI/n; const px=x+r*Math.cos(a), py=y+r*Math.sin(a); i?c.lineTo(px,py):c.moveTo(px,py);} c.closePath(); }
 function drawItem(c, id, x, y, r){
   const it = ITEMS[id]; if (!it) return;
+  const pic = PICS.items.get(id); if (pic){ drawPic(c, pic, x, y, r * 2.3, r * 2.3); return; }
+  if (it.cat === 'filled'){ // a filled bottle or canister: the empty container with the contents in the corner
+    const [base, inside] = id.split('__'), bp = PICS.items.get(base), ip = PICS.items.get(inside);
+    if (bp){ drawPic(c, bp, x - r * .2, y, r * 2.2, r * 2.2); if (ip){ drawPic(c, ip, x + r * .62, y + r * .55, r * 1.25, r * 1.25); } return; }
+  }
   const col = MAT[it.mat] || '#999';
   c.fillStyle = col; c.strokeStyle = 'rgba(0,0,0,.55)'; c.lineWidth = Math.max(.6, r*.16);
   switch(it.cat){
@@ -2348,8 +2473,8 @@ function iconURL(id){
   const u = c.toDataURL(); iconCache.set(id, u); return u;
 }
 const esc = s => String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-const ic = (id, n) => `<span class="ic" title="${esc(ITEMS[id].en)}"><img alt="" src="${iconURL(id)}">${n!=null?`<span>${n}×</span>`:''}<span>${esc(ITEMS[id].ko)}</span></span>`;
-const icS = (id, n) => `<span class="ic" title="${esc(ITEMS[id].ko)} · ${esc(ITEMS[id].en)}"><img alt="${esc(ITEMS[id].ko)}" src="${iconURL(id)}">${n!=null?n:''}</span>`;
+const ic = (id, n) => `<span class="ic" data-item="${id}" title="${esc(ITEMS[id].en)}"><img alt="" src="${iconURL(id)}">${n!=null?`<span>${n}×</span>`:''}<span>${esc(ITEMS[id].ko)}</span></span>`;
+const icS = (id, n) => `<span class="ic" data-item="${id}" title="${esc(ITEMS[id].ko)} · ${esc(ITEMS[id].en)}"><img alt="${esc(ITEMS[id].ko)}" src="${iconURL(id)}">${n!=null?n:''}</span>`;
 const fmt = n => { if (!isFinite(n)) return '∞'; const a = Math.abs(n); return a >= 1000 ? Math.round(n).toLocaleString('ko-KR') : (Math.round(n*10)/10).toString(); };
 
 // ---------- state ----------
@@ -2357,7 +2482,18 @@ let space, world;   // the whole Endfield space, and the site on screen (one of 
 const ui = { site:'valley:0', tool:'select', rot:2, sel:null, multi:new Set(), paste:null, clip:null, playing:true, speed:1, cam:{x:0,y:0,z:1}, hover:null, drag:null, tab:'stats', cat:'prod1', q:'', acc:0, touched:false, presetNote:null, view:'sim' };
 
 // ---------- persistence: account storage when the page has it, browser storage otherwise ----------
-const LS_LAYOUT = 'aic-sim-v2', LS_BP = 'aic-bp-v2';
+const LS_LAYOUT = 'aic-sim-v2', LS_BP = 'aic-bp-v2', LS_PREFS = 'aic-prefs';
+// screen settings, kept per browser: theme, text size, and what the factory canvas draws
+const PREF_DEF = { theme: 'system', size: 'm', grid: true, labels: true, items: true };
+const prefs = (() => { let o = null; try { o = JSON.parse(localStorage.getItem(LS_PREFS) || 'null'); } catch(e){} return Object.assign({}, PREF_DEF, o && typeof o === 'object' ? o : {}); })();
+function applyPrefs(first){
+  const r = document.documentElement;
+  // "system" leaves the attribute alone on load (the page host may have set it); switching back to it clears ours
+  if (prefs.theme === 'dark' || prefs.theme === 'light') r.dataset.theme = prefs.theme; else if (!first) delete r.dataset.theme;
+  r.style.setProperty('--ui-zoom', { s: '0.92', m: '1', l: '1.12' }[prefs.size] || '1');
+}
+function savePrefs(){ try { localStorage.setItem(LS_PREFS, JSON.stringify(prefs)); } catch(e){} }
+applyPrefs(true);
 const store = {
   db: null, uid: null, bps: [],
   lsGet(k){ try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch(e){ return null; } },
@@ -2457,11 +2593,7 @@ function boot(){
     else if (saved && saved.world && saved.world.v >= 3){ const w = AIC.deserialize(saved.world); space = AIC.Space.fresh(); ui.site = AIC.legacyKey(w); space.set(ui.site, w); AIC.ensureInf(w); }
     else if (saved) ui.oldSave = true;
   } catch(e){ space = null; }
-  if (!space){
-    space = AIC.Space.fresh(); ui.site = 'valley:0';
-    const r = AIC.loadPreset('capsule', 70, 70); r.world.edgeBus = [0, 3]; r.world.dirtyPower = true;
-    space.set(ui.site, r.world); AIC.ensureInf(r.world); ui.presetNote = 'capsule';
-  }
+  if (!space){ space = AIC.Space.fresh(); ui.site = 'valley:0'; }
   world = space.get(ui.site);
 }
 
@@ -2544,7 +2676,15 @@ function acctError(e){
   return '문제가 생겼습니다: ' + m;
 }
 // save a new blueprint to the account when logged in, otherwise to this browser
+// names never repeat: an empty name becomes "청사진 1", "청사진 2" …; a name already in use gets " 1", " 2" … after it
+function uniqueBpName(name){
+  const used = new Set([...store.bps, ...acct.mine].map(b => String(b.name || '').trim()));
+  const base = String(name || '').trim().slice(0, 56) || '청사진';
+  if (name && String(name).trim() && !used.has(base)) return base;
+  for (let n = 1; ; n++) if (!used.has(`${base} ${n}`)) return `${base} ${n}`;
+}
 async function saveBp(name, bp){
+  name = uniqueBpName(name); saveBp.last = name;
   if (acct.user){ try { await acct.addBp(name, bp); return 'account'; } catch(e){ flash('계정에 저장하지 못해 이 브라우저에 저장했습니다 · ' + acctError(e)); } }
   await store.addBp(name, bp); return 'local';
 }
@@ -2564,10 +2704,10 @@ function toolButton(type){
   const t = TYPES[type], id = 'build:'+type;
   const b = document.createElement('button'); b.className='tool'; b.type='button'; b.dataset.tool = id;
   b.setAttribute('aria-pressed', ui.tool===id);
-  b.innerHTML = `<canvas width="72" height="72"></canvas><span class="nm">${esc(t.ko)}</span><span class="meta">${t.sizeLabel || (t.w+'×'+t.h)}${t.power?' · 전력 '+t.power:''}</span>`;
+  b.innerHTML = `<canvas width="96" height="96"></canvas><span class="nm">${esc(t.ko)}</span><span class="meta">${t.sizeLabel || (t.w+'×'+t.h)}</span>`;
   b.title = `${t.ko} · ${t.en}`;
   b.onclick = () => setTool(id);
-  drawToolIcon(b.querySelector('canvas'), id, 72);
+  drawToolIcon(b.querySelector('canvas'), id, 96);
   return b;
 }
 // palette: a row of category tabs (namu.wiki categories in wiki order, blueprints last);
@@ -2625,10 +2765,7 @@ function renderPalette(){
     };
     el.appendChild(d);
   }
-  note(!store.bps.length && !acct.mine.length ? '저장한 청사진이 없습니다. 범위 선택으로 설비를 고른 뒤 "청사진으로 저장"을 누르세요.'
-    : acct.user ? '계정에 저장한 청사진은 어느 기기에서 로그인해도 그대로 있습니다. "게시"를 누르면 게시판에 글로 올릴 수 있습니다.'
-    : acct.enabled() ? '청사진은 이 브라우저에 저장됩니다. 로그인하면 계정에 저장하고 게시판에 올릴 수 있습니다.'
-    : store.db ? '청사진은 내 계정에 저장되어 이 페이지를 다시 열어도 그대로 있습니다.' : '청사진은 이 브라우저에 저장됩니다. 다른 기기에서 쓰려면 "코드"로 복사해 가져가세요.');
+  note(!store.bps.length && !acct.mine.length ? '저장한 청사진이 없습니다.' : '');
 }
 // arrow keys move between category tabs; a mouse wheel scrolls the strip sideways
 $('#cats').addEventListener('keydown', ev => {
@@ -2822,20 +2959,19 @@ const board = {
   // ---- my saved factories (own profile only) ----
   async myFactories(name, my){
     const el = this.el();
-    if (!acct.user || acct.name() !== name){ el.innerHTML = `<div class="bwrap"><a class="back" href="#user/${encodeURIComponent(name)}">← 프로필</a><p class="note">저장한 공장은 본인만 볼 수 있습니다.${acct.user ? '' : ' 로그인하세요.'}</p></div>`; return; }
+    if (!acct.user || acct.name() !== name){ el.innerHTML = `<div class="bwrap"><a class="back" href="#user/${encodeURIComponent(name)}">← 프로필</a><p class="note">본인만 볼 수 있습니다.</p></div>`; return; }
     this.lv = { mode: 'user', name, filter: 'all', sort: 'new', q: '', stats: undefined, sub: 'factories' };
     const lv = this.lv;
     el.innerHTML = `<div class="bwrap"><a class="back" href="#board">← 게시판</a><div class="uhead" id="uHead"></div><div id="fSub">${ownSubtabs(name, 'factories')}</div>
-      <div class="fhead"><p class="dim">저장한 공장은 나만 볼 수 있습니다. 공장 화면 위쪽의 "공장 저장"으로 추가하고, 여기서 불러옵니다. (최대 50개)</p></div>
       <div class="fgrid" id="fGrid" aria-live="polite"><p class="note">불러오는 중…</p></div></div>`;
     this.renderUserHead();
     userStats(name).then(st => { if (this.lv !== lv) return; lv.stats = st || null; this.renderUserHead(); }, () => {});
     let list;
-    try { list = await facs.load(); } catch(e){ if (my === this.seq) $('#fGrid').innerHTML = '<p class="note">불러오지 못했습니다. 관리 기능 SQL(admin_setup.sql)을 실행했는지 확인하세요.</p>'; return; }
+    try { list = await facs.load(); } catch(e){ if (my === this.seq) $('#fGrid').innerHTML = '<p class="note">불러오지 못했습니다.</p>'; return; }
     if (my !== this.seq) return;
     $('#fSub').innerHTML = ownSubtabs(name, 'factories');
     const grid = $('#fGrid');
-    if (!list.length){ grid.innerHTML = '<p class="note bempty">아직 저장한 공장이 없습니다. 공장 화면에서 공장을 만든 뒤 위쪽의 "공장 저장"을 누르세요.</p>'; return; }
+    if (!list.length){ grid.innerHTML = '<p class="note bempty">저장한 공장이 없습니다.</p>'; return; }
     grid.innerHTML = list.map(f => `<article class="fcard" data-id="${f.id}">
       <div class="fthumb">${f.thumb ? `<img src="${esc(f.thumb)}" alt="">` : ''}</div>
       <div class="fbody">
@@ -2913,7 +3049,7 @@ const board = {
     if (!$('#bList') || $('#bList').dataset.lv !== key){
       el.innerHTML = `<div class="bwrap">
         ${banBar()}${user ? `<a class="back" href="#board">← 게시판</a><div class="uhead" id="uHead"></div>${ownSubtabs(lv.name, 'posts') || '<h3 class="usub">쓴 글</h3>'}`
-          : `<div class="bhead"><div><h2>게시판</h2><p class="dim">청사진 공유, 공장 이야기, 게임에 대한 질문까지 자유롭게 남기는 곳</p></div><span class="spacer"></span><button class="btn" id="bBug" type="button">버그 제보</button><button class="btn primary" id="bWrite">글쓰기</button></div>`}
+          : `<div class="bhead"><h2>게시판</h2><span class="spacer"></span><button class="btn primary" id="bWrite">글쓰기</button></div>`}
         <div class="btool">
           <div class="seg" id="bFilter" role="group" aria-label="글 종류"><button data-f="all">전체</button><button data-f="bp">청사진</button><button data-f="text">일반</button><button data-f="notice">공지</button></div>
           ${user ? '<span class="spacer"></span>' : '<form class="bsearch" id="bSearch" role="search"><input type="search" id="bQ" placeholder="제목·내용·작성자 검색" aria-label="게시글 검색" maxlength="40"><button class="btn">검색</button></form>'}
@@ -2922,7 +3058,7 @@ const board = {
         <div class="blist" id="bList" data-lv="${esc(key)}" aria-live="polite"></div>
         <div class="bmore"><button class="btn" id="bMore" hidden>더 보기</button></div>
       </div>`;
-      if (!user){ $('#bWrite').onclick = () => { this.pending = null; location.hash = 'write'; }; $('#bBug').onclick = openBugDialog; }
+      if (!user){ $('#bWrite').onclick = () => { this.pending = null; location.hash = 'write'; }; }
       $('#bFilter').onclick = ev => { const b = ev.target.closest('button'); if (!b) return; this.lv.filter = b.dataset.f; this.list(true, this.seq); };
       if (!user) $('#bSearch').onsubmit = ev => { ev.preventDefault(); this.lv.q = $('#bQ').value.trim(); this.list(true, this.seq); };
       $('#bSort').onchange = ev => { this.lv.sort = ev.target.value; this.list(true, this.seq); };
@@ -2987,7 +3123,7 @@ const board = {
       const extra = [f.belts ? `벨트 ${f.belts}칸` : '', f.pipes ? `파이프 ${f.pipes}칸` : ''].filter(Boolean).join(' · ');
       bpBlock = `<figure class="bpfig">
         <canvas id="bBig" role="img" aria-label="청사진 미리보기: ${esc(p.title)}"></canvas>
-        <figcaption><b>${p.bp.w}×${p.bp.h}</b> · 설비 ${f.facs}개${extra ? ' · ' + extra : ''}${p.bp.pac ? ' <span class="dim">· PAC는 미리보기에만 표시되고 배치되지 않습니다</span>' : ''}</figcaption>
+        <figcaption><b>${p.bp.w}×${p.bp.h}</b> · 설비 ${f.facs}개${extra ? ' · ' + extra : ''}</figcaption>
         <div class="fchips">${f.list.map(([t, c]) => `<span class="mchip">${esc(TYPES[t].ko)} ×${c}</span>`).join('')}</div>
         <div class="row"><button class="btn primary" id="bUse">공장에 배치</button><button class="btn" id="bSave">내 청사진에 저장</button><button class="btn" id="bCode">청사진 코드</button></div>
       </figure>`;
@@ -3125,15 +3261,15 @@ const board = {
       <h2>${p ? '글 고치기' : '글쓰기'}</h2>
       <div class="field"><span class="flabel" id="wKindL">종류</span>
         <div class="seg" id="wKind" role="group" aria-labelledby="wKindL"><button type="button" data-k="bp">청사진 글</button><button type="button" data-k="text">일반 글</button>${acct.isAdmin() ? '<button type="button" data-k="notice">공지</button>' : ''}</div></div>
-      <label class="field"><span class="flabel">제목</span><input id="wTitle" maxlength="80" required placeholder="제목 (80자까지)"></label>
+      <label class="field"><span class="flabel">제목</span><input id="wTitle" maxlength="80" required placeholder="제목"></label>
       <div class="field" id="wBpF"><label class="flabel" for="wSrc">청사진</label>
         <div class="wbp">
           <select class="sel" id="wSrc">${src.map(([v, l]) => `<option value="${esc(v)}">${esc(l)}</option>`).join('')}</select>
-          <textarea id="wCode" hidden rows="3" placeholder="AIC2: 로 시작하는 청사진 코드를 붙여넣으세요" spellcheck="false" aria-label="청사진 코드"></textarea>
+          <textarea id="wCode" hidden rows="3" placeholder="청사진 코드" spellcheck="false" aria-label="청사진 코드"></textarea>
           <canvas id="wPrev" role="img" aria-label="붙일 청사진 미리보기"></canvas>
           <p class="note" id="wPrevNote"></p>
         </div></div>
-      <label class="field"><span class="flabel">내용</span><textarea id="wBody" maxlength="5000" rows="10" placeholder="${kind0 === 'bp' ? '어떤 공장인지, 무엇을 넣으면 무엇이 나오는지, 분당 생산량 같은 설명을 적어 주세요' : '공장 이야기, 게임에 대한 질문, 팁 등 자유롭게 적어 주세요 (5000자까지)'}"></textarea></label>
+      <label class="field"><span class="flabel">내용</span><textarea id="wBody" maxlength="5000" rows="10" placeholder="내용"></textarea></label>
       <div class="msg" id="wMsg" role="alert"></div>
       <div class="acts"><button class="btn primary" type="submit" id="wGo">${p ? '고친 내용 저장' : '올리기'}</button><a class="btn" href="${p ? '#post/' + p.id : '#board'}">취소</a></div>
     </form>`;
@@ -3255,14 +3391,14 @@ const reports = {
   async show(tab, my){
     const el = $('#board');
     if (!acct.isAdmin()){ el.innerHTML = '<div class="bwrap"><a class="back" href="#board">← 게시판</a><p class="note">관리자만 볼 수 있습니다.</p></div>'; return; }
-    el.innerHTML = adminShell('reports', `<p class="dim amsub">신고 당시의 내용이 함께 저장되어 글이 지워져도 남습니다</p>
+    el.innerHTML = adminShell('reports', `
       <div class="btool"><div class="seg" id="rpTabs" role="group" aria-label="처리 상태">${RP_TABS.map(([k, n]) => `<a class="segb" href="#admin/reports/${k}" aria-pressed="${k === tab}">${n}</a>`).join('')}</div></div>
       <div id="rpRows" aria-live="polite"><p class="note">불러오는 중…</p></div>`);
     let q = acct.client.from('reports').select('*').order('created_at', { ascending: false }).limit(100);
     if (tab !== 'all') q = q.eq('status', tab);
     const { data, error } = await q;
     if (my !== board.seq) return;
-    if (error){ $('#rpRows').innerHTML = '<p class="note">불러오지 못했습니다. 신고 기능 SQL(report_setup.sql)을 실행했는지 확인하세요.</p>'; return; }
+    if (error){ $('#rpRows').innerHTML = '<p class="note">불러오지 못했습니다.</p>'; return; }
     this.rows = data || []; this.render(tab);
   },
   render(tab){
@@ -3301,7 +3437,7 @@ function adminShell(sub, inner){
 function banUntilText(until){ return until ? new Date(until).toLocaleString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) + '까지' : '영구'; }
 function banBar(){
   const b = acct.ban; if (!b) return '';
-  return `<div class="banbar" role="status"><b>이용이 제한된 계정입니다</b> · ${esc(banUntilText(b.until))}${b.reason ? ' · 사유: ' + esc(b.reason) : ''}<br><span>글·댓글·추천·신고를 할 수 없습니다. 읽기와 공장 저장은 그대로 쓸 수 있습니다.</span></div>`;
+  return `<div class="banbar" role="status"><b>이용이 제한된 계정입니다</b> · ${esc(banUntilText(b.until))}${b.reason ? ' · 사유: ' + esc(b.reason) : ''}</div>`;
 }
 const BAN_DAYS = [[1, '1일'], [3, '3일'], [7, '7일'], [30, '30일'], [0, '영구']];
 const admin = {
@@ -3309,7 +3445,7 @@ const admin = {
   async users(my){
     const el = $('#board');
     if (!acct.isAdmin()){ el.innerHTML = '<div class="bwrap"><a class="back" href="#board">← 게시판</a><p class="note">관리자만 볼 수 있습니다.</p></div>'; return; }
-    el.innerHTML = adminShell('users', `<p class="dim amsub">아이디로 찾아서 이용을 제한하거나 풀 수 있습니다. 제한된 사용자는 글·댓글·추천·신고를 할 수 없습니다.</p>
+    el.innerHTML = adminShell('users', `
       <div class="btool"><form class="bsearch" id="auForm" role="search"><input type="search" id="auQ" placeholder="아이디 검색 (비우면 최근 가입자)" aria-label="사용자 검색" maxlength="20"><button class="btn">검색</button></form></div>
       <div id="auRows" class="aulist" aria-live="polite"><p class="note">불러오는 중…</p></div>`);
     $('#auQ').value = this.q;
@@ -3320,7 +3456,7 @@ const admin = {
   async load(my){
     const { data, error } = await acct.client.rpc('admin_users', { q: this.q });
     if (my !== board.seq) return;
-    if (error){ $('#auRows').innerHTML = '<p class="note">불러오지 못했습니다. 관리 기능 SQL(admin_setup.sql)을 실행했는지 확인하세요.</p>'; return; }
+    if (error){ $('#auRows').innerHTML = '<p class="note">불러오지 못했습니다.</p>'; return; }
     this.rows = data || []; this.render();
   },
   render(){
@@ -3337,7 +3473,7 @@ const admin = {
         : '<button class="btn sm danger" data-a="ban">이용 제한</button>'}</div>
       <form class="banform" hidden>
         <label>기간 <select class="sel" name="days">${BAN_DAYS.map(([d, n]) => `<option value="${d}"${d === 7 ? ' selected' : ''}>${n}</option>`).join('')}</select></label>
-        <label class="grow">사유 <input name="reason" maxlength="300" placeholder="예: 운영 원칙 2. 욕설·비하" required></label>
+        <label class="grow">사유 <input name="reason" maxlength="300" required></label>
         <label class="switch"><input type="checkbox" name="purge"> 이 사용자의 글·댓글 모두 삭제</label>
         <div class="row"><button class="btn sm danger" type="submit">제한하기</button><button class="btn sm" type="button" data-a="cancel">취소</button><span class="msg"></span></div>
       </form>
@@ -3414,7 +3550,7 @@ function openFacDialog(edit){
   $('#facDesc').value = edit ? edit.description || '' : '';
   $('#facMode').hidden = !!edit || !ui.fac;
   if (ui.fac && !edit){ $('#facOverName').textContent = ui.fac.name; $('#facModeOver').checked = true; }
-  $('#facNote').textContent = edit ? '' : `협곡 IV·무릉의 부지 8곳과 지역 창고(재고·무한 설정·무재고 전송)를 통째로 저장합니다. 저장한 공장은 나만 볼 수 있고, 내 프로필 → "저장한 공장"에서 불러옵니다.`;
+  $('#facNote').textContent = '';
   $('#facMsg').textContent = ''; $('#facGo').disabled = false; $('#facGo').textContent = edit ? '고치기' : '저장';
   d.showModal(); $('#facName').focus();
 }
@@ -3519,7 +3655,7 @@ const bugs = {
   async show(tab, my){
     const el = $('#board');
     if (!acct.isAdmin()){ el.innerHTML = '<div class="bwrap"><a class="back" href="#board">← 게시판</a><p class="note">관리자만 볼 수 있습니다.</p></div>'; return; }
-    el.innerHTML = adminShell('bugs', `<p class="dim amsub">사용자가 보낸 버그 제보입니다. 공장 배치가 첨부된 제보는 그대로 불러와서 확인할 수 있습니다.</p>
+    el.innerHTML = adminShell('bugs', `
       <div class="btool"><div class="seg" role="group" aria-label="처리 상태">${BUG_TABS.map(([k, n]) => `<a class="segb" href="#admin/bugs/${k}" aria-pressed="${k === tab}">${n}</a>`).join('')}</div></div>
       <div id="bgRows" class="rplist2" aria-live="polite"><p class="note">불러오는 중…</p></div>`);
     reports.badge();
@@ -3527,7 +3663,7 @@ const bugs = {
     if (tab !== 'all') q = q.eq('status', tab);
     const { data, error } = await q;
     if (my !== board.seq) return;
-    if (error){ $('#bgRows').innerHTML = '<p class="note">불러오지 못했습니다. 버그 제보 SQL(bug_setup.sql)을 실행했는지 확인하세요.</p>'; return; }
+    if (error){ $('#bgRows').innerHTML = '<p class="note">불러오지 못했습니다.</p>'; return; }
     this.rows = data || []; this.render(tab);
   },
   render(tab){
@@ -3576,12 +3712,13 @@ const bugs = {
 // simulator ↔ board: the address decides which one is on screen
 function setView(v, tab){
   const was = ui.view; ui.view = v;
-  $('#app').classList.toggle('boardmode', v === 'board');
+  $('#app').classList.toggle('boardmode', v === 'board'); $('#app').classList.toggle('craftmode', v === 'craft');
   document.querySelectorAll('#viewSw button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === (tab || v)));
-  if (v === 'sim' && was === 'board'){ fitHeader(); resize(); render(); }
+  if (v === 'sim' && was !== 'sim'){ fitHeader(); resize(); render(); }
 }
 function route(){
   const [v, arg, arg2] = location.hash.replace(/^#\/?/, '').split('/');
+  if (v === 'craft'){ setView('craft'); craft.show(decodeURIComponent(arg || '')); return; }
   if (!acct.enabled() || !BOARD_VIEWS.includes(v)){ setView('sim'); return; }
   const first = ui.view !== 'board';
   setView('board', v === 'admin' || v === 'reports' ? 'admin' : 'board');
@@ -3591,17 +3728,16 @@ function route(){
 window.addEventListener('hashchange', route);
 $('#viewSw').onclick = ev => {
   const b = ev.target.closest('button'); if (!b) return;
-  if (b.dataset.v === 'board' || b.dataset.v === 'admin'){ const h = '#' + b.dataset.v; if (location.hash !== h) location.hash = b.dataset.v; else route(); }
+  if (b.dataset.v === 'craft'){ const h = '#craft' + (craft.target ? '/' + craft.target : ''); if (location.hash !== h) location.hash = h; else route(); }
+  else if (b.dataset.v === 'board' || b.dataset.v === 'admin'){ const h = '#' + b.dataset.v; if (location.hash !== h) location.hash = b.dataset.v; else route(); }
   else if (ui.view !== 'sim'){ history.pushState(null, '', location.pathname + location.search); route(); }
 };
-$('#viewSw').hidden = !acct.enabled();
+$('#viewSw').querySelector('[data-v="board"]').hidden = !acct.enabled();
 $('#bar').classList.toggle('site', acct.enabled());
+// the header always uses two rows on the factory screen: title, menu and account on top, factory controls below
 function fitHeader(){
-  const bar = $('#bar'), tb = bar.querySelector('.toolbar'), brand = bar.querySelector('.brand');
-  bar.classList.remove('tworow');
-  if (getComputedStyle(tb).display === 'none') return;
-  const ac = $('#acct'), low = el => el && !el.hidden && el.offsetTop > brand.offsetTop + brand.offsetHeight / 2;
-  if (low(tb) || low(ac)) bar.classList.add('tworow');
+  const bar = $('#bar'), tb = bar.querySelector('.toolbar');
+  bar.classList.toggle('tworow', getComputedStyle(tb).display !== 'none');
 }
 window.addEventListener('resize', fitHeader);
 if (document.fonts) document.fonts.ready.then(fitHeader);
@@ -3658,7 +3794,7 @@ function drawToolIcon(c, id, px){
   else if (id==='area'){ g.setLineDash([2.5,2]); g.strokeRect(4,5,16,14); g.setLineDash([]); g.fillRect(15,14,5,5); }
   else if (id==='pan'){ for (const d of [0,1,2,3]){ g.beginPath(); g.moveTo(12,12); g.lineTo(12+DX[d]*8,12+DY[d]*8); g.stroke(); poly(g,12+DX[d]*8,12+DY[d]*8,2.6,3,Math.atan2(DY[d],DX[d])); g.fill(); } }
   else if (id==='delete'){ g.strokeStyle = C.bad; g.beginPath(); g.moveTo(6,6); g.lineTo(18,18); g.moveTo(18,6); g.lineTo(6,18); g.stroke(); }
-  else drawMini(g, id.slice(6));
+  else { const pic = PICS.facs.get(id.slice(6)); if (pic){ g.restore(); drawPic(g, pic, px / 2, px / 2, px, px); return; } drawMini(g, id.slice(6)); }
   g.restore();
 }
 function drawMini(g, type){
@@ -3675,12 +3811,12 @@ function drawMini(g, type){
   else if (k==='loader' || k==='unloader'){
     // bus strip on top, the 1×3 port under it, arrow into (input) or out of (output) the bus
     g.fillStyle = C.accent; g.fillRect(2,2,20,5); g.fillStyle = '#15191A'; for (let x=4;x<22;x+=4) g.fillRect(x,2,1.5,5);
-    g.fillStyle = portColor(k); g.beginPath(); g.roundRect(2,8,20,9,2); g.fill();
+    g.fillStyle = portColor(k); g.beginPath(); g.roundRect(2,8,20,9, 0); g.fill();
     g.strokeStyle = C.panel; g.lineWidth = 1.8; chevron(g, 12, 12.5, k==='loader' ? 0 : 2, 3.4);
     g.strokeStyle = portColor(k); g.lineWidth = 1.6; g.beginPath(); g.moveTo(12,17); g.lineTo(12,22); g.stroke();
   }
   else {
-    g.fillStyle = C['cv-mach']; g.strokeStyle = ink; const w = Math.min(20, 5+t.w*2.6), h = Math.min(20, 5+t.h*2.6); g.beginPath(); g.roundRect(12-w/2,12-h/2,w,h,2); g.fill(); g.stroke();
+    g.fillStyle = C['cv-mach']; g.strokeStyle = ink; const w = Math.min(20, 5+t.w*2.6), h = Math.min(20, 5+t.h*2.6); g.beginPath(); g.roundRect(12-w/2,12-h/2,w,h, 0); g.fill(); g.stroke();
     if (k==='thermal'){ g.fillStyle = C.warn; g.beginPath(); g.moveTo(12,7); g.quadraticCurveTo(17,12,12,17); g.quadraticCurveTo(7,12,12,7); g.fill(); }
     else if (k==='miner') drawItem(g, t.ores[t.ores.length-1], 12, 12, 4.2);
     else if (k==='pump') drawItem(g, t.makes, 12, 12, 4.5);
@@ -3775,6 +3911,7 @@ function render(){
   const x1 = Math.min(world.W-1, Math.ceil((ui.cam.x + vw/z)/S)), y1 = Math.min(world.H-1, Math.ceil((ui.cam.y + vh/z)/S));
   ctx.fillStyle = C['panel']; ctx.globalAlpha = .35; ctx.fillRect(0,0,world.W*S,world.H*S); ctx.globalAlpha = 1;
   ctx.lineWidth = 1/z;
+  if (prefs.grid){
   ctx.strokeStyle = C['cv-grid']; ctx.beginPath();
   for (let x=x0; x<=x1+1; x++){ ctx.moveTo(x*S, y0*S); ctx.lineTo(x*S, (y1+1)*S); }
   for (let y=y0; y<=y1+1; y++){ ctx.moveTo(x0*S, y*S); ctx.lineTo((x1+1)*S, y*S); }
@@ -3783,6 +3920,7 @@ function render(){
   for (let x=Math.ceil(x0/4)*4; x<=x1+1; x+=4){ ctx.moveTo(x*S, y0*S); ctx.lineTo(x*S, (y1+1)*S); }
   for (let y=Math.ceil(y0/4)*4; y<=y1+1; y+=4){ ctx.moveTo(x0*S, y*S); ctx.lineTo((x1+1)*S, y*S); }
   ctx.stroke();
+  }
   ctx.strokeStyle = C['cv-mach-ink']; ctx.globalAlpha=.35; ctx.lineWidth = 1.5/z; ctx.strokeRect(0,0,world.W*S,world.H*S); ctx.globalAlpha=1;
   drawTiles(x0,y0,x1,y1);
   drawOuterBus();
@@ -3802,7 +3940,7 @@ function render(){
   const belts = carriers.filter(e => TYPES[e.type].carrier !== 'fluid'), pipes = carriers.filter(e => TYPES[e.type].carrier === 'fluid');
   drawCarrierBeds(belts, geo);
   for (const e of belts) drawCarrierDetail(e, geo.get(e.id), phase);
-  for (const e of belts) drawCarrierItems(e);
+  if (prefs.items) for (const e of belts) drawCarrierItems(e);
   for (const e of vis) if (!CARRIER.has(K(e.type))) drawBuilding(e);
   // belts may butt against the depot bus anywhere, but only link through a port's middle cell: mark the dead ends
   for (const e of belts){
@@ -3811,7 +3949,7 @@ function render(){
   }
   drawCarrierBeds(pipes, geo);
   for (const e of pipes) drawCarrierDetail(e, geo.get(e.id), phase);
-  for (const e of pipes) drawCarrierItems(e);
+  if (prefs.items) for (const e of pipes) drawCarrierItems(e);
   ctx.strokeStyle = C.accent; ctx.lineWidth = 2.5/z; ctx.setLineDash([6/z,4/z]);
   if (ui.sel){ const e = world.ents.get(ui.sel); if (e) ctx.strokeRect(e.x*S-2, e.y*S-2, e.w*S+4, e.h*S+4); }
   ctx.setLineDash([]);
@@ -3838,7 +3976,7 @@ function drawOuterBus(){
   const strip = d => d===0 ? [0, -B, W, B] : d===1 ? [W, 0, B, H] : d===2 ? [0, H, W, B] : [-B, 0, B, H];
   for (const d of eb){
     const [x, y, w, h] = strip(d), horiz = d===0 || d===2;
-    ctx.fillStyle = C.accent; ctx.fillRect(x*S, y*S, w*S, h*S);
+    ctx.fillStyle = BUS_GREEN; ctx.fillRect(x*S, y*S, w*S, h*S);
     ctx.fillStyle = '#15191A'; ctx.globalAlpha = .8;
     for (let i = 0; i < (horiz ? w : h)*S; i += 8){ if (horiz) ctx.fillRect(x*S + i, y*S, 2, h*S); else ctx.fillRect(x*S, y*S + i, w*S, 2); }
     ctx.globalAlpha = 1; ctx.strokeStyle = C['cv-mach-ink']; ctx.lineWidth = 1.2/z;
@@ -3852,8 +3990,10 @@ function drawOuterBus(){
   }
   const [cx, cy] = outerBusCore();
   ctx.fillStyle = C['cv-mach']; ctx.strokeStyle = C['cv-mach-ink']; ctx.lineWidth = 1.4/z; ctx.fillRect(cx*S+2, cy*S+2, B*S-4, B*S-4); ctx.strokeRect(cx*S+2, cy*S+2, B*S-4, B*S-4);
-  ctx.fillStyle = C.accent; ctx.fillRect((cx+B/2)*S-7, (cy+B/2)*S-7, 14, 14);
-  label('창고 입출력 라인 (고정)', cx*S+5, cy*S+5, 8.5, 700, C['cv-mach-ink']);
+  fitLabel('창고 입출력 라인 (고정)', cx*S+6, cy*S+6, B*S-12, 8.5, 700, C['cv-mach-ink']);
+  corners(cx*S+2, cy*S+2, B*S-4, B*S-4, BUS_GREEN);
+  const ct = fitBottom + 4, cb = (cy+B)*S - 8;
+  if (!facPic('busport', (cx+B/2)*S, (ct+cb)/2, Math.min(B*S-16, cb-ct), 1)){ ctx.fillStyle = BUS_GREEN; ctx.fillRect((cx+B/2)*S-7, (cy+B/2)*S-7, 14, 14); }
 }
 function drawTiles(x0,y0,x1,y1){
   for (let y=y0; y<=y1; y++) for (let x=x0; x<=x1; x++){
@@ -3913,7 +4053,7 @@ function drawCarrierDetail(e, g, phase){
   if (k!=='belt'){
     ctx.fillStyle = fluid ? C['cv-pipe'] : C['cv-belt']; ctx.strokeStyle = fluid ? C['cv-pipe-core'] : C['cv-rail'];
     ctx.lineWidth = 1.5; ctx.beginPath(); ctx.roundRect(e.x*S+3, e.y*S+3, S-6, S-6, 3); ctx.fill(); ctx.stroke();
-    ctx.strokeStyle = '#EEF0EC'; ctx.lineWidth = 1.5; ctx.lineCap = 'round';
+    ctx.strokeStyle = facAcc(e.type); ctx.lineWidth = 1.8; ctx.lineCap = 'round';
     logiGlyph(ctx, k, cx, cy, 6, (e.f+2)&3); ctx.lineCap = 'butt';
     if (k==='control' && e.filter) drawItem(ctx, e.filter, e.x*S+S-5, e.y*S+5, 3.4);
     if (e.off){ ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.fillRect(e.x*S+3, e.y*S+3, S-6, S-6); }
@@ -3960,8 +4100,9 @@ function portSummary(e){
 }
 const STCOL = () => ({ working:C.ok, slow:C.warn, idle:C.muted, blocked:C.warn, nopower:C.bad, off:C.muted, nogas:C.bad, nocat:C.bad });
 // label that always stays inside maxW: shrink the font, then wrap onto two lines at a space, then cut with …
+let fitBottom = 0; // bottom edge of the last fitLabel text, so pictures can start below it
 function fitLabel(txt, x, y, maxW, size, weight, color, align, minSize){
-  minSize = minSize || 7; weight = weight || 600;
+  minSize = minSize || 7; weight = weight || 600; fitBottom = y + size;
   const font = sz => `${weight} ${sz}px ${C.fBody}`, width = (t, sz) => { ctx.font = font(sz); return ctx.measureText(t).width; };
   for (let sz = size; sz >= minSize; sz -= .5) if (width(txt, sz) <= maxW){ label(txt, x, y, sz, weight, color, align); return sz; }
   const words = txt.split(' ');
@@ -3969,7 +4110,7 @@ function fitLabel(txt, x, y, maxW, size, weight, color, align, minSize){
     let best = null;
     for (let i = 1; i < words.length; i++){ const a = words.slice(0, i).join(' '), b = words.slice(i).join(' '); const m = Math.max(width(a, 10), width(b, 10)); if (!best || m < best.m) best = { a, b, m }; }
     for (let sz = Math.min(size, 9); sz >= minSize; sz -= .5) if (Math.max(width(best.a, sz), width(best.b, sz)) <= maxW){
-      label(best.a, x, y, sz, weight, color, align); label(best.b, x, y + sz + 1.5, sz, weight, color, align); return sz;
+      label(best.a, x, y, sz, weight, color, align); label(best.b, x, y + sz + 1.5, sz, weight, color, align); fitBottom = y + 2 * sz + 1.5; return sz;
     }
   }
   let t = txt; while (t.length > 1 && width(t + '…', minSize) > maxW) t = t.slice(0, -1);
@@ -3980,39 +4121,61 @@ function label(txt, x, y, size, weight, color, align){
 }
 // depot ports: input (into the depot) is teal with arrows pointing at the bus, output is amber with arrows
 // pointing away. The middle cell carries the single belt mouth on the side away from the bus.
-function portColor(k){ return k==='loader' ? C.power : C.warn; }
+function portColor(k){ return k==='loader' ? FAC_ACC.loader : FAC_ACC.unloader; }
 function drawDepotPort(e, x, y, w, h, live){
   const k = K(e.type), inp = k==='loader', col = portColor(k), f = e.f, back = opp(f), a = (f+1)&3;
   const cx = x+w/2, cy = y+h/2;
   // body flush against the bus side, slightly inset elsewhere
   const bx = x + (back===3 ? 0 : 2), by = y + (back===0 ? 0 : 2), bw = w - (back===3||back===1 ? 2 : 4), bh = h - (back===0||back===2 ? 2 : 4);
-  ctx.fillStyle = col; ctx.beginPath(); ctx.roundRect(bx, by, bw, bh, 3); ctx.fill();
+  ctx.fillStyle = col; ctx.beginPath(); ctx.roundRect(bx, by, bw, bh, 0); ctx.fill();
   ctx.fillStyle = 'rgba(0,0,0,.28)'; // seam on the bus side
   if (back===0) ctx.fillRect(bx, by, bw, 3); else if (back===2) ctx.fillRect(bx, by+bh-3, bw, 3); else if (back===3) ctx.fillRect(bx, by, 3, bh); else ctx.fillRect(bx+bw-3, by, 3, bh);
   const flow = inp ? back : f, fg = C.panel;
   // middle cell: the mouth, a light socket on the outer edge
   const mx = cx + DX[f]*S*.22, my = cy + DY[f]*S*.22;
-  ctx.fillStyle = fg; ctx.beginPath(); ctx.roundRect(mx - S*.3, my - S*.3, S*.6, S*.6, 3); ctx.fill();
+  ctx.fillStyle = fg; ctx.beginPath(); ctx.roundRect(mx - S*.3, my - S*.3, S*.6, S*.6, 0); ctx.fill();
   ctx.strokeStyle = col; ctx.lineWidth = 2.2; chevron(ctx, mx, my, flow, 4.2);
   // end cells: label on one, direction arrow (or the chosen item) on the other
   const lx = cx - DX[a]*S, ly = cy - DY[a]*S, rx = cx + DX[a]*S, ry = cy + DY[a]*S;
   ctx.fillStyle = fg; ctx.font = `700 9px ${C.fBody}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(inp ? '입력' : '출력', lx, ly);
   if (!inp && e.item) drawItem(ctx, e.item, rx, ry, 4.5);
   else { ctx.strokeStyle = fg; ctx.lineWidth = 1.8; chevron(ctx, rx, ry, flow, 3.6); }
-  if (live && !e.busOn) fitLabel('버스 없음', cx + DX[f]*S*.9, cy + DY[f]*S*.9 - 5, 3*S - 6, 8, 700, C.bad, 'center');
+  if (live && !e.busOn) fitLabel('라인 연결 안 됨', cx + DX[f]*S*.9, cy + DY[f]*S*.9 - 5, 3*S - 6, 8, 700, C.bad, 'center');
 }
+// accent colours taken from the facility pictures (the lit parts of each model); everything else is the default yellow
+const FAC_ACC = { refine:'#F08A4B', plant:'#5DC64C', seed:'#8CCF45', grind:'#4FC487', reactor:'#45CFE6', xreactor:'#7CD34A', forge:'#9BE15D', purify:'#4CC56E',
+  fgtrans:'#C9D83A', sgtrans:'#86C936', gasdisp:'#A9C4D6', gear:'#E8B23A', pylon:'#22A6EE', xpylon:'#22A6EE', relay:'#E8CF3E', xrelay:'#5CD05A', thermal:'#8FD3FF',
+  stash:'#C9CED0', loader:'#F2C230', unloader:'#F08A3A', tank:'#4FB8EC', gastank:'#D8CF5A', bussection:'#7CC546', busport:'#6BC33A',
+  cinlet:'#E8A640', coutlet:'#E8A640', cminlet:'#E8A640', cmoutlet:'#E8A640',
+  bridge:'#E9B44C', converger:'#E9B44C', splitter:'#E9B44C', control:'#E9C440', pbridge:'#C9D23E', pconverger:'#E58A3A', psplitter:'#E9B44C', pcontrol:'#C9D23E' };
+const BUS_GREEN = '#7CC546';
+const facAcc = type => FAC_ACC[type] || '#E8C930';
+// corner brackets in the accent colour
+function corners(x, y, w, h, col){
+  const l = Math.max(4, Math.min(11, w / 4, h / 4)), t = 2.5; ctx.fillStyle = col;
+  for (const [cx, cy, sx, sy] of [[x, y, 1, 1], [x + w, y, -1, 1], [x, y + h, 1, -1], [x + w, y + h, -1, -1]]){
+    ctx.fillRect(sx > 0 ? cx : cx - l, sy > 0 ? cy : cy - t, l, t); ctx.fillRect(sx > 0 ? cx : cx - t, sy > 0 ? cy : cy - l, t, l);
+  }
+}
+function facPic(type, cx, cy, d, alpha){ const p = PICS.facs.get(type); if (!p) return false; ctx.globalAlpha = alpha == null ? 1 : alpha; drawPic(ctx, p, cx, cy, d, d); ctx.globalAlpha = 1; return true; }
 function drawBuilding(e){
   const t = TYPES[e.type], k = t.kind, x = e.x*S+2, y = e.y*S+2, w = e.w*S-4, h = e.h*S-4;
   const ink = C['cv-mach-ink'];
   if (k==='pylon' || k==='relay'){
-    ctx.fillStyle = C['cv-mach']; ctx.strokeStyle = ink; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.roundRect(x, y, w, h, 4); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = C['cv-mach']; ctx.strokeStyle = ink; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.roundRect(x, y, w, h, 0); ctx.fill(); ctx.stroke();
+    const acc = facAcc(e.type); corners(x, y, w, h, e.powered ? acc : C.muted);
+    if (PICS.facs.has(e.type)){
+      let top = y + 3; if (k==='relay' && prefs.labels){ fitLabel(t.short, x+4, y+3, w - 8, 9, 600); top = fitBottom + 2; }
+      facPic(e.type, x+w/2, (top + y+h-3) / 2, Math.min(w - 6, y+h-3 - top), e.powered ? 1 : .45);
+      return;
+    }
     ctx.fillStyle = e.powered ? C.power : C.muted; poly(ctx, x+w/2, y+h/2, Math.min(w,h)*.36, 4, 0); ctx.fill();
     ctx.strokeStyle = C['cv-mach']; ctx.lineWidth = 1.6; const mx = x+w/2, my = y+h/2; ctx.beginPath(); ctx.moveTo(mx+1.5,my-6); ctx.lineTo(mx-2,my+.5); ctx.lineTo(mx+2,my-.5); ctx.lineTo(mx-1.5,my+6); ctx.stroke();
-    if (k==='relay') fitLabel(t.short, x+4, y+3, w - 8, 9, 600);
+    if (k==='relay' && prefs.labels) fitLabel(t.short, x+4, y+3, w - 8, 9, 600);
     return;
   }
   if (k==='bus'){
-    ctx.fillStyle = e.busOn ? C.accent : C['panel-2']; ctx.fillRect(x, y, w, h);
+    ctx.fillStyle = e.busOn ? BUS_GREEN : C['panel-2']; ctx.fillRect(x, y, w, h);
     ctx.fillStyle = '#15191A'; ctx.globalAlpha = e.busOn ? .85 : .3;
     const vert = e.h > e.w; for (let i = 0; i < (vert ? h : w); i += 8){ if (vert) ctx.fillRect(x, y+i, w, 2); else ctx.fillRect(x+i, y, 2, h); }
     ctx.globalAlpha = 1; ctx.strokeStyle = ink; ctx.lineWidth = 1.2; ctx.strokeRect(x, y, w, h);
@@ -4020,9 +4183,9 @@ function drawBuilding(e){
   }
   if (k==='loader' || k==='unloader'){ drawDepotPort(e, e.x*S, e.y*S, e.w*S, e.h*S, true); return; }
   ctx.fillStyle = C['cv-mach']; ctx.strokeStyle = ink; ctx.lineWidth = 1.4;
-  ctx.beginPath(); ctx.roundRect(x, y, w, h, 3); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.roundRect(x, y, w, h, 0); ctx.fill(); ctx.stroke();
   if (k==='pac'){
-    ctx.save(); ctx.beginPath(); ctx.roundRect(x,y,w,h,3); ctx.clip();
+    ctx.save(); ctx.beginPath(); ctx.roundRect(x,y,w,h, 0); ctx.clip();
     ctx.fillStyle = C.accent; ctx.fillRect(x,y,w,h); ctx.fillStyle = '#15191A';
     for (let q=-h; q<w; q+=12){ ctx.beginPath(); ctx.moveTo(x+q,y); ctx.lineTo(x+q+6,y); ctx.lineTo(x+q+6+h,y+h); ctx.lineTo(x+q+h,y+h); ctx.closePath(); ctx.fill(); }
     ctx.fillStyle = C['cv-mach']; ctx.fillRect(x+7,y+7,w-14,h-14); ctx.restore();
@@ -4034,7 +4197,7 @@ function drawBuilding(e){
       ctx.fillStyle = C.accent;
       if (d === 1 || d === 3){ const tx = d === 3 ? cx*S - 3 : cx*S + S - 4; ctx.fillRect(tx, cy*S + 2, 7, S - 4); }
       else { const ty = d === 0 ? cy*S - 3 : cy*S + S - 4; ctx.fillRect(cx*S + 2, ty, S - 4, 7); }
-      ctx.fillStyle = C['cv-mach']; ctx.strokeStyle = ink; ctx.lineWidth = 1; ctx.beginPath(); ctx.roundRect(cx*S + 3, cy*S + 3, S - 6, S - 6, 3); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = C['cv-mach']; ctx.strokeStyle = ink; ctx.lineWidth = 1; ctx.beginPath(); ctx.roundRect(cx*S + 3, cy*S + 3, S - 6, S - 6, 0); ctx.fill(); ctx.stroke();
       if (e.ports[i]) drawItem(ctx, e.ports[i], px, py, 5.4);
       else { ctx.fillStyle = C.muted; ctx.font = `700 9px ${C.fMono}`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(String(i+1), px, py); }
       if (e.ports[i]){ ctx.fillStyle = ink; ctx.font = `700 7.5px ${C.fMono}`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(String(i+1), px + DX[opp(d)]*S*.72, py - S*.36); }
@@ -4047,29 +4210,50 @@ function drawBuilding(e){
     portMarks(e, 'in', ink, true);
     ctx.textAlign='left'; if (e.off) offVeil(x,y,w,h); return;
   }
+  const acc = facAcc(e.type), pic = PICS.facs.has(e.type);
+  corners(x, y, w, h, acc);
+  // layout that does not depend on rotation: margins as deep as the deepest port mark (pipe sockets reach 12px in),
+  // name size and picture size from the short side, so turning a unit only moves things along its long side
+  const fluidPorts = ['in', 'out'].some(w2 => AIC.portCells(e, w2).some(c => c[3] && c[3] !== 's'));
+  const pad = fluidPorts ? 12 : 5, short = Math.min(w, h);
+  const tiny = fluidPorts && short < 4*S - 4; // 3×3 units with pipe sockets: no room for a name between the sockets, the picture says what it is
+  let picTop = y + pad;
   if (e.w * e.h > 4 && k !== 'loader' && k !== 'unloader' && k !== 'conduit'){ // 2×2 units are too small for a name: the icon and the hover text say what they are
-    // keep the name clear of port marks on the top edge and of the status dots at the top right
-    const top = ['in', 'out'].some(w2 => AIC.portCells(e, w2).some(c => c[1] === e.y && (c[2] === 0 || c[2] === 2)));
     const right = e.status ? (e.pin != null ? 22 : 14) : 4;
-    fitLabel(t.short, x+4, y + (top ? 12 : 4), w - 4 - right, t.w>=5 ? 11 : 9.5, 600, ink, 'left', 6.5);
+    if (prefs.labels && !tiny){ fitLabel(t.short, x + pad, y + pad + 1, short - pad - Math.max(pad, right), t.w>=5 ? 11 : 9.5, 600, ink, 'left', 6.5); picTop = fitBottom + 3; }
   }
+  // the picture: the same size in every rotation, centred between the name and a bottom row of rowH
+  const picIn = (rowH, alpha) => { const bot = y + h - pad - rowH, d = Math.max(8, Math.min(short - 2 * pad, short - (picTop - y) - pad - rowH)); return facPic(e.type, x + w/2, (picTop + bot) / 2, d, alpha); };
   if (e.status){ ctx.fillStyle = STCOL()[e.status] || C.muted; ctx.beginPath(); ctx.arc(x+w-6, y+6, 3, 0, 7); ctx.fill(); }
   if (k==='machine'){
     portMarks(e, 'in', C.muted, false); portMarks(e, 'out', ink, true);
     const pinR = e.pin != null ? RECIPES_BY_M[e.type][e.pin] : null;
     const show = e.cur ? rItem(e.cur) : pinR ? rItem(pinR) : (e.last ? rItem(e.last) : firstOut(e.type));
     if (pinR){ ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(x+w-14, y+6, 3, 0, 7); ctx.fill(); }
-    ctx.globalAlpha = e.cur ? 1 : .4; drawItem(ctx, show, x+w/2, y+h/2+3, Math.min(12, Math.min(w,h)*.16)); ctx.globalAlpha = 1;
-    if (e.cur){ ctx.fillStyle = C.ink; ctx.globalAlpha=.8; ctx.fillRect(x+5, y+h-8, (w-10)*Math.min(1, e.t/e.cur.t), 3); ctx.globalAlpha=1; }
     const warnTxt = { nopower:'전력 없음', nogas:'기체 환경 필요', nocat:'촉매 부족' }[e.status];
-    if (warnTxt) fitLabel(warnTxt, x+w/2, y+h-20, w - 8, 9, 700, C.bad, 'center');
+    if (pic){
+      // the machine's picture between the name and the bottom row (warning text / progress), what it is making in a badge at the bottom right
+      const rowH = tiny ? 0 : 16, rowTop = y + h - pad - (tiny ? 15 : rowH);
+      picIn(rowH, e.cur ? 1 : .8);
+      if (show){ const b = 14, bx = x + w - pad - b, by = rowTop + 1;
+        ctx.fillStyle = C['cv-mach']; ctx.strokeStyle = acc; ctx.lineWidth = 1.2; ctx.fillRect(bx, by, b, b); ctx.strokeRect(bx, by, b, b);
+        ctx.globalAlpha = e.cur ? 1 : .45; drawItem(ctx, show, bx + b/2, by + b/2, b * .36); ctx.globalAlpha = 1; }
+      if (e.cur){ ctx.fillStyle = acc; ctx.fillRect(x + pad, rowTop + rowH - 1, (w - 2*pad)*Math.min(1, e.t/e.cur.t), 2.5); }
+      if (warnTxt && !tiny) fitLabel(warnTxt, x + pad + 1, rowTop + 3, w - 2*pad - 20, 9, 700, C.bad, 'left');
+    } else {
+      ctx.globalAlpha = e.cur ? 1 : .4; drawItem(ctx, show, x+w/2, y+h/2+3, Math.min(12, Math.min(w,h)*.16)); ctx.globalAlpha = 1;
+      if (e.cur){ ctx.fillStyle = C.ink; ctx.globalAlpha=.8; ctx.fillRect(x+5, y+h-8, (w-10)*Math.min(1, e.t/e.cur.t), 3); ctx.globalAlpha=1; }
+    }
+    if (warnTxt && !pic) fitLabel(warnTxt, x+w/2, y+h-20, w - 8, 9, 700, C.bad, 'center');
   } else if (k==='miner' || k==='pump'){
     portMarks(e, 'out', ink, true); if (t.ports.in) portMarks(e, 'in', C.muted, false);
     const it = k==='miner' ? e.ore : t.makes; if (it) drawItem(ctx, it, x+w/2, y+h/2+3, 7);
     if (e.status==='working'){ ctx.fillStyle=C.ink; ctx.globalAlpha=.8; ctx.fillRect(x+5, y+h-7, (w-10)*Math.min(1,e.t/t.rate), 2.5); ctx.globalAlpha=1; }
   } else if (k==='thermal'){
-    const on = e.out > 0; ctx.fillStyle = on ? C.warn : C.muted; ctx.beginPath(); const fx = x+w/2, fy = y+h/2+1; ctx.moveTo(fx, fy-8); ctx.quadraticCurveTo(fx+8, fy, fx, fy+7); ctx.quadraticCurveTo(fx-8, fy, fx, fy-8); ctx.fill();
-    fitLabel(on ? '+'+e.out : '연료 없음', x+w/2, y+h-12, w - 6, 8.5, 600, ink, 'center', 6.5);
+    const on = e.out > 0;
+    if (facPic(e.type, x+w/2, y + (h - 13) / 2 + 1, Math.min(w - 6, h - 16), on ? 1 : .5)){ fitLabel(on ? '+'+e.out : '연료 없음', x+w/2, y+h-12, w - 6, 8.5, 700, ink, 'center', 6.5); }
+    else { ctx.fillStyle = on ? C.warn : C.muted; ctx.beginPath(); const fx = x+w/2, fy = y+h/2+1; ctx.moveTo(fx, fy-8); ctx.quadraticCurveTo(fx+8, fy, fx, fy+7); ctx.quadraticCurveTo(fx-8, fy, fx, fy-8); ctx.fill();
+    fitLabel(on ? '+'+e.out : '연료 없음', x+w/2, y+h-12, w - 6, 8.5, 600, ink, 'center', 6.5); }
   } else if (k==='stash'){
     portMarks(e, 'in', C.muted, false); portMarks(e, 'out', ink, true);
     // 3 × 2 slot grid; the green fill shows how full each slot is (50 max)
@@ -4083,14 +4267,24 @@ function drawBuilding(e){
     });
   } else if (k==='tank'){
     portMarks(e,'in',C.muted,false); portMarks(e,'out',ink,true);
+    if (pic){ // the picture, with a level gauge as the bottom row
+      picIn(9, 1);
+      const gx = x + pad, gw = w - 2*pad, gh = 4, gy = y + h - pad - 5, horiz = true;
+      ctx.fillStyle = C['panel-2']; ctx.fillRect(gx, gy, gw, gh);
+      if (e.fl){ const f = Math.min(1, e.amt/500); ctx.fillStyle = MAT[ITEMS[e.fl].mat]; ctx.fillRect(gx, gy, gw*f, gh); }
+      ctx.strokeStyle = ink; ctx.lineWidth = .8; ctx.strokeRect(gx, gy, gw, gh);
+    } else {
     ctx.fillStyle = C['panel-2']; ctx.fillRect(x+w/2-8, y+h/2-6, 16, 16);
     if (e.fl){ ctx.fillStyle = MAT[ITEMS[e.fl].mat]; const f = Math.min(1, e.amt/500); ctx.fillRect(x+w/2-8, y+h/2+10-16*f, 16, 16*f); }
     ctx.strokeStyle = ink; ctx.lineWidth = 1; ctx.strokeRect(x+w/2-8, y+h/2-6, 16, 16);
+    }
   } else if (k==='busport'){
-    ctx.fillStyle = C.accent; ctx.fillRect(x+w/2-7, y+h/2-5, 14, 14);
+    if (!picIn(0, 1)){ ctx.fillStyle = BUS_GREEN; ctx.fillRect(x+w/2-7, y+h/2-5, 14, 14); }
   } else if (k==='sink'){
     portMarks(e,'in',C.muted,false);
-    ctx.globalAlpha = e.status==='working' ? 1 : .4; drawItem(ctx, e.lastGas || 'xiragen', x+w/2, y+h/2+4, 12); ctx.globalAlpha = 1;
+    if (pic){ picIn(0, e.status==='working' ? 1 : .6);
+      ctx.globalAlpha = e.status==='working' ? 1 : .45; drawItem(ctx, e.lastGas || 'xiragen', x+w-pad-6, y+h-pad-6, 5); ctx.globalAlpha = 1; }
+    else { ctx.globalAlpha = e.status==='working' ? 1 : .4; drawItem(ctx, e.lastGas || 'xiragen', x+w/2, y+h/2+4, 12); ctx.globalAlpha = 1; }
     if (e.status==='working'){ ctx.fillStyle=C.ink; ctx.globalAlpha=.8; ctx.fillRect(x+5, y+h-8, (w-10)*Math.min(1,e.t/10), 3); ctx.globalAlpha=1; }
   } else if (k==='conduit'){
     const inl = t.dirn === 'in'; portMarks(e, inl ? 'in' : 'out', inl ? C.muted : ink, !inl);
@@ -4102,7 +4296,7 @@ function drawBuilding(e){
     }
     const far = inl ? e.f : opp(e.f), len = (far & 1) ? w : h;
     const dx = x+w/2 + DX[far]*(len/2 - S*.62), dy = y+h/2 + DY[far]*(len/2 - S*.62), rr = S*.42;
-    fitLabel(t.short, x+w/2, (far & 1) ? y+4 : y+h/2 - 5, w - 8, 8.5, 600, ink, 'center'); // sideways: the top row is free
+    if (prefs.labels) fitLabel(t.short, x+w/2, (far & 1) ? y+4 : y+h/2 - 5, w - 8, 8.5, 600, ink, 'center'); // sideways: the top row is free
     ctx.fillStyle = C['cv-pipe']; ctx.beginPath(); ctx.arc(dx, dy, rr, 0, 7); ctx.fill();
     ctx.strokeStyle = ink; ctx.globalAlpha = .5; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(dx, dy, rr + 2.5, 0, 7); ctx.stroke(); ctx.globalAlpha = 1;
     if (e.src){ drawItem(ctx, e.src, dx, dy, rr*.62); }
@@ -4173,7 +4367,7 @@ cv.addEventListener('pointerdown', ev => {
   let e = here[0] || null;
   if (here.length === 2 && ui.sel === here[0].id) e = here[1];
   if (e){
-    if (here.length === 2 && !(ev.ctrlKey || ev.metaKey)) flash(`이 칸에는 ${TYPES[here[0].type].ko}와 ${TYPES[here[1].type].ko}가 겹쳐 있습니다. 다시 누르면 다른 쪽을 고릅니다.`);
+    if (here.length === 2 && !(ev.ctrlKey || ev.metaKey)) flash(`겹친 설비 · 다시 누르면 다른 쪽`);
     if (ev.ctrlKey || ev.metaKey){ if (ui.multi.has(e.id)) ui.multi.delete(e.id); else ui.multi.add(e.id); if (ui.sel && ui.sel !== e.id){ ui.multi.add(ui.sel); } ui.sel = null; }
     else if (!ui.multi.has(e.id)){ ui.sel = e.id; ui.multi.clear(); }
     renderInspector(true); renderSelbar();
@@ -4361,14 +4555,13 @@ function renderSelbar(){
   $('#sbClear').onclick = () => { ui.multi.clear(); renderSelbar(); renderInspector(true); };
   $('#sbSave').onclick = async () => {
     const bp = world.blueprint(selectionIds()); if (!bp){ flash('저장할 설비가 없습니다'); return; }
-    const name = ($('#sbName').value || '').trim() || `청사진 ${store.bps.length+1}`;
-    const where = await saveBp(name, bp); flash(`"${name}" 청사진을 ${where === 'account' ? '계정에' : ''} 저장했습니다`.replace('을  저장', '을 저장'));
+    const where = await saveBp(($('#sbName').value || '').trim(), bp), name = saveBp.last; flash(`"${name}" 청사진을 ${where === 'account' ? '계정에' : ''} 저장했습니다`.replace('을  저장', '을 저장'));
     setCat('bp');
   };
 }
 
 document.addEventListener('keydown', ev => {
-  if (ui.view === 'board' || ev.target.closest('input,select,textarea,dialog')) return;
+  if (ui.view !== 'sim' || ev.target.closest('input,select,textarea,dialog')) return;
   const k = ev.key.toLowerCase(), mod = ev.ctrlKey || ev.metaKey;
   if (mod && k==='c'){ copySel(); ev.preventDefault(); return; }
   if (mod && k==='v'){ if (ui.clip) startPaste(ui.clip); ev.preventDefault(); return; }
@@ -4388,33 +4581,12 @@ function rotateAction(){
   if (ui.tool.startsWith('build:')){ ui.rot = (ui.rot + 1) & 3; return; }
   if (ui.sel){ if (world.rotate(ui.sel) === false) flash('회전할 공간이 없습니다'); markTouched(); renderInspector(true); }
 }
-$('#rotBtn').onclick = rotateAction;
-$('#fitBtn').onclick = fitView;
 
 // ---------- header ----------
 function togglePlay(){ ui.playing = !ui.playing; $('#play').textContent = ui.playing ? '일시정지' : '재생'; }
 $('#play').onclick = togglePlay;
 function setSpeed(s){ ui.speed = s; document.querySelectorAll('#speed button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.s === s)); }
 document.querySelectorAll('#speed button').forEach(b => b.onclick = () => setSpeed(+b.dataset.s));
-const presetSel = $('#preset');
-for (const k in PRESETS){ if (k === 'empty') continue; const o = document.createElement('option'); o.value = k; o.textContent = PRESETS[k].ko; presetSel.appendChild(o); }
-presetSel.onchange = () => {
-  const k = presetSel.value; if (!k) return; presetSel.value = '';
-  let W = world.W, H = world.H, r = AIC.loadPreset(k, W, H);
-  // keep the site's fixed outer depot bus (and core) when the example lands on the same site
-  let eb = (world.edgeBus || []).slice(), ec = world.edgeCore;
-  if (!r.world){
-    const need = AIC.presetSize(k);
-    const site = siteChoices().find(s => s.w >= need.w && s.h >= need.h);
-    W = site ? site.w : Math.max(W, need.w); H = site ? site.h : Math.max(H, need.h);
-    r = AIC.loadPreset(k, W, H);
-    eb = site && site.edgeBus ? site.edgeBus.slice() : []; ec = site ? site.edgeCore !== false : true;
-    flash(`이 예시는 ${need.w}×${need.h}칸이 필요해서 부지를 ${W}×${H}로 넓혔습니다`);
-  }
-  if (eb.length){ r.world.edgeBus = eb.sort(); if (ec === false) r.world.edgeCore = false; r.world.dirtyPower = true; }
-  ui.presetNote = k; loadWorld(r.world); setTool('select'); markTouched();
-};
-
 // ---------- new factory: empty the site on screen, or start the whole space over ----------
 function emptySite(){
   const W = world.W, H = world.H, eb = (world.edgeBus || []).slice(), ec = world.edgeCore;
@@ -4438,6 +4610,25 @@ $('#newDlg').addEventListener('close', () => {
   else { const d = space.siteDef(ui.site); loadWorld(emptySite()); flash(`${space.regionOf(ui.site).ko} ${d.name} 부지를 비웠습니다`); }
   setTool('select'); markTouched();
 });
+
+// ---------- settings ----------
+function openSettings(){
+  const d = $('#setDlg'), f = $('#setForm');
+  f.querySelectorAll('input[name="theme"]').forEach(i => i.checked = i.value === prefs.theme);
+  f.querySelectorAll('input[name="size"]').forEach(i => i.checked = i.value === prefs.size);
+  $('#setGrid').checked = prefs.grid; $('#setLabels').checked = prefs.labels; $('#setItems').checked = prefs.items;
+  d.showModal();
+}
+$('#setBtn').onclick = openSettings;
+$('#setForm').addEventListener('change', () => {
+  const f = $('#setForm');
+  prefs.theme = (f.querySelector('input[name="theme"]:checked') || {}).value || 'system';
+  prefs.size = (f.querySelector('input[name="size"]:checked') || {}).value || 'm';
+  prefs.grid = $('#setGrid').checked; prefs.labels = $('#setLabels').checked; prefs.items = $('#setItems').checked;
+  applyPrefs(); savePrefs(); resize(); fitHeader(); syncSitesH();
+});
+$('#setReset').onclick = () => { Object.assign(prefs, PREF_DEF); applyPrefs(); savePrefs(); openSettings(); resize(); fitHeader(); };
+$('#setClose').onclick = () => $('#setDlg').close();
 
 // ---------- site size ----------
 const siteSel = $('#site');
@@ -4510,9 +4701,9 @@ const enc = o => 'AIC2:' + btoa(unescape(encodeURIComponent(JSON.stringify(o))))
 const dec = s => { s = s.trim(); if (s.startsWith('AIC2:')) s = decodeURIComponent(escape(atob(s.slice(5)))); return JSON.parse(s); };
 function openDialog(mode, bp){
   dlgMode = mode; $('#dlgMsg').textContent = '';
-  if (mode==='layout'){ $('#dlgTitle').textContent = '레이아웃 코드'; $('#dlgNote').textContent = '협곡 IV·무릉의 부지 8곳과 지역 창고를 통째로 코드로 옮깁니다. 복사해 두었다가 붙여넣고 불러오면 같은 공장이 됩니다. 예전의 부지 하나짜리 코드는 지금 보는 부지에 불러옵니다. 작업 내용은 자동으로도 저장됩니다.'; $('#dlgText').value = enc(space.serialize(ui.site)); $('#dlgLoad').textContent = '붙여넣은 코드 불러오기'; $('#dlgLoad').hidden = false; }
-  else if (mode==='bpcode'){ $('#dlgTitle').textContent = `청사진 코드 · ${bp.name}`; $('#dlgNote').textContent = '이 코드를 다른 기기로 옮기거나 친구에게 보내면 "코드로 가져오기"로 같은 청사진을 쓸 수 있습니다.'; $('#dlgText').value = enc({ name: bp.name, bp: bp.bp }); $('#dlgLoad').hidden = true; }
-  else { $('#dlgTitle').textContent = '청사진 가져오기'; $('#dlgNote').textContent = '청사진 코드를 붙여넣으세요.'; $('#dlgText').value = ''; $('#dlgLoad').textContent = '청사진으로 저장'; $('#dlgLoad').hidden = false; }
+  if (mode==='layout'){ $('#dlgTitle').textContent = '레이아웃 코드'; $('#dlgNote').textContent = ''; $('#dlgText').value = enc(space.serialize(ui.site)); $('#dlgLoad').textContent = '붙여넣은 코드 불러오기'; $('#dlgLoad').hidden = false; }
+  else if (mode==='bpcode'){ $('#dlgTitle').textContent = `청사진 코드 · ${bp.name}`; $('#dlgNote').textContent = ''; $('#dlgText').value = enc({ name: bp.name, bp: bp.bp }); $('#dlgLoad').hidden = true; }
+  else { $('#dlgTitle').textContent = '청사진 가져오기'; $('#dlgNote').textContent = ''; $('#dlgText').value = ''; $('#dlgLoad').textContent = '청사진으로 저장'; $('#dlgLoad').hidden = false; }
   dlg.showModal();
 }
 $('#io').onclick = () => openDialog('layout');
@@ -4551,81 +4742,79 @@ function renderInspector(force){
   const e = ui.sel ? world.ents.get(ui.sel) : null;
   const key = ui.multi.size ? 'm'+[...ui.multi].join(',') : e ? 'e'+e.id+':'+e.f+':'+e.off : 't'+ui.tool+':'+ui.presetNote;
   if (!force && key === inspKey){ updateInspectorDynamic(e); return; }
-  inspKey = key;
+  inspKey = key; el.hidden = false; $('#rzInspRow').hidden = false;
   if (ui.multi.size){
     const cnt = {}; let pw = 0;
     for (const id of ui.multi){ const x = world.ents.get(id); if (x){ cnt[x.type] = (cnt[x.type]||0)+1; if (!x.off) pw += TYPES[x.type].power; } }
-    el.innerHTML = `<h3>${ui.multi.size}개 선택</h3><div class="en">범위 선택 · 전력 ${pw}</div><div class="bufs" style="margin-top:8px">${Object.entries(cnt).map(([k,n]) => `<span class="buf">${esc(TYPES[k].ko)} <b>${n}</b></span>`).join('')}</div><p>부지 위쪽 막대에서 복사, 삭제, 켜기·끄기, 청사진 저장을 고르세요. Ctrl+클릭으로 하나씩 더하거나 뺄 수 있습니다.</p>`;
+    el.innerHTML = `<h3>${ui.multi.size}개 선택</h3><div class="en">범위 선택 · 전력 ${pw}</div><div class="bufs" style="margin-top:8px">${Object.entries(cnt).map(([k,n]) => `<span class="buf">${esc(TYPES[k].ko)} <b>${n}</b></span>`).join('')}</div>`;
     return;
   }
   if (!e){
     if (ui.tool.startsWith('build:')){
       const type = ui.tool.slice(6), t = TYPES[type], rs = RECIPES_BY_M[type] || [];
-      el.innerHTML = `${head(t)}<p>${toolHelp(type)}</p>${rs.length ? `<div class="sub">처리 레시피 <span>(${rs.length}개)</span></div><div class="rlist">${rs.slice(0,30).map(r => recipeRow(r)).join('')}${rs.length>30?`<p class="note">나머지 ${rs.length-30}개는 레시피 탭에서 볼 수 있습니다.</p>`:''}</div>` : ''}`;
+      el.innerHTML = `${head(t)}${rs.length ? `<div class="sub">처리 레시피 <span>(${rs.length}개)</span></div><div class="rlist">${rs.slice(0,30).map(r => recipeRow(r)).join('')}${rs.length>30?``:''}</div>` : ''}`;
     } else if (ui.tool==='movepac'){
-      el.innerHTML = `<h3>PAC 옮기기</h3><div class="en">Protocol Automation-Core</div><p>부지 위를 클릭하면 그 자리로 옮깁니다. 초록색이면 놓을 수 있습니다. 연결된 벨트는 그대로 남으니 다시 이어 주세요. Esc로 취소합니다.</p>`;
+      el.innerHTML = `<h3>PAC 옮기기</h3><div class="en">Protocol Automation-Core</div><p>클릭해서 옮기기 · Esc 취소</p>`;
     } else if (ui.tool==='paste'){
-      el.innerHTML = `<h3>붙여넣기</h3><div class="en">Blueprint</div><p>부지 위를 클릭하면 그 자리에 놓입니다. 초록색이면 놓을 수 있고 빨간색이면 겹칩니다. R로 회전, Esc로 끝냅니다.</p>`;
-    } else if (ui.presetNote && PRESETS[ui.presetNote]){
-      const p = PRESETS[ui.presetNote];
-      el.innerHTML = `<h3>${esc(p.ko)}</h3><div class="en">예시 공장</div><p>${esc(p.note)}</p><p>설비를 클릭하면 안에 든 재료와 상태를 볼 수 있습니다.</p>`;
+      el.innerHTML = `<h3>붙여넣기</h3><div class="en">Blueprint</div><p>클릭해서 놓기 · R 회전 · Esc 끝내기</p>`;
     } else {
-      el.innerHTML = `<h3>공장 부지</h3><div class="en">Core AIC Area</div><p>설비를 클릭하면 상태와 내용물을 볼 수 있습니다. 왼쪽에서 분류별로 설비를 골라 배치하고, 벨트로 PAC 출력 포트와 설비의 입력 쪽을 이으세요.</p>`;
+      // nothing selected and no tool to explain: the panel stays out of the way
+      el.innerHTML = ''; el.hidden = true; $('#rzInspRow').hidden = true;
     }
     return;
   }
   const t = TYPES[e.type], k = t.kind;
   let h = head(t, e);
-  if (TOGGLABLE.has(k)) h += `<div class="row" style="margin-top:8px"><label class="switch"><input type="checkbox" id="ion" ${e.off?'':'checked'}> <span>${e.off?'꺼짐 · 전력을 쓰지 않습니다':'켜짐'}</span></label></div>`;
+  if (TOGGLABLE.has(k)) h += `<div class="row" style="margin-top:8px"><label class="switch"><input type="checkbox" id="ion" ${e.off?'':'checked'}> <span>${e.off?'꺼짐':'켜짐'}</span></label></div>`;
   if (k==='machine'){
     h += `<div class="prog"><i id="iprog"></i></div><dl class="kv" id="ikv"></dl>
-      <div class="sub">입력 버퍼 <span>(설비 안에 든 재료)</span></div><div class="bufs" id="iin"></div>
-      <div class="sub">출력 버퍼 <span>(내보낼 생산품)</span></div><div class="bufs" id="iout"></div>
-      <div class="sub">레시피</div><div class="ports">${t.modes ? `<label for="imode">포트 모드</label><select id="imode">${t.modes.map((m, i) => `<option value="${i}"${(e.mode||0)===i?' selected':''}>${esc(m.ko)}</option>`).join('')}</select>` : ''}<label for="ipin">레시피</label><select id="ipin"><option value="">자동 · 들어온 재료로 선택</option>${RECIPES_BY_M[e.type].map((r, i) => `<option value="${i}"${e.pin===i?' selected':''}>${t.modes && !world.modeFits(e.type, e.mode||0, r) ? '↻ ' : ''}${esc(Object.keys(r.out).map(x => ITEMS[x].ko).join(' + ') || '폐기')} ← ${esc(Object.entries(r.in).map(([x,n]) => ITEMS[x].ko + ' ' + n).join(', '))}${r.gas ? ' [' + esc(ITEMS[r.gas].ko) + ' 환경]' : ''}</option>`).join('')}</select></div><p class="note">포트: ${portSummary(e)}${t.modes ? ' · 레시피를 고르면 맞는 포트 모드로 바뀝니다 (↻ 표시)' : ''}${t.catalyst ? ` · 위쪽 가운데 파이프 입구로 촉매(${esc(ITEMS[t.catalyst].ko)})를 넣어야 작동하며, 가동 10초마다 1씩 씁니다` : ''}${RECIPES_BY_M[e.type].some(r => r.gas) ? ' · "환경" 표시 레시피는 해당 기체를 쓰는 기체 분산기 범위(13×13) 안에서만 작동합니다' : ''}</p>
-      <p class="note" style="margin-top:4px">레시피를 고정하면 그 재료만 받습니다. 같은 재료로 여러 가지를 만드는 설비(예: 성형기의 적동 병 / 적동 내압 캔)에서 쓰세요.</p>
+      <div class="sub">입력 버퍼</div><div class="bufs" id="iin"></div>
+      <div class="sub">출력 버퍼</div><div class="bufs" id="iout"></div>
+      <div class="sub">레시피</div><div class="ports">${t.modes ? `<label for="imode">포트 모드</label><select id="imode">${t.modes.map((m, i) => `<option value="${i}"${(e.mode||0)===i?' selected':''}>${esc(m.ko)}</option>`).join('')}</select>` : ''}<label for="ipin">레시피</label><select id="ipin"><option value="">자동</option>${RECIPES_BY_M[e.type].map((r, i) => `<option value="${i}"${e.pin===i?' selected':''}>${t.modes && !world.modeFits(e.type, e.mode||0, r) ? '↻ ' : ''}${esc(Object.keys(r.out).map(x => ITEMS[x].ko).join(' + ') || '폐기')} ← ${esc(Object.entries(r.in).map(([x,n]) => ITEMS[x].ko + ' ' + n).join(', '))}${r.gas ? ' [' + esc(ITEMS[r.gas].ko) + ' 환경]' : ''}</option>`).join('')}</select></div>
+      
       <div class="rlist" id="irec" style="margin-top:6px"></div>`;
   } else if (k==='pac'){
-    h += `<p>좌우 가장자리의 출력 포트 6개(왼쪽 1–3, 오른쪽 4–6)로 창고 재고를 내보냅니다. 위·아래 가장자리의 입력 포트 7개씩(모두 14개)에 벨트로 들어온 물품은 바로 창고로 들어갑니다.</p><div class="sub">출력 포트</div><div class="ports">`;
+    h += `<div class="sub">출력 포트</div><div class="ports">`;
     for (let i=0;i<6;i++) h += `<label for="port${i}">${i<3?'왼쪽':'오른쪽'} ${i+1}</label><select id="port${i}" data-p="${i}">${itemOptions(e.ports[i], 'solid', '— 끔 —')}</select>`;
     h += `</div><div class="sub">포트별 소비량</div><div class="tscroll"><table class="dep" id="iports"></table></div><dl class="kv" id="ikv"></dl><div class="acts"><button class="btn sm" id="imovepac">PAC 옮기기 (M)</button><button class="btn sm" id="irotpac">PAC 회전</button></div>`;
   } else if (k==='control' && t.carrier==='fluid'){
-    h += `<p>설정한 액체·기체만 통과시키고, 흐르는 양을 분당 6 단위씩 조절합니다 (0은 제한 없음, 파이프 최대 분당 120). 기체 공정을 정밀하게 맞출 때 씁니다.</p>
+    h += `
       <div class="ports"><label for="cflt">통과 재료</label><select id="cflt">${itemOptions(e.filter, t.carrier)}</select>
       <label for="crate">분당 유량</label><input id="crate" type="number" min="0" max="120" step="6" value="${e.rate||0}"></div>
       <dl class="kv" id="ikv"></dl><div class="acts"><button class="btn sm" id="creset">통과 수 초기화</button></div>`;
   } else if (k==='control'){
-    h += `<p>설정한 재료만 통과시킵니다. 맞지 않는 재료는 앞에서 멈추므로, 분류기 옆 출구에 달면 재료를 골라낼 수 있습니다. 최대 수량(최대 5000)을 채우면 더는 통과시키지 않습니다 (0은 제한 없음).</p>
+    h += `
       <div class="ports"><label for="cflt">통과 재료</label><select id="cflt">${itemOptions(e.filter, t.carrier)}</select>
       <label for="clim">최대 수량</label><input id="clim" type="number" min="0" max="5000" step="1" value="${e.limit||0}"></div>
       <dl class="kv" id="ikv"></dl><div class="acts"><button class="btn sm" id="creset">통과 수 초기화</button></div>`;
   } else if (k==='unloader'){
-    h += `<p>창고에서 고른 품목을 꺼내 가운데 칸으로 내보냅니다. 긴 쪽이 창고 입출력 라인에 붙어 있어야 합니다.</p><div class="ports"><label for="unl">품목</label><select id="unl">${itemOptions(e.item)}</select></div><dl class="kv" id="ikv"></dl>`;
+    h += `<div class="ports"><label for="unl">품목</label><select id="unl">${itemOptions(e.item)}</select></div><dl class="kv" id="ikv"></dl>`;
   } else if (k==='loader'){
-    h += `<p>가운데 칸으로 들어온 물품을 창고로 보냅니다. 긴 쪽이 창고 입출력 라인에 붙어 있어야 합니다.</p><dl class="kv" id="ikv"></dl>`;
+    h += `<dl class="kv" id="ikv"></dl>`;
   } else if (k==='thermal'){
-    h += `<div class="ports"><label for="ifuel">연료 공급</label><select id="ifuel"><option value="">— 없음 (벨트로 넣은 연료만) —</option>${Object.keys(FUEL).map(f => `<option value="${f}"${e.infFuel===f?' selected':''}>${esc(ITEMS[f].ko)} (+${FUEL[f].p})</option>`).join('')}</select></div><p class="note">고른 연료가 계속 들어가 발전이 끊기지 않습니다. 쓴 양은 원자재 소비량에 잡힙니다.</p><dl class="kv" id="ikv"></dl><div class="sub">연료</div><div class="rlist">${Object.entries(FUEL).map(([f,v]) => `<div class="rec">${icS(f,1)} ${esc(ITEMS[f].ko)} <span class="t">+${v.p} · ${v.t}초</span></div>`).join('')}</div>`;
+    h += `<div class="ports"><label for="ifuel">연료 공급</label><select id="ifuel"><option value="">— 없음 —</option>${Object.keys(FUEL).map(f => `<option value="${f}"${e.infFuel===f?' selected':''}>${esc(ITEMS[f].ko)} (+${FUEL[f].p})</option>`).join('')}</select></div><dl class="kv" id="ikv"></dl><div class="sub">연료</div><div class="rlist">${Object.entries(FUEL).map(([f,v]) => `<div class="rec">${icS(f,1)} ${esc(ITEMS[f].ko)} <span class="t">+${v.p} · ${v.t}초</span></div>`).join('')}</div>`;
   } else if (k==='miner' || k==='pump'){
-    h += `<dl class="kv" id="ikv"></dl><p>${k==='miner' ? '출력 쪽에 벨트가 없으면 캐낸 광석을 창고로 바로 보냅니다.' : '출력 쪽 파이프로 내보냅니다.'}</p>`;
+    h += `<dl class="kv" id="ikv"></dl>`;
   } else if (k==='pylon' || k==='relay'){
-    h += `<dl class="kv"><dt>전력망</dt><dd>${e.powered?'연결됨':'연결 안 됨'}</dd><dt>연결 거리</dt><dd>제한 없음 (프로토콜 공간 안)</dd><dt>공급 범위</dt><dd>${t.supply}×${t.supply}칸 (가운데에 두고, 조금이라도 걸치면 공급)</dd></dl>`;
+    h += `<dl class="kv"><dt>전력망</dt><dd>${e.powered?'연결됨':'연결 안 됨'}</dd><dt>연결 거리</dt><dd>제한 없음</dd><dt>공급 범위</dt><dd>${t.supply}×${t.supply}칸</dd></dl>`;
   } else if (k==='stash'){
-    h += `<p>칸 6개에 한 칸당 한 종류를 최대 50개까지 담고, 아래쪽 출력 포트에 벨트를 이으면 담긴 물품을 내보냅니다. 아래에서 칸을 골라 아이템과 개수를 정해 직접 넣을 수 있습니다.</p>
+    h += `
       <div class="slots">${e.slots.map((q, i) => `<div class="slot"><span class="sn">${i+1}</span><span class="sc" id="sc${i}"></span><button class="btn sm" data-empty="${i}">비우기</button></div>`).join('')}</div>
       <div class="sub">칸에 직접 넣기</div>
       <div class="ports sfill"><label for="sfI">아이템</label><select id="sfI">${itemOptions(null, 'solid', '— 아이템 고르기 —')}</select><label for="sfN">개수</label><input id="sfN" type="number" min="1" max="50" value="50"><label for="sfS">칸</label><select id="sfS">${e.slots.map((q, i) => `<option value="${i}">${i+1}번 칸${q.n ? '' : ' (빈 칸)'}</option>`).join('')}</select></div>
       <div class="acts"><button class="btn sm primary" id="sfGo">넣기</button></div><dl class="kv" id="ikv"></dl>`;
   } else if (k==='tank'){
-    h += `<p>${t.holds==='gas' ? '기체' : '액체'} 한 종류를 최대 500까지 담아 두었다가 앞쪽 파이프로 내보냅니다.</p><dl class="kv" id="ikv"></dl>`;
+    h += `<dl class="kv" id="ikv"></dl>`;
   } else if (k==='sink'){
-    h += `<p>비활성 기체·수증기·산성 기체·식양 기체만 받습니다. 기체 1 단위로 설비를 가운데에 둔 13×13칸에 그 기체 환경이 10초 동안 생기고, 끊기지 않으려면 분당 6 단위가 필요합니다 (안에 최대 5 보관). 전력이 필요 없고, 다른 기체 분산기와는 10칸 넘게 떨어뜨려야 합니다. 천화로(카본 → 식양), 정제기 기체 모드(분리 필터 1개 레시피), 기체 반응로(기체 작동) 레시피가 이 환경을 씁니다.</p><div class="sub">안에 든 기체</div><div class="bufs" id="iin"></div><dl class="kv" id="ikv"></dl>`;
+    h += `<div class="sub">안에 든 기체</div><div class="bufs" id="iin"></div><dl class="kv" id="ikv"></dl>`;
   } else if (k==='conduit'){
-    h += `<p>${t.dirn==='in' ? '뒤쪽 파이프로 들어온 액체·기체를 같은 채널의 출구로 땅속으로 보냅니다.' : '같은 채널의 입구에서 온 액체·기체를 앞쪽 파이프로 내보냅니다.'} 입구와 출구는 1:1로 짝지어지고 양 끝에 500씩 담깁니다. 게임에서는 최단 거리 300m 안이어야 합니다.${t.multi ? ' 다중 암관은 파이프 2줄을 한꺼번에 받아 보냅니다.' : ''}</p>
-      <div class="ports">${t.dirn==='out' ? `<label for="isrc">나오는 재료</label><select id="isrc"><option value="">— 없음 (입구와 짝) —</option>${fluidOptions(e.src)}</select>` : ''}${e.src ? '' : `<label for="ich">채널</label><select id="ich">${world.channelChoices(e).map(n => `<option value="${n}"${e.ch===n?' selected':''}>${n}</option>`).join('')}</select>`}</div>
-      <p class="note">${e.src ? `고른 ${ITEMS[e.src].cat==='gas'?'기체':'액체'}를 지역 창고에서 꺼내 파이프 속도대로 내보냅니다${world.isInf(e.src) ? ' (무한으로 켜져 있어 끝없이 나옴)' : ' · 무한이 꺼져 있어 창고 재고만큼만 나옴 (창고 탭에서 켤 수 있음)'}. 입구와 짝을 짓지 않고, 나간 양은 원자재 소비량에 잡힙니다.` : '채널마다 입구 하나와 출구 하나만 짝지어집니다. 목록에는 비어 있는 채널만 나옵니다.'}</p><dl class="kv" id="ikv"></dl>`;
+    h += `
+      <div class="ports">${t.dirn==='out' ? `<label for="isrc">나오는 재료</label><select id="isrc"><option value="">— 없음 —</option>${fluidOptions(e.src)}</select>` : ''}${e.src ? '' : `<label for="ich">채널</label><select id="ich">${world.channelChoices(e).map(n => `<option value="${n}"${e.ch===n?' selected':''}>${n}</option>`).join('')}</select>`}</div>
+      <dl class="kv" id="ikv"></dl>`;
   } else if (k==='bus' || k==='busport'){
-    h += `<dl class="kv"><dt>상태</dt><dd>${e.busOn?'활성':'핵심 장치와 이어지지 않음'}</dd></dl><p>벨트를 직접 연결할 수 없습니다. 핵심 장치나 기초 장치에 창고 입력·출력 포트(1×3)를 긴 쪽으로 붙이고, 포트 가운데 칸에 벨트를 잇습니다.</p>`;
+    h += `<dl class="kv"><dt>상태</dt><dd>${e.busOn?'활성':'핵심 장치와 이어지지 않음'}</dd></dl>`;
   } else {
-    h += `<dl class="kv" id="ikv"></dl><p>${toolHelp(e.type)}</p>`;
+    h += `<dl class="kv" id="ikv"></dl>`;
   }
   if (e.type !== 'pac') h += `<div class="acts"><button class="btn sm" id="imove">이동 (M)</button><button class="btn sm" id="irot">회전 (R)</button><button class="btn sm" id="icopy">복사</button><button class="btn sm danger" id="idel">철거</button></div>`;
   el.innerHTML = h;
@@ -4680,7 +4869,7 @@ function updateInspectorDynamic(e){
       document.getElementById('iout').innerHTML = bufList(e.outBuf, OUT_CAP[e.type]);
       const rs = RECIPES_BY_M[e.type], cur = e.cur || e.last;
       const shown = e.pin != null ? [rs[e.pin]] : rs.length > 16 ? rs.filter(r => r === cur || Object.keys(r.in).some(x => (e.inBuf[x]||0) > 0)).slice(0, 12) : rs;
-      document.getElementById('irec').innerHTML = shown.map(r => recipeRow(r, r===e.cur)).join('') + (e.pin == null && rs.length > 16 ? `<p class="note">레시피 ${rs.length}개 중 지금 든 재료와 맞는 것만 보여 줍니다.</p>` : '');
+      document.getElementById('irec').innerHTML = shown.map(r => recipeRow(r, r===e.cur)).join('') + '';
     }
     return;
   }
@@ -4695,7 +4884,7 @@ function updateInspectorDynamic(e){
   } else if (k==='control'){
     kv.innerHTML = `<dt>지금 든 것</dt><dd>${it(e.item)}</dd><dt>통과한 수</dt><dd>${e.passed}${t.carrier!=='fluid' && e.limit?` / ${e.limit}`:''}</dd>${t.carrier==='fluid'?`<dt>유량 제한</dt><dd>${e.rate ? '분당 '+e.rate : '없음'}</dd>`:''}`;
   } else if (k==='unloader'){
-    kv.innerHTML = `<dt>버스</dt><dd>${e.busOn?'연결됨':'연결 안 됨'}</dd><dt>보낸 수</dt><dd>${e.sent}</dd><dt>창고 재고</dt><dd>${e.item ? fmt(world.stock(e.item)) : '—'}</dd>`;
+    kv.innerHTML = `<dt>입출력 라인</dt><dd>${e.busOn?'연결됨':'연결 안 됨'}</dd><dt>보낸 수</dt><dd>${e.sent}</dd><dt>창고 재고</dt><dd>${e.item ? fmt(world.stock(e.item)) : '—'}</dd>`;
   } else if (k==='pac'){
     const r = world.rates(), tb = document.getElementById('iports');
     if (tb) tb.innerHTML = `<thead><tr><th>포트</th><th>분당</th><th>시간당</th><th>누적</th></tr></thead><tbody>${e.ports.map((it, i) => `<tr><td>${i<3?'왼쪽':'오른쪽'} ${i+1} ${it ? icS(it) + ' ' + esc(ITEMS[it].ko) : '<span class="dim">꺼짐</span>'}</td><td>${fmt(r.port[i]||0)}</td><td>${fmt((r.port[i]||0)*60)}</td><td>${fmt(r.total.port[i]||0)}</td></tr>`).join('')}</tbody>`;
@@ -4704,7 +4893,7 @@ function updateInspectorDynamic(e){
     e.slots.forEach((q, i) => { const c = document.getElementById('sc'+i); if (c) c.innerHTML = q.n ? `${icS(q.item)} ${q.n} / 50` : '<span class="dim">비어 있음</span>'; });
     kv.innerHTML = `<dt>받은 수</dt><dd>${e.got}</dd><dt>담긴 수</dt><dd>${e.slots.reduce((a, q) => a + q.n, 0)} / 300</dd>`;
   } else if (k==='loader'){
-    kv.innerHTML = `<dt>버스</dt><dd>${e.busOn?'연결됨':'연결 안 됨'}</dd><dt>창고로 보낸 수</dt><dd>${e.got}</dd>`;
+    kv.innerHTML = `<dt>입출력 라인</dt><dd>${e.busOn?'연결됨':'연결 안 됨'}</dd><dt>창고로 보낸 수</dt><dd>${e.got}</dd>`;
   } else if (k==='tank'){
     kv.innerHTML = `<dt>내용물</dt><dd>${it(e.fl)}</dd><dt>양</dt><dd>${e.amt} / 500</dd>`;
   } else if (k==='sink'){
@@ -4766,7 +4955,7 @@ function toolHelp(type){
 document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
   ui.tab = b.dataset.tab;
   document.querySelectorAll('.tabs button').forEach(x => x.setAttribute('aria-selected', x===b));
-  for (const p of ['stats','facs','depot','recipes','plan']) $('#pane-'+p).hidden = p !== ui.tab;
+  for (const p of ['stats','facs','depot','recipes']) $('#pane-'+p).hidden = p !== ui.tab;
   if (ui.tab==='stats') renderStats(); if (ui.tab==='facs') renderFacs(); if (ui.tab==='depot') renderDepot(true);
 });
 const CAT_ORDER = ['final','battery','comp','filled','bottle','part','powder','refined','fluid','gas','seed','plant','ore'];
@@ -4783,16 +4972,14 @@ function renderStats(){
   const el = $('#pane-stats');
   const open = [...el.querySelectorAll('details')].map(d => d.open);
   el.innerHTML = `
-    <div class="row" style="justify-content:space-between;align-items:flex-start">
-      <p class="note" style="margin:0;flex:1;min-width:180px">지금 보는 부지(${esc(space.regionOf(ui.site).ko)} ${esc(space.siteDef(ui.site).name)})의 숫자입니다. 무한으로 켠 품목은 PAC 출력 포트에서 얼마든지 꺼내 쓰고, 나머지는 지역 창고 재고에서 나갑니다. 지역 전체 합계·필요한 채굴기 수·무한 설정은 "창고" 탭에서 봅니다.</p>
+    <div class="row" style="justify-content:flex-end">
       <button class="btn sm" id="rst">통계 초기화</button>
     </div>
-    <h4>원자재 소비량 <small>PAC 출력 포트·창고 출력 포트·공급 설정한 암관 출구로 나간 양</small></h4>
-    ${rateTable(rawUse, 'PAC 출력 포트에 품목을 정하면 여기에 표시됩니다.')}
-    <h4>산출물 <small>PAC 입력 포트·저장함·창고 입력 포트로 들어온 양</small></h4>
-    ${rateTable(produced, '아직 창고로 들어온 생산품이 없습니다.')}
-    <details><summary>설비 생산량 (중간재 포함)</summary>${rateTable(made, '아직 생산 기록이 없습니다.')}</details>
-    <p class="note">분당 값은 최근 ${r.window}초 평균, 시간당 값은 분당 값 × 60입니다. 누적은 ${Math.floor(r.elapsed/60)}분 ${Math.floor(r.elapsed%60)}초 동안의 합계입니다.</p>`;
+    <h4>원자재 소비량</h4>
+    ${rateTable(rawUse, '없음')}
+    <h4>산출물</h4>
+    ${rateTable(produced, '없음')}
+    <details><summary>설비 생산량</summary>${rateTable(made, '없음')}</details>`;
   el.querySelectorAll('details').forEach((d,i) => { if (open[i]) d.open = true; });
   $('#rst').onclick = () => { world.resetStats(); renderStats(); };
 }
@@ -4838,9 +5025,8 @@ function renderDepot(force){
   const xferHTML = isDest ? `
     <div class="form"><select id="xItem" aria-label="무재고 전송할 품목" style="flex:1;min-width:140px"><option value="">— 보내지 않음 —</option>${xOpts}</select></div>
     ${xk ? `<div class="form" style="margin-top:6px"><span class="dim">시간당</span><input id="xAmt" class="num" type="number" min="1" max="${xmax}" step="1" value="${xn}" aria-label="시간당 전송량" style="width:76px"><span class="dim">/ 최대 ${xmax.toLocaleString('ko-KR')}개</span><button class="btn sm" id="xMax" ${xn >= xmax ? 'disabled' : ''}>최대</button></div>
-      <div class="xcap"><span>${ic(xk)} 분당 <b class="pos">${fmt(xn / 60)}</b> · 전송 가치 <b>${(xn * xv).toLocaleString('ko-KR')}</b> / ${X.cap.toLocaleString('ko-KR')}</span><span class="meter" style="flex:1;min-width:50px"><i style="width:${Math.min(100, xn * xv / X.cap * 100)}%"></i></span></div>${r.inf.has(xk) ? `<p class="note" style="color:var(--warn)">${esc(ITEMS[xk].ko)}${josa(ITEMS[xk].ko, '은', '는')} ${esc(r.ko)}에서 무한으로 켜져 있어 전송한 양이 재고에 쌓이지 않습니다. 전송으로 채우려면 아래 품목 목록에서 무한을 끄세요.</p>` : ''}` : ''}
-    <p class="note">한 번에 한 종류만 보냅니다. 시간당 개수 × 전송 가치가 ${X.cap.toLocaleString('ko-KR')}까지라서 가치가 높을수록 적게 보냅니다 (가치 50 → 시간당 30개). 정한 양이 1시간에 걸쳐 계속 들어오고(분당 = 시간당 ÷ 60), 보내는 ${esc(src.ko)} 창고는 줄지 않습니다. 협곡 IV 지역 개발 Lv.12에서 열립니다.</p>`
-    : `<p class="note">게임에서 무재고 전송은 ${esc(src.ko)} → ${esc(dst.ko)} 방향만 있습니다 (${esc(src.ko)} 지역 개발 Lv.12). ${esc(dst.ko)}에서 ${esc(src.ko)}로 보내는 기능은 아직 없습니다. ${esc(dst.ko)} 창고에서 받을 품목을 정하세요.</p>${dst ? `<button class="btn sm" data-rg="${dst.id}">${esc(dst.ko)} 창고 열기</button>` : ''}`;
+      <div class="xcap"><span>${ic(xk)} 분당 <b class="pos">${fmt(xn / 60)}</b> · 전송 가치 <b>${(xn * xv).toLocaleString('ko-KR')}</b> / ${X.cap.toLocaleString('ko-KR')}</span><span class="meter" style="flex:1;min-width:50px"><i style="width:${Math.min(100, xn * xv / X.cap * 100)}%"></i></span></div>${r.inf.has(xk) ? `<p class="note" style="color:var(--warn)">${esc(ITEMS[xk].ko)}${josa(ITEMS[xk].ko, '은', '는')} 무한이 켜져 있어 재고에 쌓이지 않습니다.</p>` : ''}` : ''}`
+    : '';
   // 3. every item with its endless switch
   const q = dep.q.trim().toLowerCase();
   let keys = Object.keys(ITEMS);
@@ -4857,7 +5043,7 @@ function renderDepot(force){
     : `<input type="checkbox" data-pick="${k}" ${dep.picked.has(k) ? 'checked' : ''} aria-label="${esc(ITEMS[k].ko)} 보충할 품목으로 고르기">`;
   const np = dep.picked.size;
   const refill = `<div class="refill">
-      <div class="rfhead"><b>${np ? `${np}개 품목 고름` : '창고에 보충하기'}</b>${np ? `<button class="linkish" id="rfClear">선택 해제</button>` : `<span class="dim">표 왼쪽 칸에서 품목을 고르세요</span>`}</div>
+      <div class="rfhead"><b>${np ? `${np}개 품목 고름` : '창고에 보충하기'}</b>${np ? `<button class="linkish" id="rfClear">선택 해제</button>` : ''}</div>
       <div class="form"><input id="rfN" class="num" type="number" min="1" max="1000000000" step="100" value="${dep.amt}" aria-label="보충할 개수" style="width:96px"><span class="dim">개</span>
         ${[100, 1000, 10000].map(n => `<button class="btn sm" data-rfq="${n}" aria-pressed="${dep.amt === n}">${n.toLocaleString('ko-KR')}</button>`).join('')}</div>
       <div class="form"><button class="btn sm primary" id="rfAdd" ${np ? '' : 'disabled'}>더하기 (+)</button><button class="btn sm" id="rfSet" ${np ? '' : 'disabled'} title="고른 품목의 재고를 이 개수로 맞춥니다">이 개수로 맞추기</button><button class="btn sm" id="rfEmpty" ${np ? '' : 'disabled'}>비우기</button></div>
@@ -4868,21 +5054,17 @@ function renderDepot(force){
   const regionSw = `<div class="seg" role="group" aria-label="지역">${space.regions.map(x => `<button data-rg="${x.id}" aria-pressed="${x === r}">${esc(x.ko)}</button>`).join('')}</div>`;
   const keepScroll = el.scrollTop;
   el.innerHTML = `
-    <div class="row" style="justify-content:space-between;align-items:center;gap:8px">${regionSw}<span class="note" style="margin:0">${esc(r.ko)} 부지 ${r.sites.length}곳이 함께 쓰는 창고</span></div>
+    <div class="row" style="justify-content:space-between;align-items:center;gap:8px">${regionSw}</div>
     <label class="switch" style="margin-top:10px;font-weight:600"><input type="checkbox" id="rawAll" ${AIC.RAW_DEFAULT.every(k => r.inf.has(k)) ? 'checked' : ''}><span style="white-space:nowrap">원자재 무한</span></label>
-    <p class="note" style="margin:4px 0 0">광석 4종 · 청정수 · 산성 침적물 · 비활성 기체 · 식양 기체를 한 번에 켜고 끕니다 (채굴기·양수기·기체 수집기로 얻는 것). 품목마다 따로 켜려면 아래 목록의 스위치를 씁니다.</p>
-    <h4>무한 원자재 사용량 <small>${esc(r.ko)} 전체 · 무한으로 켠 품목이 창고에서 나간 양</small></h4>
+    <h4>무한 원자재 사용량</h4>
     ${used.length ? `<div class="tscroll"><table class="dep"><thead><tr><th>품목</th><th>분당</th><th>시간당</th><th style="text-align:left">필요한 수집 장치</th></tr></thead><tbody>${useRows}</tbody></table></div>
-      <div class="tot" style="margin-top:6px"><div class="sub" style="margin-top:0">필요한 수집 장치 합계 (고순도·고농도 기준, 올림)</div>${totLine || '<span class="dim">수집 장치로 얻는 품목이 없습니다</span>'}</div>`
-      : '<p class="note">아직 무한 품목을 쓰는 곳이 없습니다. PAC 출력 포트에 품목을 정하면 여기에 표시됩니다.</p>'}
-    <p class="note">광물 채굴기 고순도 3초에 1개(분당 20)·저순도 6초에 1개(분당 10), 적동 광석은 1개마다 청정수 1. 양수기·내산성 양수기 1초에 1(분당 60). 기체 수집기 고농도 분당 20·저농도 분당 10. (나무위키 천연자원 문서 기준)</p>
-    <h4>무재고 전송 <small>${esc(src.ko)} → ${esc(dst.ko)} 창고</small></h4>
-    ${xferHTML}
-    <h4>품목 <small>보충 · 무한 스위치 · 재고 · 분당 증감 (${esc(r.ko)} 전체)</small></h4>
+      <div class="tot" style="margin-top:6px"><div class="sub" style="margin-top:0">필요한 수집 장치</div>${totLine || '<span class="dim">수집 장치로 얻는 품목이 없습니다</span>'}</div>`
+      : '<p class="note">무한 품목을 쓰는 곳이 없습니다.</p>'}
+    ${isDest ? `<h4>무재고 전송 <small>${esc(src.ko)} → ${esc(dst.ko)} 창고</small></h4>${xferHTML}` : ''}
+    <h4>품목</h4>
     <div class="form"><div class="seg" role="group" aria-label="보기">${[['main','주요'],['prod','생산품'],['all','전체']].map(([v,l]) => `<button data-df="${v}" aria-pressed="${!q && dep.filter === v}">${l}</button>`).join('')}</div><input id="depQ" type="search" placeholder="품목 찾기" aria-label="품목 찾기" value="${esc(dep.q)}" style="flex:1;min-width:90px"></div>
     ${refill}
-    <div class="tscroll"><table class="dep depl"><thead><tr><th class="pk"><input type="checkbox" id="pickAll" ${allPicked ? 'checked' : ''} ${pickable.length ? '' : 'disabled'} aria-label="보이는 품목 모두 고르기" title="보이는 품목 모두 고르기 (무한 제외)"></th><th>품목</th><th>재고</th><th>분당</th><th>무한</th></tr></thead><tbody>${list || '<tr class="empty"><td colspan="5">맞는 품목이 없습니다.</td></tr>'}</tbody></table></div>
-    <p class="note">"주요"는 원자재와 재고·드나듦·무한·전송이 있는 품목, "생산품"은 설비로 만드는 품목입니다. 무한을 끈 품목은 창고 재고만큼만 나갑니다. 왼쪽 칸에서 여러 품목을 골라 한꺼번에 보충하거나, 재고 숫자를 눌러 하나씩 정할 수 있습니다. 분당 증감 = 들어온 양 − 나간 양 + 무재고 전송 (최근 평균).</p>`;
+    <div class="tscroll"><table class="dep depl"><thead><tr><th class="pk"><input type="checkbox" id="pickAll" ${allPicked ? 'checked' : ''} ${pickable.length ? '' : 'disabled'} aria-label="보이는 품목 모두 고르기" title="보이는 품목 모두 고르기 (무한 제외)"></th><th>품목</th><th>재고</th><th>분당</th><th>무한</th></tr></thead><tbody>${list || '<tr class="empty"><td colspan="5">맞는 품목이 없습니다.</td></tr>'}</tbody></table></div>`;
   el.scrollTop = keepScroll;
   el.querySelectorAll('button[data-rg]').forEach(b => b.onclick = () => { dep.rg = b.dataset.rg; dep.edit = null; dep.picked.clear(); renderDepot(true); });
   el.querySelectorAll('button[data-df]').forEach(b => b.onclick = () => { dep.filter = b.dataset.df; dep.q = ''; renderDepot(true); });
@@ -4963,44 +5145,224 @@ function renderFacs(){
 const MNAME = m => TYPES[m].ko;
 function renderRecipes(){
   const machines = Object.keys(RECIPES_BY_M);
-  $('#pane-recipes').innerHTML = `<div class="form"><label for="rf">설비</label><select id="rf"><option value="">전체</option>${machines.map(m => `<option value="${m}"${m==='refine'?' selected':''}>${esc(MNAME(m))}</option>`).join('')}</select><input id="rq" type="search" placeholder="재료 이름" aria-label="재료 이름으로 찾기" style="flex:1;min-width:100px"></div>
-    <p class="note">분당 수치는 설비 1대가 쉬지 않고 돌 때 기준입니다. 벨트 1줄은 분당 30개, 파이프 1줄은 분당 120을 나릅니다.</p><div class="rlist" id="rl" style="margin-top:8px"></div>`;
+  $('#pane-recipes').innerHTML = `<div class="form"><label for="rf">설비</label><select id="rf"><option value="">전체</option>${machines.map(m => `<option value="${m}"${m==='refine'?' selected':''}>${esc(MNAME(m))}</option>`).join('')}</select><input id="rq" type="search" placeholder="재료 이름" aria-label="재료 이름으로 찾기" style="flex:1;min-width:100px"></div><div class="rlist" id="rl" style="margin-top:8px"></div>`;
   const draw = () => {
     const f = $('#rf').value, q = $('#rq').value.trim().toLowerCase();
     const list = RECIPES.filter(r => (!f || r.m===f) && (!q || [...Object.keys(r.in), ...Object.keys(r.out)].some(k => ITEMS[k].ko.toLowerCase().includes(q) || ITEMS[k].en.toLowerCase().includes(q))));
     $('#rl').innerHTML = list.slice(0, 120).map(r => {
-      const per = 60 / r.t;
-      const line = k => ITEMS[k].fluid ? 120 : 30;
-      const ins = Object.entries(r.in).map(([k,n]) => `${ic(k,n)} <span class="dim">${fmt(n*per)}/분${n*per>line(k)?` · ${fmt(n*per/line(k))}줄`:''}</span>`).join('<br>');
-      const outs = Object.entries(r.out).map(([k,n]) => `${ic(k,n)} <span class="dim">${fmt(n*per)}/분</span>`).join('<br>');
+      const ins = Object.entries(r.in).map(([k,n]) => ic(k,n)).join('<br>');
+      const outs = Object.entries(r.out).map(([k,n]) => ic(k,n)).join('<br>');
       return `<div class="rec" style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center"><div>${ins}</div><span class="ar">→</span><div>${outs}</div><div class="t" style="grid-column:1/-1;margin:2px 0 0">${esc(MNAME(r.m))} · ${r.t}초</div></div>`;
-    }).join('') + (list.length > 120 ? `<p class="note">${list.length}개 중 120개만 표시합니다. 재료 이름으로 좁혀 보세요.</p>` : '') + (!list.length ? '<p class="note">맞는 레시피가 없습니다.</p>' : '');
+    }).join('') + (list.length > 120 ? `<p class="note">120개만 표시</p>` : '') + (!list.length ? '<p class="note">맞는 레시피가 없습니다.</p>' : '');
   };
   $('#rf').onchange = draw; $('#rq').oninput = draw; draw();
 }
-function renderPlan(){
-  const targets = Object.keys(ITEMS).filter(k => !AIC.RAW.has(k) && ITEMS[k].cat!=='seed' && ITEMS[k].cat!=='filled' && AIC.producerOf(k)).sort(byCat);
-  const pt = $('#pt'), prr = $('#pr');
-  const cur = pt ? pt.value : 'buck_capsule_c', rate = prr ? prr.value : '6';
-  $('#pane-plan').innerHTML = `<div class="form"><label for="pt">목표</label><select id="pt">${targets.map(k => `<option value="${k}"${k===cur?' selected':''}>${esc(ITEMS[k].ko)}</option>`).join('')}</select>
-    <input id="pr" type="number" min="0.1" step="0.5" value="${esc(rate)}" aria-label="분당 생산량"><span class="dim">개/분</span></div><div id="pout"></div>`;
-  const draw = () => {
-    const item = $('#pt').value, r = Math.max(0, parseFloat($('#pr').value) || 0);
-    const root = AIC.plan(item, r), raw = {}, mach = {};
-    const node = n => {
-      if (n.raw){ raw[n.item] = (raw[n.item]||0) + n.rate; return `<li><div class="n">${icS(n.item)} ${esc(ITEMS[n.item].ko)} <span class="r">${fmt(n.rate)}/분 · 원자재</span></div></li>`; }
-      mach[n.recipe.m] = (mach[n.recipe.m]||0) + n.machines;
-      const belts = n.rate/(ITEMS[n.item].fluid ? 120 : 30);
-      return `<li><div class="n">${icS(n.item)} ${esc(ITEMS[n.item].ko)} <span class="r">${fmt(n.rate)}/분${belts>1?` · ${fmt(belts)}줄`:''}</span> <span class="m">${esc(MNAME(n.recipe.m))} ×${fmt(n.machines)}</span></div>${n.children.length?`<ul>${n.children.map(node).join('')}</ul>`:''}</li>`;
-    };
-    const tree = `<ul class="tree">${node(root)}</ul>`;
-    let power = 0; for (const m in mach) power += Math.ceil(mach[m]-1e-9) * TYPES[m].power;
-    $('#pout').innerHTML = tree + `<div class="tot"><div class="sub" style="margin-top:0">필요 설비 (올림)</div>${Object.entries(mach).map(([m,n]) => `<span class="mchip">${esc(MNAME(m))} ${Math.ceil(n-1e-9)}대</span>`).join('')}
-      <div class="sub">원자재</div>${Object.entries(raw).map(([k,v]) => `<div>${ic(k)} <span class="dim">분당 ${fmt(v)} · 시간당 ${fmt(v*60)}</span></div>`).join('')}
-      <p class="note">예상 전력 ${power} (PAC 기본 200). 한 품목을 만드는 레시피가 여럿이면 가장 기본적인 것으로 계산합니다.</p></div>`;
-  };
-  $('#pt').onchange = draw; $('#pr').oninput = draw; draw();
+
+// ---------- item card: click any item name or icon to see how it is made and where it is used ----------
+const facIconCache = new Map();
+function facIconURL(type){
+  if (facIconCache.has(type)) return facIconCache.get(type);
+  const p = PICS.facs.get(type); if (!p) return '';
+  const c = document.createElement('canvas'); c.width = c.height = 48; drawPic(c.getContext('2d'), p, 24, 24, 46, 46);
+  const u = c.toDataURL(); facIconCache.set(type, u); return u;
 }
+const itemNav = [];
+function openItem(id, push){
+  const it = ITEMS[id]; if (!it) return;
+  const dlg = $('#itemDlg');
+  if (push && dlg.open && dlg.dataset.item && dlg.dataset.item !== id) itemNav.push(dlg.dataset.item);
+  if (!push) itemNav.length = 0;
+  dlg.dataset.item = id;
+  $('#itImg').src = iconURL(id); $('#itTitle').textContent = it.ko; $('#itEn').textContent = it.en;
+  $('#itBack').hidden = !itemNav.length;
+  const mach = m => `<button class="itmach" type="button" data-build="${m}" title="이 설비 고르기">${facIconURL(m) ? `<img alt="" src="${facIconURL(m)}">` : ''}<b>${esc(MNAME(m))}</b></button>`;
+  const row = r => `<div class="rec itrec"><div class="itio">${Object.entries(r.in).map(([k,n]) => ic(k,n)).join('<br>')}</div><span class="ar">→</span><div class="itio">${Object.entries(r.out).map(([k,n]) => ic(k,n)).join('<br>') || '<span class="dim">폐기</span>'}</div>
+    <div class="itm">${mach(r.m)}<span class="t">${r.t}초${r.gas ? ' · ' + esc(ITEMS[r.gas].ko) + ' 환경' : ''}</span></div></div>`;
+  const makes = RECIPES.filter(r => r.out[id]), uses = RECIPES.filter(r => r.in[id] && !r.out[id]);
+  const ex = AIC.EXTRACT[id], fuel = FUEL[id], xv = AIC.XFER.items[id];
+  let h = '';
+  if (ex) h += `<h4>얻는 법</h4><p>${esc(ex.by)} · 분당 ${ex.hi}${ex.lo ? ` (저순도 ${ex.lo})` : ''}${ex.water ? ` · 광석 1개에 ${esc(ITEMS.clean_water.ko)} ${ex.water}` : ''}</p>`;
+  if (makes.length || !ex) h += `<h4>만드는 법 <small>${makes.length}</small></h4>` + (makes.length ? makes.map(row).join('') : '<p class="dim">만드는 레시피가 없습니다</p>');
+  if (uses.length) h += `<h4>쓰이는 곳 <small>${uses.length}</small></h4>` + uses.slice(0, 60).map(row).join('') + (uses.length > 60 ? `<p class="dim">60개만 표시</p>` : '');
+  const extra = [fuel ? `열에너지 뱅크 연료 (+${fuel.p} · ${fuel.t}초)` : '', xv ? `무재고 전송 가치 ${xv.v}` : ''].filter(Boolean);
+  if (extra.length) h += `<p class="dim itx">${extra.join(' · ')}</p>`;
+  h += `<p class="itx"><a class="btn sm" href="#craft/${id}" id="itCraft">조합식 보기</a></p>`;
+  $('#itBody').innerHTML = h; $('#itBody').scrollTop = 0;
+  if (!dlg.open) dlg.showModal();
+}
+// capture phase: an item name inside a row or label opens the card instead of toggling the row
+document.addEventListener('click', ev => {
+  const el = ev.target.closest && ev.target.closest('.ic[data-item]'); if (!el) return;
+  if (el.closest('select, option, button:not(.itmach)')) return;
+  ev.preventDefault(); ev.stopPropagation();
+  openItem(el.dataset.item, !!el.closest('#itemDlg'));
+}, true);
+$('#itClose').onclick = () => $('#itemDlg').close();
+$('#itBack').onclick = () => { const prev = itemNav.pop(); if (prev){ $('#itemDlg').dataset.item = ''; openItem(prev, true); } };
+$('#itemDlg').addEventListener('click', ev => {
+  if (ev.target === ev.currentTarget){ ev.currentTarget.close(); return; }   // click on the backdrop
+  if (ev.target.closest('#itCraft')){ ev.currentTarget.close(); return; }
+  const b = ev.target.closest('[data-build]'); if (!b) return;
+  $('#itemDlg').close(); if (ui.view !== 'sim') location.hash = ''; setTool('build:' + b.dataset.build);
+});
+
+// ---------- crafting chains (조합식): search an item, see the whole chain from raw materials (left) to it (right) ----------
+const CAT_KO = { ore:'광석', plant:'식물', seed:'씨앗', fluid:'액체', gas:'기체', refined:'정제 소재', powder:'가루', part:'부품', comp:'장비 부품', bottle:'병·캔', final:'완제품', battery:'배터리', filled:'채운 병·캔' };
+const craft = {
+  target: '', hist: [], z: 1, px: 0, py: 0,
+  el(){ return $('#craft'); },
+  // the ways to get an item: gathering (extractors) first, then every recipe that makes it
+  ways(id){
+    const w = [], ex = AIC.EXTRACT[id];
+    if (ex) w.push({ src: true, by: ex.by, t: Math.round(60 / ex.hi * 10) / 10, in: {}, out: { [id]: 1 } });
+    for (const r of RECIPES) if (r.out[id]) w.push(r);
+    return w;
+  },
+  pick(id, path){
+    const w = this.ways(id); if (!w.length) return { w, i: -1 };
+    // default: the way with the smallest whole chain that does not loop back (gathering counts as 1 step)
+    let i = 0, best = Infinity;
+    w.forEach((r, j) => { const v = this.wayCost(r, id, path); if (v < best){ best = v; i = j; } });
+    return { w, i };
+  },
+  wayCost(r, id, path){
+    if (r.src) return 1;
+    let v = 1 + (r.gas ? 1 : 0);
+    const p2 = new Set(path); p2.add(id);
+    for (const k of Object.keys(r.in)) v += k === id || p2.has(k) ? 60 : this.cost(k, p2);
+    return v;
+  },
+  cost(id, path){
+    this.memo = this.memo || new Map(); if (this.memo.has(id)) return this.memo.get(id);
+    if (path.size > 12) return 30;
+    const w = this.ways(id); if (!w.length) return 2;
+    let best = Infinity; for (const r of w) best = Math.min(best, this.wayCost(r, id, path));
+    if (best < 60) this.memo.set(id, best);   // results that hit a loop depend on the path: not cached
+    return best;
+  },
+  // every way of making an item is shown: the main one (smallest loop-free chain) first and fully expanded,
+  // the other ways below it with their direct inputs only (click one to follow its own chain)
+  build(id, path, seen){
+    const n = { id, groups: [] };
+    if (path.has(id)){ n.loop = true; return n; }
+    if (seen.has(id)){ n.dup = true; return n; }
+    seen.add(id);
+    const { w, i } = this.pick(id, path);
+    if (i < 0) return n;
+    const p2 = new Set(path); p2.add(id);
+    const order = [i, ...w.map((_, j) => j).filter(j => j !== i)];
+    for (const j of order){
+      const way = w[j], alt = j !== i, g = { way, alt, kids: [] };
+      if (way.src) g.kids.push({ id, deposit: true, groups: [], alt });
+      else for (const [k, q] of Object.entries(way.in)) g.kids.push(alt ? { id: k, groups: [], qty: q, alt: true } : Object.assign(this.build(k, p2, seen), { qty: q }));
+      n.groups.push(g);
+    }
+    return n;
+  },
+  show(id){
+    const el = this.el();
+    if (!el.firstChild) this.shell();
+    if (id && !ITEMS[id]) id = '';
+    if (id !== this.target && this.target && id) this.hist.push(this.target);
+    this.target = id;
+    $('#cCrumb').innerHTML = `<a href="#craft">조합식</a>${id ? ` <span>›</span> <b>${esc(ITEMS[id].ko)}</b>` : ''}`;
+    $('#cPick').hidden = !!id; $('#cStage').hidden = !id;
+    if (!id){ this.picker(); return; }
+    this.draw(true);
+  },
+  shell(){
+    this.el().innerHTML = `<div class="cbar"><nav class="ccrumb" id="cCrumb"></nav>
+      <div class="csearch"><input id="cq" type="search" placeholder="생산품·원재료 찾기" autocomplete="off" aria-label="아이템 찾기"><div class="cres" id="cRes" hidden></div></div></div>
+      <div class="cpick" id="cPick"></div>
+      <div class="cstage" id="cStage" hidden><div class="cplane" id="cPlane"></div>
+        <div class="czoom"><button class="btn sm" data-z="in" aria-label="확대">+</button><button class="btn sm" data-z="out" aria-label="축소">−</button><button class="btn sm" data-z="fit">맞추기</button></div></div>
+`;
+    const q = $('#cq'), res = $('#cRes');
+    const find = () => { const v = q.value.trim().toLowerCase(); if (!v){ res.hidden = true; return []; }
+      const hits = Object.keys(ITEMS).filter(k => ITEMS[k].ko.toLowerCase().includes(v) || ITEMS[k].en.toLowerCase().includes(v))
+        .sort((a, b) => (ITEMS[a].ko.startsWith(v) ? 0 : 1) - (ITEMS[b].ko.startsWith(v) ? 0 : 1) || ITEMS[a].ko.length - ITEMS[b].ko.length).slice(0, 14);
+      res.innerHTML = hits.length ? hits.map(k => `<a href="#craft/${k}"><img alt="" src="${iconURL(k)}">${esc(ITEMS[k].ko)}</a>`).join('') : '<span class="dim">없음</span>';
+      res.hidden = false; return hits; };
+    q.oninput = find;
+    q.onkeydown = ev => { if (ev.key === 'Enter'){ const h = find(); if (h.length){ location.hash = 'craft/' + h[0]; q.value = ''; res.hidden = true; q.blur(); } } else if (ev.key === 'Escape'){ q.value = ''; res.hidden = true; } };
+    res.onclick = () => { q.value = ''; res.hidden = true; };
+    document.addEventListener('click', ev => { if (!ev.target.closest('.csearch')) res.hidden = true; });
+    // pan by dragging the background, zoom with the wheel or the buttons
+    const st = $('#cStage');
+    st.addEventListener('pointerdown', ev => {
+      if (ev.button !== 0 || ev.target.closest('.cnode, .cpill, .czoom, .ceye')) return;
+      const x0 = ev.clientX, y0 = ev.clientY, px = this.px, py = this.py; st.setPointerCapture(ev.pointerId); st.classList.add('drag');
+      const mv = e => { this.px = px + e.clientX - x0; this.py = py + e.clientY - y0; this.apply(); };
+      const up = () => { st.removeEventListener('pointermove', mv); st.removeEventListener('pointerup', up); st.classList.remove('drag'); };
+      st.addEventListener('pointermove', mv); st.addEventListener('pointerup', up);
+    });
+    st.addEventListener('wheel', ev => { ev.preventDefault(); const r = st.getBoundingClientRect(); this.zoomAt(ev.deltaY < 0 ? 1.15 : 1/1.15, ev.clientX - r.left, ev.clientY - r.top); }, { passive: false });
+    st.querySelector('.czoom').onclick = ev => { const b = ev.target.closest('[data-z]'); if (!b) return; const r = st.getBoundingClientRect();
+      if (b.dataset.z === 'fit') this.fit(); else this.zoomAt(b.dataset.z === 'in' ? 1.25 : 1/1.25, r.width / 2, r.height / 2); };
+    $('#cPlane').addEventListener('click', ev => {
+      const eye = ev.target.closest('.ceye'); if (eye){ const o = $('#cPlane').querySelector(`.cnode[data-main="${eye.dataset.item}"]`); if (o){ o.classList.remove('flash'); void o.offsetWidth; o.classList.add('flash'); } return; }
+      const nd = ev.target.closest('.cnode'); if (nd && nd.dataset.item && nd.dataset.item !== this.target) location.hash = 'craft/' + nd.dataset.item;
+      else if (nd && nd.dataset.item) openItem(nd.dataset.item);
+    });
+  },
+  picker(){
+    const groups = {}; for (const [k, it] of Object.entries(ITEMS)) (groups[it.cat] = groups[it.cat] || []).push(k);
+    const order = ['final', 'battery', 'comp', 'part', 'bottle', 'refined', 'powder', 'plant', 'seed', 'ore', 'fluid', 'gas', 'filled'];
+    const card = k => `<a class="cpi" href="#craft/${k}" title="${esc(ITEMS[k].en)}"><img alt="" src="${iconURL(k)}"><span>${esc(ITEMS[k].ko)}</span></a>`;
+    $('#cPick').innerHTML = order.filter(c => groups[c]).map(c => c === 'filled'
+      ? `<details class="cgrp"><summary>${CAT_KO[c] || c} <small>${groups[c].length}</small></summary><div class="cgrid">${groups[c].map(card).join('')}</div></details>`
+      : `<section class="cgrp"><h4>${CAT_KO[c] || c} <small>${groups[c].length}</small></h4><div class="cgrid">${groups[c].map(card).join('')}</div></section>`).join('');
+  },
+  draw(refit){
+    const root = this.build(this.target, new Set(), new Set());
+    // layout: depth → column (target on the right), leaves take rows top to bottom, a parent sits on its first input's row
+    const CW = 64, PW = 132, G = 30, PITCH = CW + PW + 2 * G, RH = 104, M = 40;
+    let row = 0, maxD = 0;
+    const place = (n, d) => { n.d = d; maxD = Math.max(maxD, d);
+      if (!n.groups.length){ n.row = row++; return; }
+      for (const g of n.groups){ g.kids.forEach(c => place(c, d + 1)); g.row = g.kids.length ? g.kids[0].row : row++; }
+      n.row = n.groups[0].row; };
+    place(root, 0);
+    const W = (maxD + 1) * PITCH - PW - 2 * G + 2 * M, H = row * RH + 2 * M - 20;
+    const cx = n => M + (maxD - n.d) * PITCH, cy = n => M + n.row * RH;
+    let html = '', lines = '', alines = '';
+    const all = []; const walk = n => { all.push(n); n.groups.forEach(g => g.kids.forEach(walk)); }; walk(root);
+    for (const n of all){
+      const x = cx(n), y = cy(n), it = ITEMS[n.id];
+      html += `<div class="cnode${n.deposit ? ' dep' : ''}${n.alt ? ' alt' : ''}${n === root ? ' root' : ''}" data-item="${n.id}"${!n.deposit && !n.dup && !n.loop && !n.alt ? ` data-main="${n.id}"` : ''} style="left:${x}px;top:${y}px" title="${esc(it.ko)}${n.deposit ? ' (매장지)' : ''}">
+        <div class="cimg" style="--mc:${MAT[it.mat] || '#888'}"><img alt="" src="${iconURL(n.id)}"></div>${n.qty > 1 ? `<span class="cq">×${n.qty}</span>` : ''}
+        ${n.dup ? `<button class="ceye" type="button" data-item="${n.id}" title="위에서 이미 펼친 재료 (눌러서 찾기)">◉</button>` : ''}${n.loop ? '<span class="cloop" title="이 재료는 위 단계에서 다시 만들어짐">↻</span>' : ''}
+        <div class="cname">${esc(it.ko)}</div></div>`;
+      const my = y + CW / 2, pr = x - G, pl = pr - PW, jx = pl - G / 2, jo = x - G / 2;
+      n.groups.forEach((g, gi) => {
+        // the machine (or extractor) pill for this way, wires from its inputs to it and from it to the item
+        const gy = M + g.row * RH + CW / 2, wy = g.way;
+        const name = wy.src ? wy.by : MNAME(wy.m), icon = wy.src ? '' : facIconURL(wy.m);
+        html += `<div class="cpill${g.alt ? ' alt' : ''}" style="left:${pl}px;top:${gy - 19}px;width:${PW}px">${wy.gas ? `<span class="cgas" style="--gc:${MAT[ITEMS[wy.gas].mat]}">${esc(ITEMS[wy.gas].ko)} 환경</span>` : ''}${g.alt ? `<span class="caltag">기타 ${gi}</span>` : ''}
+          <b>${icon ? `<img alt="" src="${icon}">` : ''}${esc(name)}</b><span>${wy.t}초</span></div>`;
+        const tgt = g.alt ? 'alines' : 'lines';
+        const seg = gy === my ? `<path d="M${pr} ${gy}H${x}"/>` : `<path d="M${pr} ${gy}H${jo}V${my}H${x}"/>`;
+        if (g.alt) alines += seg; else lines += seg;
+        for (const c of g.kids){ const ky = cy(c) + CW / 2, p = `<path d="M${cx(c) + CW} ${ky}H${jx}V${gy}H${pl}"/>`; if (g.alt) alines += p; else lines += p; }
+      });
+    }
+    lines = `<g>${lines}</g><g class="calt">${alines}</g>`;
+    const pl = $('#cPlane'); pl.style.width = W + 'px'; pl.style.height = H + 'px';
+    pl.innerHTML = `<svg class="clines" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" aria-hidden="true">${lines}</svg>` + html;
+    this.W = W; this.H = H;
+    if (refit) this.fit(); else this.apply();
+  },
+  apply(){ $('#cPlane').style.transform = `translate(${this.px}px, ${this.py}px) scale(${this.z})`; },
+  fit(){
+    const r = $('#cStage').getBoundingClientRect(); if (!r.width) return;
+    this.z = Math.max(.7, Math.min(1, (r.width - 20) / this.W, (r.height - 20) / this.H));
+    const w = this.W * this.z, h = this.H * this.z;
+    this.px = w <= r.width ? (r.width - w) / 2 : r.width - w - 10;   // too wide: keep the target (right end) in view
+    this.py = h <= r.height ? (r.height - h) / 2 : 10;
+    this.apply();
+  },
+  zoomAt(k, sx, sy){ const z = Math.max(.25, Math.min(2.5, this.z * k)); k = z / this.z; this.px = sx - (sx - this.px) * k; this.py = sy - (sy - this.py) * k; this.z = z; this.apply(); },
+};
 
 // ---------- loop ----------
 let last = performance.now(), uiT = 0, statT = 0, saveT = 0;
@@ -5011,7 +5373,7 @@ function frame(now){
     let n = 0; while (ui.acc >= 0.05 && n < 400){ space.step(0.05); ui.acc -= 0.05; n++; }
     if (n >= 400) ui.acc = 0;
   }
-  if (ui.view !== 'board') render();
+  if (ui.view === 'sim') render();
   if (now - uiT > 250){
     uiT = now;
     const p = world.power, over = p.demand > p.supply;
@@ -5039,10 +5401,42 @@ function frame(now){
 }
 
 const mq = matchMedia('(prefers-color-scheme: dark)');
-const retheme = () => { readColors(); renderTools(); renderPalette(); renderInspector(true); renderStats(); renderRecipes(); renderPlan(); board.redraw(); };
+const retheme = () => { readColors(); renderTools(); renderPalette(); renderInspector(true); renderStats(); renderRecipes(); board.redraw(); };
 if (mq.addEventListener) mq.addEventListener('change', retheme);
 new MutationObserver(retheme).observe(document.documentElement, { attributes:true, attributeFilter:['data-theme'] });
 window.addEventListener('resize', () => { resize(); board.redraw(); syncSitesH(); });
+// ---------- resizable panels: drag the edge of the side panel, the facility strip or the inspector ----------
+const layout = (() => { try { const v = JSON.parse(localStorage.getItem('aic-layout')); return v && typeof v === 'object' ? v : {}; } catch(e){ return {}; } })();
+function applyLayout(){
+  const app = $('#app'), strip = $('#plist'), insp = $('#insp');
+  if (layout.side) app.style.setProperty('--side-w', layout.side + 'px'); else app.style.removeProperty('--side-w');
+  strip.style.height = layout.strip ? layout.strip + 'px' : '';
+  $('.build').classList.toggle('wrap', (layout.strip || 0) > 170);
+  insp.style.height = layout.insp ? layout.insp + 'px' : ''; insp.style.maxHeight = layout.insp ? 'none' : '';
+  $('#rzInspRow').hidden = insp.hidden;
+}
+const zoomOf = el => parseFloat(getComputedStyle(el).zoom) || 1;
+function saveLayout(){ try { localStorage.setItem('aic-layout', JSON.stringify(layout)); } catch(e){} }
+function dragEdge(handle, key, cls, start, move){
+  handle.addEventListener('pointerdown', ev => {
+    if (ev.button !== 0) return; ev.preventDefault(); handle.setPointerCapture(ev.pointerId);
+    const s0 = start(ev); handle.classList.add('on'); document.body.classList.add('resizing', cls);
+    const mv = e => { layout[key] = Math.round(move(e, s0)); applyLayout(); };
+    const up = () => { handle.removeEventListener('pointermove', mv); handle.removeEventListener('pointerup', up); handle.removeEventListener('pointercancel', up);
+      handle.classList.remove('on'); document.body.classList.remove('resizing', cls); saveLayout(); };
+    handle.addEventListener('pointermove', mv); handle.addEventListener('pointerup', up); handle.addEventListener('pointercancel', up);
+  });
+  handle.addEventListener('dblclick', () => { delete layout[key]; applyLayout(); saveLayout(); });
+}
+const clampN = (v, a, b) => Math.max(a, Math.min(b, v));
+dragEdge($('#rzSide'), 'side', 'rcol', () => null, e => clampN(innerWidth - e.clientX, 260, Math.max(260, Math.min(820, innerWidth - 420))));
+dragEdge($('#rzBuild'), 'strip', 'rrow', ev => ({ y: ev.clientY, h: $('#plist').getBoundingClientRect().height, z: zoomOf($('.build')) }),
+  (e, s) => clampN((s.h + (s.y - e.clientY)) / s.z, 90, innerHeight * .6 / s.z));
+dragEdge($('#rzInsp'), 'insp', 'rrow', ev => ({ top: $('#insp').getBoundingClientRect().top, z: zoomOf($('aside.side')) }),
+  (e, s) => clampN((e.clientY - s.top) / s.z, 60, innerHeight * .85 / s.z));
+applyLayout();
+// the canvas follows whatever size the stage ends up
+if (window.ResizeObserver) new ResizeObserver(() => { resize(); render(); }).observe($('#stage'));
 // save right away when the tab is closed, reloaded or hidden (the periodic save runs every 6 s)
 const saveNow = () => { if (ui.touched) store.saveLayout(); };
 window.addEventListener('pagehide', saveNow);
@@ -5052,12 +5446,13 @@ readColors();
 boot();
 renderTools(); renderPalette();
 syncSite(); renderSites(); fitView();
-renderInspector(true); renderStats(); renderRecipes(); renderPlan();
+renderInspector(true); renderStats(); renderRecipes();
 store.init();
 acct.init();
+loadPics();
 route();
 if (document.fonts) document.fonts.ready.then(() => render());
-if (ui.oldSave) setTimeout(() => flash('PAC 포트 배치가 바뀌어 이전 공장 대신 예시 공장을 열었습니다. 청사진은 그대로 있습니다.'), 600);
+if (ui.oldSave) setTimeout(() => flash('PAC 포트 배치가 바뀌어 이전 공장을 열지 못했습니다. 청사진은 그대로 있습니다.'), 600);
 if (ui.migrated) setTimeout(() => flash('이전 주소에서 ' + [ui.migrated.nb ? `청사진 ${ui.migrated.nb}개` : '', ui.migrated.nl ? '작업 중이던 공장' : ''].filter(Boolean).join('와 ') + (ui.migrated.nl ? '을' : '를') + ' 옮겨 왔습니다'), 700);
 requestAnimationFrame(frame);
 })();
