@@ -1026,8 +1026,8 @@ const TYPES = {
   loader:    { ko: '창고 입력 포트', en: 'Depot Loader', short: '입력 포트', w: 3, h: 1, sizeLabel: '1×3', power: 0, kind: 'loader', group: 'depot', local: { in: [[1, 0, 0]], out: [] } },
   unloader:  { ko: '창고 출력 포트', en: 'Depot Unloader', short: '출력 포트', w: 3, h: 1, sizeLabel: '1×3', power: 0, kind: 'unloader', group: 'depot', local: { out: [[1, 0, 2]], in: [] } },
   tank:      { ko: '액체 저장 탱크', en: 'Fluid Tank', short: '저장 탱크', w: 3, h: 3, power: 0, kind: 'tank', holds: 'fluid', group: 'depot' },
-  bussection:{ ko: '창고 입출력 라인 기초 장치', en: 'Depot Bus Section', short: '버스', w: 4, h: 8, power: 0, kind: 'bus', group: 'depot', ports: { in: null, out: null } },
-  busport:   { ko: '창고 입출력 라인 핵심 장치', en: 'Depot Bus Port', short: '버스 핵심', w: 4, h: 4, power: 0, kind: 'busport', group: 'depot', ports: { in: null, out: null } },
+  bussection:{ ko: '창고 입출력 라인 기초 장치', en: 'Depot Bus Section', short: '기초 장치', w: 4, h: 8, power: 0, kind: 'bus', group: 'depot', ports: { in: null, out: null } },
+  busport:   { ko: '창고 입출력 라인 핵심 장치', en: 'Depot Bus Port', short: '핵심 장치', w: 4, h: 4, power: 0, kind: 'busport', group: 'depot', ports: { in: null, out: null } },
   cinlet:    { ko: '암관 입구', en: 'Conduit Inlet', short: '암관 입구', w: 3, h: 3, power: 0, kind: 'conduit', dirn: 'in', group: 'depot', gas: true, local: { in: [[1, 0, 2]], out: [] } },
   coutlet:   { ko: '암관 출구', en: 'Conduit Outlet', short: '암관 출구', w: 3, h: 3, power: 0, kind: 'conduit', dirn: 'out', group: 'depot', gas: true, local: { out: [[1, 2, 2]], in: [] } },
   cminlet:   { ko: '다중 암관 입구', en: 'Conduit Inlet Manifold', short: '다중 암관 입구', w: 5, h: 3, sizeLabel: '3×5', power: 0, kind: 'conduit', dirn: 'in', multi: true, group: 'depot', gas: true, local: { in: [[1, 0, 2], [3, 0, 2]], out: [] } },
@@ -3894,9 +3894,10 @@ function drawOuterBus(){
   }
   const [cx, cy] = outerBusCore();
   ctx.fillStyle = C['cv-mach']; ctx.strokeStyle = C['cv-mach-ink']; ctx.lineWidth = 1.4/z; ctx.fillRect(cx*S+2, cy*S+2, B*S-4, B*S-4); ctx.strokeRect(cx*S+2, cy*S+2, B*S-4, B*S-4);
+  fitLabel('창고 입출력 라인 (고정)', cx*S+6, cy*S+6, B*S-12, 8.5, 700, C['cv-mach-ink']);
   corners(cx*S+2, cy*S+2, B*S-4, B*S-4, BUS_GREEN);
-  if (!facPic('busport', (cx+B/2)*S, (cy+B/2)*S + 5, B*S*.62, 1)){ ctx.fillStyle = BUS_GREEN; ctx.fillRect((cx+B/2)*S-7, (cy+B/2)*S-7, 14, 14); }
-  label('창고 입출력 라인 (고정)', cx*S+5, cy*S+5, 8.5, 700, C['cv-mach-ink']);
+  const ct = fitBottom + 4, cb = (cy+B)*S - 8;
+  if (!facPic('busport', (cx+B/2)*S, (ct+cb)/2, Math.min(B*S-16, cb-ct), 1)){ ctx.fillStyle = BUS_GREEN; ctx.fillRect((cx+B/2)*S-7, (cy+B/2)*S-7, 14, 14); }
 }
 function drawTiles(x0,y0,x1,y1){
   for (let y=y0; y<=y1; y++) for (let x=x0; x<=x1; x++){
@@ -4003,8 +4004,9 @@ function portSummary(e){
 }
 const STCOL = () => ({ working:C.ok, slow:C.warn, idle:C.muted, blocked:C.warn, nopower:C.bad, off:C.muted, nogas:C.bad, nocat:C.bad });
 // label that always stays inside maxW: shrink the font, then wrap onto two lines at a space, then cut with …
+let fitBottom = 0; // bottom edge of the last fitLabel text, so pictures can start below it
 function fitLabel(txt, x, y, maxW, size, weight, color, align, minSize){
-  minSize = minSize || 7; weight = weight || 600;
+  minSize = minSize || 7; weight = weight || 600; fitBottom = y + size;
   const font = sz => `${weight} ${sz}px ${C.fBody}`, width = (t, sz) => { ctx.font = font(sz); return ctx.measureText(t).width; };
   for (let sz = size; sz >= minSize; sz -= .5) if (width(txt, sz) <= maxW){ label(txt, x, y, sz, weight, color, align); return sz; }
   const words = txt.split(' ');
@@ -4012,7 +4014,7 @@ function fitLabel(txt, x, y, maxW, size, weight, color, align, minSize){
     let best = null;
     for (let i = 1; i < words.length; i++){ const a = words.slice(0, i).join(' '), b = words.slice(i).join(' '); const m = Math.max(width(a, 10), width(b, 10)); if (!best || m < best.m) best = { a, b, m }; }
     for (let sz = Math.min(size, 9); sz >= minSize; sz -= .5) if (Math.max(width(best.a, sz), width(best.b, sz)) <= maxW){
-      label(best.a, x, y, sz, weight, color, align); label(best.b, x, y + sz + 1.5, sz, weight, color, align); return sz;
+      label(best.a, x, y, sz, weight, color, align); label(best.b, x, y + sz + 1.5, sz, weight, color, align); fitBottom = y + 2 * sz + 1.5; return sz;
     }
   }
   let t = txt; while (t.length > 1 && width(t + '…', minSize) > maxW) t = t.slice(0, -1);
@@ -4042,7 +4044,7 @@ function drawDepotPort(e, x, y, w, h, live){
   ctx.fillStyle = fg; ctx.font = `700 9px ${C.fBody}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(inp ? '입력' : '출력', lx, ly);
   if (!inp && e.item) drawItem(ctx, e.item, rx, ry, 4.5);
   else { ctx.strokeStyle = fg; ctx.lineWidth = 1.8; chevron(ctx, rx, ry, flow, 3.6); }
-  if (live && !e.busOn) fitLabel('버스 없음', cx + DX[f]*S*.9, cy + DY[f]*S*.9 - 5, 3*S - 6, 8, 700, C.bad, 'center');
+  if (live && !e.busOn) fitLabel('라인 연결 안 됨', cx + DX[f]*S*.9, cy + DY[f]*S*.9 - 5, 3*S - 6, 8, 700, C.bad, 'center');
 }
 // accent colours taken from the facility pictures (the lit parts of each model); everything else is the default yellow
 const FAC_ACC = { refine:'#F08A4B', plant:'#5DC64C', seed:'#8CCF45', grind:'#4FC487', reactor:'#45CFE6', xreactor:'#7CD34A', forge:'#9BE15D', purify:'#4CC56E',
@@ -4066,8 +4068,9 @@ function drawBuilding(e){
   if (k==='pylon' || k==='relay'){
     ctx.fillStyle = C['cv-mach']; ctx.strokeStyle = ink; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.roundRect(x, y, w, h, 0); ctx.fill(); ctx.stroke();
     const acc = facAcc(e.type); corners(x, y, w, h, e.powered ? acc : C.muted);
-    if (facPic(e.type, x+w/2, y+h/2 + (k==='relay' && prefs.labels ? 4 : 0), Math.min(w, h) * (k==='relay' ? .78 : .92), e.powered ? 1 : .45)){
-      if (k==='relay' && prefs.labels) fitLabel(t.short, x+4, y+3, w - 8, 9, 600);
+    if (PICS.facs.has(e.type)){
+      let top = y + 3; if (k==='relay' && prefs.labels){ fitLabel(t.short, x+4, y+3, w - 8, 9, 600); top = fitBottom + 2; }
+      facPic(e.type, x+w/2, (top + y+h-3) / 2, Math.min(w - 6, y+h-3 - top), e.powered ? 1 : .45);
       return;
     }
     ctx.fillStyle = e.powered ? C.power : C.muted; poly(ctx, x+w/2, y+h/2, Math.min(w,h)*.36, 4, 0); ctx.fill();
@@ -4113,11 +4116,14 @@ function drawBuilding(e){
   }
   const acc = facAcc(e.type), pic = PICS.facs.has(e.type);
   corners(x, y, w, h, acc);
+  let picTop = y + 5; // pictures go below the name
+  // the largest square between picTop and bot, centred
+  const picIn = (bot, alpha, dx) => facPic(e.type, x + w/2 + (dx || 0), (picTop + bot) / 2, Math.max(8, Math.min(w - 10, bot - picTop)), alpha);
   if (e.w * e.h > 4 && k !== 'loader' && k !== 'unloader' && k !== 'conduit'){ // 2×2 units are too small for a name: the icon and the hover text say what they are
     // keep the name clear of port marks on the top edge and of the status dots at the top right
     const top = ['in', 'out'].some(w2 => AIC.portCells(e, w2).some(c => c[1] === e.y && (c[2] === 0 || c[2] === 2)));
     const right = e.status ? (e.pin != null ? 22 : 14) : 4;
-    if (prefs.labels) fitLabel(t.short, x+4, y + (top ? 12 : 4), w - 4 - right, t.w>=5 ? 11 : 9.5, 600, ink, 'left', 6.5);
+    if (prefs.labels){ fitLabel(t.short, x+4, y + (top ? 12 : 4), w - 4 - right, t.w>=5 ? 11 : 9.5, 600, ink, 'left', 6.5); picTop = fitBottom + 3; }
   }
   if (e.status){ ctx.fillStyle = STCOL()[e.status] || C.muted; ctx.beginPath(); ctx.arc(x+w-6, y+6, 3, 0, 7); ctx.fill(); }
   if (k==='machine'){
@@ -4125,10 +4131,10 @@ function drawBuilding(e){
     const pinR = e.pin != null ? RECIPES_BY_M[e.type][e.pin] : null;
     const show = e.cur ? rItem(e.cur) : pinR ? rItem(pinR) : (e.last ? rItem(e.last) : firstOut(e.type));
     if (pinR){ ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(x+w-14, y+6, 3, 0, 7); ctx.fill(); }
+    const warnTxt = { nopower:'전력 없음', nogas:'기체 환경 필요', nocat:'촉매 부족' }[e.status];
     if (pic){
-      // the machine's picture in the middle, what it is making in a badge at the bottom right
-      const top = prefs.labels ? 14 : 4, d = Math.min(w - 8, h - top - 6) * .9;
-      facPic(e.type, x + w/2, y + top + (h - top) / 2 - 1, d, e.cur ? 1 : .8);
+      // the machine's picture between the name and the bottom row (warning text / progress), what it is making in a badge at the bottom right
+      picIn(y + h - (warnTxt ? 17 : 8), e.cur ? 1 : .8);
       if (show){ const b = Math.min(20, Math.max(12, Math.min(w, h) * .26)), bx = x + w - b - 4, by = y + h - b - 7;
         ctx.fillStyle = C['cv-mach']; ctx.strokeStyle = acc; ctx.lineWidth = 1.2; ctx.fillRect(bx, by, b, b); ctx.strokeRect(bx, by, b, b);
         ctx.globalAlpha = e.cur ? 1 : .45; drawItem(ctx, show, bx + b/2, by + b/2, b * .36); ctx.globalAlpha = 1; }
@@ -4137,15 +4143,14 @@ function drawBuilding(e){
       ctx.globalAlpha = e.cur ? 1 : .4; drawItem(ctx, show, x+w/2, y+h/2+3, Math.min(12, Math.min(w,h)*.16)); ctx.globalAlpha = 1;
       if (e.cur){ ctx.fillStyle = C.ink; ctx.globalAlpha=.8; ctx.fillRect(x+5, y+h-8, (w-10)*Math.min(1, e.t/e.cur.t), 3); ctx.globalAlpha=1; }
     }
-    const warnTxt = { nopower:'전력 없음', nogas:'기체 환경 필요', nocat:'촉매 부족' }[e.status];
-    if (warnTxt) fitLabel(warnTxt, x+w/2, y+h-20, w - 8, 9, 700, C.bad, 'center');
+    if (warnTxt) fitLabel(warnTxt, pic ? x + 6 : x+w/2, pic ? y+h-15 : y+h-20, pic ? w - 34 : w - 8, 9, 700, C.bad, pic ? 'left' : 'center');
   } else if (k==='miner' || k==='pump'){
     portMarks(e, 'out', ink, true); if (t.ports.in) portMarks(e, 'in', C.muted, false);
     const it = k==='miner' ? e.ore : t.makes; if (it) drawItem(ctx, it, x+w/2, y+h/2+3, 7);
     if (e.status==='working'){ ctx.fillStyle=C.ink; ctx.globalAlpha=.8; ctx.fillRect(x+5, y+h-7, (w-10)*Math.min(1,e.t/t.rate), 2.5); ctx.globalAlpha=1; }
   } else if (k==='thermal'){
     const on = e.out > 0;
-    if (facPic(e.type, x+w/2, y+h/2-4, Math.min(w, h) * .78, on ? 1 : .5)){ fitLabel(on ? '+'+e.out : '연료 없음', x+w/2, y+h-12, w - 6, 8.5, 700, ink, 'center', 6.5); }
+    if (facPic(e.type, x+w/2, y + (h - 13) / 2 + 1, Math.min(w - 6, h - 16), on ? 1 : .5)){ fitLabel(on ? '+'+e.out : '연료 없음', x+w/2, y+h-12, w - 6, 8.5, 700, ink, 'center', 6.5); }
     else { ctx.fillStyle = on ? C.warn : C.muted; ctx.beginPath(); const fx = x+w/2, fy = y+h/2+1; ctx.moveTo(fx, fy-8); ctx.quadraticCurveTo(fx+8, fy, fx, fy+7); ctx.quadraticCurveTo(fx-8, fy, fx, fy-8); ctx.fill();
     fitLabel(on ? '+'+e.out : '연료 없음', x+w/2, y+h-12, w - 6, 8.5, 600, ink, 'center', 6.5); }
   } else if (k==='stash'){
@@ -4162,8 +4167,8 @@ function drawBuilding(e){
   } else if (k==='tank'){
     portMarks(e,'in',C.muted,false); portMarks(e,'out',ink,true);
     if (pic){ // the picture, with a level gauge down the right edge
-      facPic(e.type, x+w/2 - 3, y+h/2 + (prefs.labels ? 5 : 0), Math.min(w - 14, h - (prefs.labels ? 18 : 8)), 1);
-      const gx = x+w-9, gy = y+(prefs.labels ? 14 : 6), gh = y+h-6-gy; ctx.fillStyle = C['panel-2']; ctx.fillRect(gx, gy, 5, gh);
+      facPic(e.type, x+w/2 - 4, (picTop + y+h-6) / 2, Math.min(w - 20, y+h-6 - picTop), 1);
+      const gx = x+w-9, gy = picTop, gh = y+h-6-gy; ctx.fillStyle = C['panel-2']; ctx.fillRect(gx, gy, 5, gh);
       if (e.fl){ const f = Math.min(1, e.amt/500); ctx.fillStyle = MAT[ITEMS[e.fl].mat]; ctx.fillRect(gx, gy + gh*(1-f), 5, gh*f); }
       ctx.strokeStyle = ink; ctx.lineWidth = .8; ctx.strokeRect(gx, gy, 5, gh);
     } else {
@@ -4172,10 +4177,10 @@ function drawBuilding(e){
     ctx.strokeStyle = ink; ctx.lineWidth = 1; ctx.strokeRect(x+w/2-8, y+h/2-6, 16, 16);
     }
   } else if (k==='busport'){
-    if (!facPic(e.type, x+w/2, y+h/2 + (prefs.labels ? 6 : 0), Math.min(w, h) * .72, 1)){ ctx.fillStyle = BUS_GREEN; ctx.fillRect(x+w/2-7, y+h/2-5, 14, 14); }
+    if (!picIn(y + h - 8, 1)){ ctx.fillStyle = BUS_GREEN; ctx.fillRect(x+w/2-7, y+h/2-5, 14, 14); }
   } else if (k==='sink'){
     portMarks(e,'in',C.muted,false);
-    if (pic){ facPic(e.type, x+w/2, y+h/2 + (prefs.labels ? 5 : 0), Math.min(w, h) * .74, e.status==='working' ? 1 : .6);
+    if (pic){ picIn(y + h - 8, e.status==='working' ? 1 : .6, -4);
       ctx.globalAlpha = e.status==='working' ? 1 : .45; drawItem(ctx, e.lastGas || 'xiragen', x+w-10, y+h-12, 5); ctx.globalAlpha = 1; }
     else { ctx.globalAlpha = e.status==='working' ? 1 : .4; drawItem(ctx, e.lastGas || 'xiragen', x+w/2, y+h/2+4, 12); ctx.globalAlpha = 1; }
     if (e.status==='working'){ ctx.fillStyle=C.ink; ctx.globalAlpha=.8; ctx.fillRect(x+5, y+h-8, (w-10)*Math.min(1,e.t/10), 3); ctx.globalAlpha=1; }
@@ -4778,7 +4783,7 @@ function updateInspectorDynamic(e){
   } else if (k==='control'){
     kv.innerHTML = `<dt>지금 든 것</dt><dd>${it(e.item)}</dd><dt>통과한 수</dt><dd>${e.passed}${t.carrier!=='fluid' && e.limit?` / ${e.limit}`:''}</dd>${t.carrier==='fluid'?`<dt>유량 제한</dt><dd>${e.rate ? '분당 '+e.rate : '없음'}</dd>`:''}`;
   } else if (k==='unloader'){
-    kv.innerHTML = `<dt>버스</dt><dd>${e.busOn?'연결됨':'연결 안 됨'}</dd><dt>보낸 수</dt><dd>${e.sent}</dd><dt>창고 재고</dt><dd>${e.item ? fmt(world.stock(e.item)) : '—'}</dd>`;
+    kv.innerHTML = `<dt>입출력 라인</dt><dd>${e.busOn?'연결됨':'연결 안 됨'}</dd><dt>보낸 수</dt><dd>${e.sent}</dd><dt>창고 재고</dt><dd>${e.item ? fmt(world.stock(e.item)) : '—'}</dd>`;
   } else if (k==='pac'){
     const r = world.rates(), tb = document.getElementById('iports');
     if (tb) tb.innerHTML = `<thead><tr><th>포트</th><th>분당</th><th>시간당</th><th>누적</th></tr></thead><tbody>${e.ports.map((it, i) => `<tr><td>${i<3?'왼쪽':'오른쪽'} ${i+1} ${it ? icS(it) + ' ' + esc(ITEMS[it].ko) : '<span class="dim">꺼짐</span>'}</td><td>${fmt(r.port[i]||0)}</td><td>${fmt((r.port[i]||0)*60)}</td><td>${fmt(r.total.port[i]||0)}</td></tr>`).join('')}</tbody>`;
@@ -4787,7 +4792,7 @@ function updateInspectorDynamic(e){
     e.slots.forEach((q, i) => { const c = document.getElementById('sc'+i); if (c) c.innerHTML = q.n ? `${icS(q.item)} ${q.n} / 50` : '<span class="dim">비어 있음</span>'; });
     kv.innerHTML = `<dt>받은 수</dt><dd>${e.got}</dd><dt>담긴 수</dt><dd>${e.slots.reduce((a, q) => a + q.n, 0)} / 300</dd>`;
   } else if (k==='loader'){
-    kv.innerHTML = `<dt>버스</dt><dd>${e.busOn?'연결됨':'연결 안 됨'}</dd><dt>창고로 보낸 수</dt><dd>${e.got}</dd>`;
+    kv.innerHTML = `<dt>입출력 라인</dt><dd>${e.busOn?'연결됨':'연결 안 됨'}</dd><dt>창고로 보낸 수</dt><dd>${e.got}</dd>`;
   } else if (k==='tank'){
     kv.innerHTML = `<dt>내용물</dt><dd>${it(e.fl)}</dd><dt>양</dt><dd>${e.amt} / 500</dd>`;
   } else if (k==='sink'){
