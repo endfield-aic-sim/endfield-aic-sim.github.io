@@ -5027,6 +5027,8 @@ function renderStats(){
     </div>
     <h4>원자재 소비량</h4>
     ${rateTable(rawUse, '없음')}
+    <h4>필요한 수집 장치</h4>
+    <div class="tot">${extractTotals(Object.keys(r.out), r.out) || '<span class="dim">없음</span>'}</div>
     <h4>산출물</h4>
     ${rateTable(produced, '없음')}
     <details><summary>설비 생산량</summary>${rateTable(made, '없음')}</details>`;
@@ -5048,6 +5050,18 @@ function extractCell(k, pm){
   if (pm <= 0) return '<span class="dim">—</span>';
   return `${esc(x.by)} <b>${ceilN(pm / x.hi)}</b>대` + (x.lo ? ` <span class="dim">(저${k.endsWith('_ore') ? '순도' : '농도'} ${ceilN(pm / x.lo)}대)</span>` : '');
 }
+// extraction facilities that would supply these per-minute amounts, summed by kind (high purity / concentration, rounded up)
+function extractTotals(keys, perMin){
+  const tot = {}; let cupWater = 0;
+  for (const k of keys){
+    const x = AIC.EXTRACT[k], pm = perMin[k]; if (!x || !(pm > 0)) continue;
+    const t = tot[x.by] || (tot[x.by] = { hi: 0, lo: 0, lofine: !!x.lo });
+    t.hi += ceilN(pm / x.hi); t.lo += ceilN(pm / (x.lo || x.hi));
+    if (x.water) cupWater += pm * x.water;
+  }
+  return Object.entries(tot).map(([by, t]) => `<span class="mchip">${esc(by)} ${t.hi}대${t.lofine && t.lo !== t.hi ? ` <span class="dim">(낮은 순도·농도 ${t.lo}대)</span>` : ''}</span>`).join('')
+    + (cupWater > 0 ? `<span class="mchip">적동 광석 채굴용 청정수 분당 ${fmt(cupWater)} → 양수기 ${ceilN(cupWater / 60)}대 더</span>` : '');
+}
 function renderDepot(force){
   const el = $('#pane-depot'); if (!el || ui.tab !== 'depot' || !space) return;
   const a = document.activeElement;
@@ -5057,16 +5071,8 @@ function renderDepot(force){
   const flow = k => (rr.in[k] || 0) - (rr.out[k] || 0) + (r.xfer[k] || 0) / 60;
   // 1. endless raw materials in use, and the extraction facilities that would sustain them
   const used = [...r.inf].filter(k => (rr.out[k] || 0) > 0).sort(byDep);
-  const tot = {}; let cupWater = 0;
-  for (const k of used){
-    const x = AIC.EXTRACT[k], pm = rr.out[k]; if (!x) continue;
-    const t = tot[x.by] || (tot[x.by] = { hi: 0, lo: 0, lofine: !!x.lo });
-    t.hi += ceilN(pm / x.hi); t.lo += ceilN(pm / (x.lo || x.hi));
-    if (x.water) cupWater += pm * x.water;
-  }
   const useRows = used.map(k => `<tr><td>${ic(k)}</td><td class="neg">${fmt(rr.out[k])}</td><td class="neg">${fmt(rr.out[k]*60)}</td><td style="text-align:left;font-family:var(--f-body);white-space:normal">${extractCell(k, rr.out[k])}</td></tr>`).join('');
-  const totLine = Object.entries(tot).map(([by, t]) => `<span class="mchip">${esc(by)} ${t.hi}대${t.lofine && t.lo !== t.hi ? ` <span class="dim">(낮은 순도·농도 ${t.lo}대)</span>` : ''}</span>`).join('')
-    + (cupWater > 0 ? `<span class="mchip">적동 광석 채굴용 청정수 분당 ${fmt(cupWater)} → 양수기 ${ceilN(cupWater / 60)}대 더</span>` : '');
+  const totLine = extractTotals(used, rr.out);
   // 2. metastorage transfers into this region
   const X = AIC.XFER, isDest = r.id === X.to, src = space.region(X.from), dst = space.region(X.to);
   const xk = Object.keys(r.xfer).find(k => X.items[k]) || '', xn = xk ? r.xfer[xk] : 0, xv = xk ? X.items[xk].v : 0, xmax = xk ? Math.floor(X.cap / xv) : 0;
