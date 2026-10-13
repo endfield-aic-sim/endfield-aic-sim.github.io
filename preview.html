@@ -589,22 +589,26 @@ body.resizing.rcol{cursor:col-resize} body.resizing.rrow{cursor:row-resize}
 .cam{display:flex;align-items:center;gap:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .cam img{width:16px;height:16px}
 .czoom{position:absolute;right:12px;bottom:12px;display:flex;gap:4px}
-/* desktop layout: factory | facility panel | side panel, the factory gets the full height */
+/* desktop layout: factory | facility panel | side panel, the factory gets the full height;
+   the facility panel: search and tools on top, categories as a vertical list beside the facility cards */
 @media (min-width: 961px){
-  .app{grid-template-columns:minmax(0,1fr) var(--build-w,250px) var(--side-w,350px);grid-template-rows:auto minmax(0,1fr)}
-  .build{grid-column:2;grid-row:2;border-top:0;border-left:1px solid var(--line);min-height:0}
-  aside.side{grid-column:3;grid-row:2}
-  .app.craftmode .craft,.app.boardmode .board{grid-row:2}
-  .brow{flex-direction:column;align-items:stretch;gap:8px;padding:10px 10px 0}
-  .tools{padding-bottom:0}
-  .search{width:auto;order:-1;padding-bottom:0}
-  .cats{flex-wrap:wrap;overflow:visible;gap:2px 12px;padding-bottom:6px}
-  .cats button{border:0;border-radius:0;padding:3px 0;margin:0;background:transparent;box-shadow:none;font-size:12.5px}
-  .cats button[aria-selected="true"]{background:transparent;box-shadow:inset 0 -2px 0 var(--accent)}
-  .strip{flex:1;min-height:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));grid-auto-rows:max-content;overflow-x:hidden;overflow-y:auto;align-content:start;padding:10px;gap:6px}
-  .tool{width:auto}
+  .app{grid-template-columns:minmax(0,1fr) var(--build-w,330px) var(--side-w,350px);grid-template-rows:auto minmax(0,1fr) auto}
+  .build{grid-column:2;grid-row:2/4;border-top:0;border-left:1px solid var(--line);min-height:0;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr)}
+  aside.side{grid-column:3;grid-row:2/4}
+  .keys{grid-column:1;grid-row:3;border-top:1px solid var(--line);background:var(--panel)}
+  .app.craftmode .craft,.app.boardmode .board{grid-row:2/4}
+  .brow{display:contents}
+  .search{grid-column:1/-1;grid-row:1;width:auto;padding:10px 10px 8px}
+  .tools{grid-column:1/-1;grid-row:2;padding:0 10px 10px;border-bottom:1px solid var(--line)}
+  .cats{grid-column:1;grid-row:3;flex-direction:column;flex:none;gap:0;overflow-y:auto;overflow-x:hidden;border-right:1px solid var(--line);padding:6px 0;min-width:0}
+  .cats button{display:flex;justify-content:space-between;align-items:baseline;gap:10px;width:100%;text-align:left;border:0;border-radius:0;margin:0;padding:8px 12px;background:transparent;box-shadow:none;font-size:12.5px;white-space:nowrap}
+  .cats button[aria-selected="true"]{background:var(--panel-2);box-shadow:inset 3px 0 0 var(--accent)}
+  .strip{grid-column:2;grid-row:3;min-height:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));grid-auto-rows:max-content;overflow-x:hidden;overflow-y:auto;align-content:start;padding:8px;gap:5px}
+  .tool{width:auto;padding:6px 4px 5px;gap:3px}
+  .tool canvas{width:42px;height:42px}
+  .tool .nm{font-size:11.5px}
   .strip>:not(.tool){grid-column:1/-1}
-  .keys{max-height:30%;overflow-y:auto}
+}
 }
 .note:empty{display:none}
 </style>
@@ -659,8 +663,8 @@ body.resizing.rcol{cursor:col-resize} body.resizing.rrow{cursor:row-resize}
       <div class="search"><input id="q" type="search" placeholder="설비 찾기" aria-label="설비 검색"></div>
     </div>
     <div class="strip" id="plist" role="tabpanel" aria-label="설비 목록"></div>
-    <div class="keys"><kbd>E</kbd> 컨베이어 벨트 · <kbd>Q</kbd> 파이프 · <kbd>R</kbd> 회전 · <kbd>M</kbd> 이동 · <kbd>Esc</kbd> 취소 · <kbd>Del</kbd> 철거 · 범위 드래그 = 선택 · <kbd>Shift</kbd> + 드래그 = 선택에서 빼기 · <kbd>Ctrl</kbd> + 드래그 = 더하기 · <kbd>Ctrl</kbd> + <kbd>C</kbd> / <kbd>V</kbd> 복사·붙여넣기</div>
   </section>
+  <div class="keys simonly"><kbd>E</kbd> 컨베이어 벨트 · <kbd>Q</kbd> 파이프 · <kbd>R</kbd> 회전 · <kbd>M</kbd> 이동 · <kbd>Esc</kbd> 취소 · <kbd>Del</kbd> 철거 · 범위 드래그 = 선택 · <kbd>Shift</kbd> + 드래그 = 선택에서 빼기 · <kbd>Ctrl</kbd> + 드래그 = 더하기 · <kbd>Ctrl</kbd> + <kbd>C</kbd> / <kbd>V</kbd> 복사·붙여넣기</div>
 
   <aside class="side">
     <div class="rz col" id="rzSide" title="드래그해서 너비 조절" aria-hidden="true"></div>
@@ -5471,9 +5475,9 @@ function dragEdge(handle, key, cls, start, move){
   handle.addEventListener('dblclick', () => { delete layout[key]; applyLayout(); saveLayout(); });
 }
 const clampN = (v, a, b) => Math.max(a, Math.min(b, v));
-dragEdge($('#rzSide'), 'side', 'rcol', () => null, e => clampN(innerWidth - e.clientX, 260, Math.max(260, Math.min(820, innerWidth - (layout.build || 250) - 360))));
+dragEdge($('#rzSide'), 'side', 'rcol', () => null, e => clampN(innerWidth - e.clientX, 260, Math.max(260, Math.min(820, innerWidth - (layout.build || 330) - 360))));
 dragEdge($('#rzBuild'), 'build', 'rcol', () => ({ right: $('.build').getBoundingClientRect().right }),
-  (e, s) => clampN(s.right - e.clientX, 200, Math.max(200, Math.min(560, innerWidth - (layout.side || 350) - 360))));
+  (e, s) => clampN(s.right - e.clientX, 240, Math.max(240, Math.min(640, innerWidth - (layout.side || 350) - 360))));
 dragEdge($('#rzInsp'), 'insp', 'rrow', ev => ({ top: $('#insp').getBoundingClientRect().top, z: zoomOf($('aside.side')) }),
   (e, s) => clampN((e.clientY - s.top) / s.z, 60, innerHeight * .85 / s.z));
 applyLayout();
