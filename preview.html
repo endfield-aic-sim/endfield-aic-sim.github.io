@@ -5027,8 +5027,6 @@ function renderStats(){
     </div>
     <h4>원자재 소비량</h4>
     ${rateTable(rawUse, '없음')}
-    <h4>필요한 수집 장치</h4>
-    <div class="tot">${extractTotals(Object.keys(r.out), r.out) || '<span class="dim">없음</span>'}</div>
     <h4>산출물</h4>
     ${rateTable(produced, '없음')}
     <details><summary>설비 생산량</summary>${rateTable(made, '없음')}</details>`;
