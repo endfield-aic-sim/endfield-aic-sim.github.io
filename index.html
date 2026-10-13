@@ -68,7 +68,6 @@ header.bar{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:1
 .seg button{border:0;background:var(--panel-2);padding:5px 9px;font-family:var(--f-mono);font-size:12px}
 .seg button+button{border-left:1px solid var(--line)}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--panel)}
-.clock{font-family:var(--f-mono);font-size:12px;color:var(--muted);min-width:64px;font-variant-numeric:tabular-nums}
 .pwr{display:flex;align-items:center;gap:8px;min-width:190px}
 .pwr .lbl{font-size:12px;color:var(--ink)}
 .meter{position:relative;flex:1;height:10px;background:var(--panel-2);border:1px solid var(--line);border-radius:2px;overflow:hidden;min-width:80px}
@@ -629,7 +628,6 @@ body.resizing.rcol{cursor:col-resize} body.resizing.rrow{cursor:row-resize}
         <div class="seg" id="speed" role="group" aria-label="배속">
           <button data-s="1" aria-pressed="true">1×</button><button data-s="2" aria-pressed="false">2×</button><button data-s="4" aria-pressed="false">4×</button><button data-s="8" aria-pressed="false">8×</button>
         </div>
-        <span class="clock" id="clock">T+00:00</span>
       </div>
       <div class="pwr" title="전력 사용량 / 공급량">
         <span class="lbl">전력</span>
@@ -5427,8 +5425,6 @@ function frame(now){
     $('#meter i').style.width = Math.min(100, p.supply ? p.demand/p.supply*100 : 0) + '%';
     $('#pwrtxt').textContent = `${p.demand} / ${p.supply}${over ? ' · 초과' : ''}`;
     $('#pwrtxt').parentElement.title = over ? '전력 사용량이 공급량보다 많습니다. 시뮬레이션이라 설비는 그대로 가동합니다.' : '전력 사용량 / 공급량';
-    const s = Math.floor(world.time), mm = Math.floor(s/60), ss = s%60;
-    $('#clock').textContent = `T+${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
     const w = $('#warn');
     if (over){ w.hidden = false; w.textContent = `전력 부족: 사용 ${p.demand} > 공급 ${p.supply}. 모든 설비가 ${Math.round(p.ratio*100)}% 속도로 돕니다.`; }
     else if (now > flashT) w.hidden = true;
