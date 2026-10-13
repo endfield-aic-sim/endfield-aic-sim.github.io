@@ -577,6 +577,17 @@ body.resizing.rcol{cursor:col-resize} body.resizing.rrow{cursor:row-resize}
 .cpill.alt{border-style:dashed;border-color:var(--cv-muted)}
 .caltag{position:absolute;top:-8px;right:6px;background:var(--panel);font-size:10px;padding:0 4px;color:var(--cv-muted);font-weight:700}
 .cnode.alt .cimg{opacity:.8}
+.calts{position:absolute;background:var(--panel);border:1px solid var(--line);padding:4px 6px 5px;font-size:11px;cursor:default}
+.calth{font-weight:700;font-size:10.5px;opacity:.75;margin-bottom:2px}
+.calti{display:flex;align-items:center;justify-content:space-between;gap:6px;height:25px;border-top:1px solid var(--line)}
+.calti:first-of-type{border-top:0}
+.cain{display:flex;align-items:center;gap:2px;flex:none}
+.cai{position:relative;display:inline-flex;cursor:pointer}
+.cai img{width:20px;height:20px}
+.cai:hover img{outline:1px solid var(--ink)}
+.cai i{position:absolute;right:-3px;bottom:-3px;font-style:normal;font-size:9px;font-weight:700;background:var(--ink);color:var(--bg);padding:0 2px;line-height:1.2}
+.cam{display:flex;align-items:center;gap:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.cam img{width:16px;height:16px}
 .czoom{position:absolute;right:12px;bottom:12px;display:flex;gap:4px}
 .note:empty{display:none}
 </style>
@@ -5241,8 +5252,8 @@ const craft = {
     if (best < 60) this.memo.set(id, best);   // results that hit a loop depend on the path: not cached
     return best;
   },
-  // every way of making an item is shown: the main one (smallest loop-free chain) first and fully expanded,
-  // the other ways below it with their direct inputs only (click one to follow its own chain)
+  // every way of making an item is shown: the main one (smallest loop-free chain) fully expanded,
+  // the other ways as a short list right under the item card (click an input to follow its own chain)
   build(id, path, seen){
     const n = { id, groups: [] };
     if (path.has(id)){ n.loop = true; return n; }
@@ -5251,13 +5262,11 @@ const craft = {
     const { w, i } = this.pick(id, path);
     if (i < 0) return n;
     const p2 = new Set(path); p2.add(id);
-    const order = [i, ...w.map((_, j) => j).filter(j => j !== i)];
-    for (const j of order){
-      const way = w[j], alt = j !== i, g = { way, alt, kids: [] };
-      if (way.src) g.kids.push({ id, deposit: true, groups: [], alt });
-      else for (const [k, q] of Object.entries(way.in)) g.kids.push(alt ? { id: k, groups: [], qty: q, alt: true } : Object.assign(this.build(k, p2, seen), { qty: q }));
-      n.groups.push(g);
-    }
+    const way = w[i], g = { way, kids: [] };
+    if (way.src) g.kids.push({ id, deposit: true, groups: [] });
+    else for (const [k, q] of Object.entries(way.in)) g.kids.push(Object.assign(this.build(k, p2, seen), { qty: q }));
+    n.groups.push(g);
+    n.alts = w.filter((_, j) => j !== i);
     return n;
   },
   show(id){
@@ -5306,6 +5315,7 @@ const craft = {
     st.querySelector('.czoom').onclick = ev => { const b = ev.target.closest('[data-z]'); if (!b) return; const r = st.getBoundingClientRect();
       if (b.dataset.z === 'fit') this.fit(); else this.zoomAt(b.dataset.z === 'in' ? 1.25 : 1/1.25, r.width / 2, r.height / 2); };
     $('#cPlane').addEventListener('click', ev => {
+      const go = ev.target.closest('[data-go]'); if (go){ location.hash = 'craft/' + go.dataset.go; return; }
       const eye = ev.target.closest('.ceye'); if (eye){ const o = $('#cPlane').querySelector(`.cnode[data-main="${eye.dataset.item}"]`); if (o){ o.classList.remove('flash'); void o.offsetWidth; o.classList.add('flash'); } return; }
       const nd = ev.target.closest('.cnode'); if (nd && nd.dataset.item && nd.dataset.item !== this.target) location.hash = 'craft/' + nd.dataset.item;
       else if (nd && nd.dataset.item) openItem(nd.dataset.item);
@@ -5322,12 +5332,15 @@ const craft = {
   draw(refit){
     const root = this.build(this.target, new Set(), new Set());
     // layout: depth → column (target on the right), leaves take rows top to bottom, a parent sits on its first input's row
-    const CW = 64, PW = 132, G = 30, PITCH = CW + PW + 2 * G, RH = 104, M = 40;
+    const CW = 64, PW = 132, G = 30, PITCH = CW + PW + 2 * G, RH = 104, M = 40, AT = 88, AR = 25, AW = 236;
     let row = 0, maxD = 0;
     const place = (n, d) => { n.d = d; maxD = Math.max(maxD, d);
       if (!n.groups.length){ n.row = row++; return; }
+      const r0 = row;
       for (const g of n.groups){ g.kids.forEach(c => place(c, d + 1)); g.row = g.kids.length ? g.kids[0].row : row++; }
-      n.row = n.groups[0].row; };
+      n.row = n.groups[0].row;
+      // keep the rows under the item free for its list of other ways
+      if (n.alts && n.alts.length) row = Math.max(row, n.row + Math.ceil((AT + 20 + n.alts.length * AR) / RH)); };
     place(root, 0);
     const W = (maxD + 1) * PITCH - PW - 2 * G + 2 * M, H = row * RH + 2 * M - 20;
     const cx = n => M + (maxD - n.d) * PITCH, cy = n => M + n.row * RH;
@@ -5340,6 +5353,12 @@ const craft = {
         ${n.dup ? `<button class="ceye" type="button" data-item="${n.id}" title="위에서 이미 펼친 재료 (눌러서 찾기)">◉</button>` : ''}${n.loop ? '<span class="cloop" title="이 재료는 위 단계에서 다시 만들어짐">↻</span>' : ''}
         <div class="cname">${esc(it.ko)}</div></div>`;
       const my = y + CW / 2, pr = x - G, pl = pr - PW, jx = pl - G / 2, jo = x - G / 2;
+      if (n.alts && n.alts.length){
+        // the other ways, listed under the item: inputs → machine · time
+        html += `<div class="calts" style="left:${x + CW - AW}px;top:${y + AT}px;width:${AW}px"><div class="calth">기타 조합식 ${n.alts.length}</div>` + n.alts.map(wy => `<div class="calti">
+          <span class="cain">${wy.src ? `<span class="dim">${esc(wy.by)}</span>` : Object.entries(wy.in).map(([k, q]) => `<span class="cai" data-go="${k}" title="${esc(ITEMS[k].ko)}"><img alt="" src="${iconURL(k)}">${q > 1 ? `<i>${q}</i>` : ''}</span>`).join('')}</span>
+          <span class="cam">${wy.src ? '' : `${facIconURL(wy.m) ? `<img alt="" src="${facIconURL(wy.m)}">` : ''}${esc(MNAME(wy.m))} · `}${wy.t}초${wy.gas ? ` · <b style="color:${MAT[ITEMS[wy.gas].mat]}">${esc(ITEMS[wy.gas].ko)}</b>` : ''}</span></div>`).join('') + '</div>';
+      }
       n.groups.forEach((g, gi) => {
         // the machine (or extractor) pill for this way, wires from its inputs to it and from it to the item
         const gy = M + g.row * RH + CW / 2, wy = g.way;
