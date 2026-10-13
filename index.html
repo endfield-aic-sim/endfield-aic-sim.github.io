@@ -577,7 +577,39 @@ body.resizing.rcol{cursor:col-resize} body.resizing.rrow{cursor:row-resize}
 .cpill.alt{border-style:dashed;border-color:var(--cv-muted)}
 .caltag{position:absolute;top:-8px;right:6px;background:var(--panel);font-size:10px;padding:0 4px;color:var(--cv-muted);font-weight:700}
 .cnode.alt .cimg{opacity:.8}
+.calts{position:absolute;background:var(--panel);border:1px solid var(--line);padding:4px 6px 5px;font-size:11px;cursor:default}
+.calth{font-weight:700;font-size:10.5px;opacity:.75;margin-bottom:2px}
+.calti{display:flex;align-items:center;justify-content:space-between;gap:6px;height:25px;border-top:1px solid var(--line)}
+.calti:first-of-type{border-top:0}
+.cain{display:flex;align-items:center;gap:2px;flex:none}
+.cai{position:relative;display:inline-flex;cursor:pointer}
+.cai img{width:20px;height:20px}
+.cai:hover img{outline:1px solid var(--ink)}
+.cai i{position:absolute;right:-3px;bottom:-3px;font-style:normal;font-size:9px;font-weight:700;background:var(--ink);color:var(--bg);padding:0 2px;line-height:1.2}
+.cam{display:flex;align-items:center;gap:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.cam img{width:16px;height:16px}
 .czoom{position:absolute;right:12px;bottom:12px;display:flex;gap:4px}
+/* desktop layout: factory | facility panel | side panel, the factory gets the full height;
+   the facility panel: search and tools on top, categories as a vertical list beside the facility cards */
+@media (min-width: 961px){
+  .app{grid-template-columns:minmax(0,1fr) var(--build-w,330px) var(--side-w,350px);grid-template-rows:auto minmax(0,1fr) auto}
+  .build{grid-column:2;grid-row:2/4;border-top:0;border-left:1px solid var(--line);min-height:0;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr)}
+  aside.side{grid-column:3;grid-row:2/4}
+  .keys{grid-column:1;grid-row:3;border-top:1px solid var(--line);background:var(--panel)}
+  .app.craftmode .craft,.app.boardmode .board{grid-row:2/4}
+  .brow{display:contents}
+  .search{grid-column:1/-1;grid-row:1;width:auto;padding:10px 10px 8px}
+  .tools{grid-column:1/-1;grid-row:2;padding:0 10px 10px;border-bottom:1px solid var(--line)}
+  .cats{grid-column:1;grid-row:3;flex-direction:column;flex:none;gap:0;overflow-y:auto;overflow-x:hidden;border-right:1px solid var(--line);padding:6px 0;min-width:0}
+  .cats button{display:flex;justify-content:space-between;align-items:baseline;gap:10px;width:100%;text-align:left;border:0;border-radius:0;margin:0;padding:8px 12px;background:transparent;box-shadow:none;font-size:12.5px;white-space:nowrap}
+  .cats button[aria-selected="true"]{background:var(--panel-2);box-shadow:inset 3px 0 0 var(--accent)}
+  .strip{grid-column:2;grid-row:3;min-height:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));grid-auto-rows:max-content;overflow-x:hidden;overflow-y:auto;align-content:start;padding:8px;gap:5px}
+  .tool{width:auto;padding:6px 4px 5px;gap:3px}
+  .tool canvas{width:42px;height:42px}
+  .tool .nm{font-size:11.5px}
+  .strip>:not(.tool){grid-column:1/-1}
+}
+}
 .note:empty{display:none}
 </style>
 
@@ -624,15 +656,15 @@ body.resizing.rcol{cursor:col-resize} body.resizing.rrow{cursor:row-resize}
   </main>
 
   <section class="build" aria-label="설비">
-    <div class="rz row top" id="rzBuild" title="드래그해서 높이 조절" aria-hidden="true"></div>
+    <div class="rz col" id="rzBuild" title="드래그해서 너비 조절" aria-hidden="true"></div>
     <div class="brow">
       <div class="tools" id="tools" aria-label="도구"></div>
       <div class="cats" id="cats" role="tablist" aria-label="설비 분류"></div>
       <div class="search"><input id="q" type="search" placeholder="설비 찾기" aria-label="설비 검색"></div>
     </div>
     <div class="strip" id="plist" role="tabpanel" aria-label="설비 목록"></div>
-    <div class="keys"><kbd>E</kbd> 컨베이어 벨트 · <kbd>Q</kbd> 파이프 · <kbd>R</kbd> 회전 · <kbd>M</kbd> 이동 · <kbd>Esc</kbd> 취소 · <kbd>Del</kbd> 철거 · 범위 드래그 = 선택 · <kbd>Shift</kbd> + 드래그 = 선택에서 빼기 · <kbd>Ctrl</kbd> + 드래그 = 더하기 · <kbd>Ctrl</kbd> + <kbd>C</kbd> / <kbd>V</kbd> 복사·붙여넣기</div>
   </section>
+  <div class="keys simonly"><kbd>E</kbd> 컨베이어 벨트 · <kbd>Q</kbd> 파이프 · <kbd>R</kbd> 회전 · <kbd>M</kbd> 이동 · <kbd>Esc</kbd> 취소 · <kbd>Del</kbd> 철거 · 범위 드래그 = 선택 · <kbd>Shift</kbd> + 드래그 = 선택에서 빼기 · <kbd>Ctrl</kbd> + 드래그 = 더하기 · <kbd>Ctrl</kbd> + <kbd>C</kbd> / <kbd>V</kbd> 복사·붙여넣기</div>
 
   <aside class="side">
     <div class="rz col" id="rzSide" title="드래그해서 너비 조절" aria-hidden="true"></div>
@@ -5241,8 +5273,8 @@ const craft = {
     if (best < 60) this.memo.set(id, best);   // results that hit a loop depend on the path: not cached
     return best;
   },
-  // every way of making an item is shown: the main one (smallest loop-free chain) first and fully expanded,
-  // the other ways below it with their direct inputs only (click one to follow its own chain)
+  // every way of making an item is shown: the main one (smallest loop-free chain) fully expanded,
+  // the other ways as a short list right under the item card (click an input to follow its own chain)
   build(id, path, seen){
     const n = { id, groups: [] };
     if (path.has(id)){ n.loop = true; return n; }
@@ -5251,13 +5283,11 @@ const craft = {
     const { w, i } = this.pick(id, path);
     if (i < 0) return n;
     const p2 = new Set(path); p2.add(id);
-    const order = [i, ...w.map((_, j) => j).filter(j => j !== i)];
-    for (const j of order){
-      const way = w[j], alt = j !== i, g = { way, alt, kids: [] };
-      if (way.src) g.kids.push({ id, deposit: true, groups: [], alt });
-      else for (const [k, q] of Object.entries(way.in)) g.kids.push(alt ? { id: k, groups: [], qty: q, alt: true } : Object.assign(this.build(k, p2, seen), { qty: q }));
-      n.groups.push(g);
-    }
+    const way = w[i], g = { way, kids: [] };
+    if (way.src) g.kids.push({ id, deposit: true, groups: [] });
+    else for (const [k, q] of Object.entries(way.in)) g.kids.push(Object.assign(this.build(k, p2, seen), { qty: q }));
+    n.groups.push(g);
+    n.alts = w.filter((_, j) => j !== i);
     return n;
   },
   show(id){
@@ -5306,6 +5336,7 @@ const craft = {
     st.querySelector('.czoom').onclick = ev => { const b = ev.target.closest('[data-z]'); if (!b) return; const r = st.getBoundingClientRect();
       if (b.dataset.z === 'fit') this.fit(); else this.zoomAt(b.dataset.z === 'in' ? 1.25 : 1/1.25, r.width / 2, r.height / 2); };
     $('#cPlane').addEventListener('click', ev => {
+      const go = ev.target.closest('[data-go]'); if (go){ location.hash = 'craft/' + go.dataset.go; return; }
       const eye = ev.target.closest('.ceye'); if (eye){ const o = $('#cPlane').querySelector(`.cnode[data-main="${eye.dataset.item}"]`); if (o){ o.classList.remove('flash'); void o.offsetWidth; o.classList.add('flash'); } return; }
       const nd = ev.target.closest('.cnode'); if (nd && nd.dataset.item && nd.dataset.item !== this.target) location.hash = 'craft/' + nd.dataset.item;
       else if (nd && nd.dataset.item) openItem(nd.dataset.item);
@@ -5322,12 +5353,15 @@ const craft = {
   draw(refit){
     const root = this.build(this.target, new Set(), new Set());
     // layout: depth → column (target on the right), leaves take rows top to bottom, a parent sits on its first input's row
-    const CW = 64, PW = 132, G = 30, PITCH = CW + PW + 2 * G, RH = 104, M = 40;
+    const CW = 64, PW = 132, G = 30, PITCH = CW + PW + 2 * G, RH = 104, M = 40, AT = 88, AR = 25, AW = 236;
     let row = 0, maxD = 0;
     const place = (n, d) => { n.d = d; maxD = Math.max(maxD, d);
       if (!n.groups.length){ n.row = row++; return; }
+      const r0 = row;
       for (const g of n.groups){ g.kids.forEach(c => place(c, d + 1)); g.row = g.kids.length ? g.kids[0].row : row++; }
-      n.row = n.groups[0].row; };
+      n.row = n.groups[0].row;
+      // keep the rows under the item free for its list of other ways
+      if (n.alts && n.alts.length) row = Math.max(row, n.row + Math.ceil((AT + 20 + n.alts.length * AR) / RH)); };
     place(root, 0);
     const W = (maxD + 1) * PITCH - PW - 2 * G + 2 * M, H = row * RH + 2 * M - 20;
     const cx = n => M + (maxD - n.d) * PITCH, cy = n => M + n.row * RH;
@@ -5340,6 +5374,12 @@ const craft = {
         ${n.dup ? `<button class="ceye" type="button" data-item="${n.id}" title="위에서 이미 펼친 재료 (눌러서 찾기)">◉</button>` : ''}${n.loop ? '<span class="cloop" title="이 재료는 위 단계에서 다시 만들어짐">↻</span>' : ''}
         <div class="cname">${esc(it.ko)}</div></div>`;
       const my = y + CW / 2, pr = x - G, pl = pr - PW, jx = pl - G / 2, jo = x - G / 2;
+      if (n.alts && n.alts.length){
+        // the other ways, listed under the item: inputs → machine · time
+        html += `<div class="calts" style="left:${x + CW - AW}px;top:${y + AT}px;width:${AW}px"><div class="calth">기타 조합식 ${n.alts.length}</div>` + n.alts.map(wy => `<div class="calti">
+          <span class="cain">${wy.src ? `<span class="dim">${esc(wy.by)}</span>` : Object.entries(wy.in).map(([k, q]) => `<span class="cai" data-go="${k}" title="${esc(ITEMS[k].ko)}"><img alt="" src="${iconURL(k)}">${q > 1 ? `<i>${q}</i>` : ''}</span>`).join('')}</span>
+          <span class="cam">${wy.src ? '' : `${facIconURL(wy.m) ? `<img alt="" src="${facIconURL(wy.m)}">` : ''}${esc(MNAME(wy.m))} · `}${wy.t}초${wy.gas ? ` · <b style="color:${MAT[ITEMS[wy.gas].mat]}">${esc(ITEMS[wy.gas].ko)}</b>` : ''}</span></div>`).join('') + '</div>';
+      }
       n.groups.forEach((g, gi) => {
         // the machine (or extractor) pill for this way, wires from its inputs to it and from it to the item
         const gy = M + g.row * RH + CW / 2, wy = g.way;
@@ -5413,11 +5453,11 @@ new MutationObserver(retheme).observe(document.documentElement, { attributes:tru
 window.addEventListener('resize', () => { resize(); board.redraw(); syncSitesH(); });
 // ---------- resizable panels: drag the edge of the side panel, the facility strip or the inspector ----------
 const layout = (() => { try { const v = JSON.parse(localStorage.getItem('aic-layout')); return v && typeof v === 'object' ? v : {}; } catch(e){ return {}; } })();
+delete layout.strip;   // the facility strip is a column now
 function applyLayout(){
   const app = $('#app'), strip = $('#plist'), insp = $('#insp');
   if (layout.side) app.style.setProperty('--side-w', layout.side + 'px'); else app.style.removeProperty('--side-w');
-  strip.style.height = layout.strip ? layout.strip + 'px' : '';
-  $('.build').classList.toggle('wrap', (layout.strip || 0) > 170);
+  if (layout.build) app.style.setProperty('--build-w', layout.build + 'px'); else app.style.removeProperty('--build-w');
   insp.style.height = layout.insp ? layout.insp + 'px' : ''; insp.style.maxHeight = layout.insp ? 'none' : '';
   $('#rzInspRow').hidden = insp.hidden;
 }
@@ -5435,9 +5475,9 @@ function dragEdge(handle, key, cls, start, move){
   handle.addEventListener('dblclick', () => { delete layout[key]; applyLayout(); saveLayout(); });
 }
 const clampN = (v, a, b) => Math.max(a, Math.min(b, v));
-dragEdge($('#rzSide'), 'side', 'rcol', () => null, e => clampN(innerWidth - e.clientX, 260, Math.max(260, Math.min(820, innerWidth - 420))));
-dragEdge($('#rzBuild'), 'strip', 'rrow', ev => ({ y: ev.clientY, h: $('#plist').getBoundingClientRect().height, z: zoomOf($('.build')) }),
-  (e, s) => clampN((s.h + (s.y - e.clientY)) / s.z, 90, innerHeight * .6 / s.z));
+dragEdge($('#rzSide'), 'side', 'rcol', () => null, e => clampN(innerWidth - e.clientX, 260, Math.max(260, Math.min(820, innerWidth - (layout.build || 330) - 360))));
+dragEdge($('#rzBuild'), 'build', 'rcol', () => ({ right: $('.build').getBoundingClientRect().right }),
+  (e, s) => clampN(s.right - e.clientX, 240, Math.max(240, Math.min(640, innerWidth - (layout.side || 350) - 360))));
 dragEdge($('#rzInsp'), 'insp', 'rrow', ev => ({ top: $('#insp').getBoundingClientRect().top, z: zoomOf($('aside.side')) }),
   (e, s) => clampN((e.clientY - s.top) / s.z, 60, innerHeight * .85 / s.z));
 applyLayout();
@@ -5457,7 +5497,7 @@ store.init();
 acct.init();
 loadPics();
 route();
-if (document.fonts) document.fonts.ready.then(() => render());
+if (document.fonts) document.fonts.ready.then(() => { syncSitesH(); fitView(); render(); });   // the site tabs may wrap once the font is in: fit again
 if (ui.oldSave) setTimeout(() => flash('PAC 포트 배치가 바뀌어 이전 공장을 열지 못했습니다. 청사진은 그대로 있습니다.'), 600);
 if (ui.migrated) setTimeout(() => flash('이전 주소에서 ' + [ui.migrated.nb ? `청사진 ${ui.migrated.nb}개` : '', ui.migrated.nl ? '작업 중이던 공장' : ''].filter(Boolean).join('와 ') + (ui.migrated.nl ? '을' : '를') + ' 옮겨 왔습니다'), 700);
 requestAnimationFrame(frame);
