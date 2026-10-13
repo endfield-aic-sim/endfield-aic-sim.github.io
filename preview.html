@@ -589,6 +589,23 @@ body.resizing.rcol{cursor:col-resize} body.resizing.rrow{cursor:row-resize}
 .cam{display:flex;align-items:center;gap:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .cam img{width:16px;height:16px}
 .czoom{position:absolute;right:12px;bottom:12px;display:flex;gap:4px}
+/* desktop layout: factory | facility panel | side panel, the factory gets the full height */
+@media (min-width: 961px){
+  .app{grid-template-columns:minmax(0,1fr) var(--build-w,250px) var(--side-w,350px);grid-template-rows:auto minmax(0,1fr)}
+  .build{grid-column:2;grid-row:2;border-top:0;border-left:1px solid var(--line);min-height:0}
+  aside.side{grid-column:3;grid-row:2}
+  .app.craftmode .craft,.app.boardmode .board{grid-row:2}
+  .brow{flex-direction:column;align-items:stretch;gap:8px;padding:10px 10px 0}
+  .tools{padding-bottom:0}
+  .search{width:auto;order:-1;padding-bottom:0}
+  .cats{flex-wrap:wrap;overflow:visible;gap:2px 12px;padding-bottom:6px}
+  .cats button{border:0;border-radius:0;padding:3px 0;margin:0;background:transparent;box-shadow:none;font-size:12.5px}
+  .cats button[aria-selected="true"]{background:transparent;box-shadow:inset 0 -2px 0 var(--accent)}
+  .strip{flex:1;min-height:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));grid-auto-rows:max-content;overflow-x:hidden;overflow-y:auto;align-content:start;padding:10px;gap:6px}
+  .tool{width:auto}
+  .strip>:not(.tool){grid-column:1/-1}
+  .keys{max-height:30%;overflow-y:auto}
+}
 .note:empty{display:none}
 </style>
 
@@ -635,7 +652,7 @@ body.resizing.rcol{cursor:col-resize} body.resizing.rrow{cursor:row-resize}
   </main>
 
   <section class="build" aria-label="설비">
-    <div class="rz row top" id="rzBuild" title="드래그해서 높이 조절" aria-hidden="true"></div>
+    <div class="rz col" id="rzBuild" title="드래그해서 너비 조절" aria-hidden="true"></div>
     <div class="brow">
       <div class="tools" id="tools" aria-label="도구"></div>
       <div class="cats" id="cats" role="tablist" aria-label="설비 분류"></div>
@@ -5432,11 +5449,11 @@ new MutationObserver(retheme).observe(document.documentElement, { attributes:tru
 window.addEventListener('resize', () => { resize(); board.redraw(); syncSitesH(); });
 // ---------- resizable panels: drag the edge of the side panel, the facility strip or the inspector ----------
 const layout = (() => { try { const v = JSON.parse(localStorage.getItem('aic-layout')); return v && typeof v === 'object' ? v : {}; } catch(e){ return {}; } })();
+delete layout.strip;   // the facility strip is a column now
 function applyLayout(){
   const app = $('#app'), strip = $('#plist'), insp = $('#insp');
   if (layout.side) app.style.setProperty('--side-w', layout.side + 'px'); else app.style.removeProperty('--side-w');
-  strip.style.height = layout.strip ? layout.strip + 'px' : '';
-  $('.build').classList.toggle('wrap', (layout.strip || 0) > 170);
+  if (layout.build) app.style.setProperty('--build-w', layout.build + 'px'); else app.style.removeProperty('--build-w');
   insp.style.height = layout.insp ? layout.insp + 'px' : ''; insp.style.maxHeight = layout.insp ? 'none' : '';
   $('#rzInspRow').hidden = insp.hidden;
 }
@@ -5454,9 +5471,9 @@ function dragEdge(handle, key, cls, start, move){
   handle.addEventListener('dblclick', () => { delete layout[key]; applyLayout(); saveLayout(); });
 }
 const clampN = (v, a, b) => Math.max(a, Math.min(b, v));
-dragEdge($('#rzSide'), 'side', 'rcol', () => null, e => clampN(innerWidth - e.clientX, 260, Math.max(260, Math.min(820, innerWidth - 420))));
-dragEdge($('#rzBuild'), 'strip', 'rrow', ev => ({ y: ev.clientY, h: $('#plist').getBoundingClientRect().height, z: zoomOf($('.build')) }),
-  (e, s) => clampN((s.h + (s.y - e.clientY)) / s.z, 90, innerHeight * .6 / s.z));
+dragEdge($('#rzSide'), 'side', 'rcol', () => null, e => clampN(innerWidth - e.clientX, 260, Math.max(260, Math.min(820, innerWidth - (layout.build || 250) - 360))));
+dragEdge($('#rzBuild'), 'build', 'rcol', () => ({ right: $('.build').getBoundingClientRect().right }),
+  (e, s) => clampN(s.right - e.clientX, 200, Math.max(200, Math.min(560, innerWidth - (layout.side || 350) - 360))));
 dragEdge($('#rzInsp'), 'insp', 'rrow', ev => ({ top: $('#insp').getBoundingClientRect().top, z: zoomOf($('aside.side')) }),
   (e, s) => clampN((e.clientY - s.top) / s.z, 60, innerHeight * .85 / s.z));
 applyLayout();
@@ -5476,7 +5493,7 @@ store.init();
 acct.init();
 loadPics();
 route();
-if (document.fonts) document.fonts.ready.then(() => render());
+if (document.fonts) document.fonts.ready.then(() => { syncSitesH(); fitView(); render(); });   // the site tabs may wrap once the font is in: fit again
 if (ui.oldSave) setTimeout(() => flash('PAC 포트 배치가 바뀌어 이전 공장을 열지 못했습니다. 청사진은 그대로 있습니다.'), 600);
 if (ui.migrated) setTimeout(() => flash('이전 주소에서 ' + [ui.migrated.nb ? `청사진 ${ui.migrated.nb}개` : '', ui.migrated.nl ? '작업 중이던 공장' : ''].filter(Boolean).join('와 ') + (ui.migrated.nl ? '을' : '를') + ' 옮겨 왔습니다'), 700);
 requestAnimationFrame(frame);
