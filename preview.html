@@ -1222,6 +1222,8 @@ const EXTRACT = {
   inergen: { by: '기체 수집기', hi: 20, lo: 10 }, xiragen: { by: '기체 수집기', hi: 20, lo: 10 },
 };
 
+// supply rate of an outlet that pours from the depot, per minute: the chosen rate, else one extractor's worth (60 when nothing gathers it)
+function srcRate(e) { return e.srate > 0 ? e.srate : (EXTRACT[e.src] ? EXTRACT[e.src].hi : 60); }
 function dims(type, f) { const t = TYPES[type]; return (f === 1 || f === 3) ? [t.h, t.w] : [t.w, t.h]; }
 function edgeCells(e, f) {
   const out = [];
@@ -1823,11 +1825,11 @@ class World {
     }
     if (e.off) return;
     // an outlet set to a liquid or gas feeds it from the region depot (endless when that item is infinite); otherwise it passes on what its inlet sent
-    // e.srate: units per minute (as if fed by that many pumps or gas extractors); 0 = as fast as the pipes take it
+    // units per minute, as if fed by that many pumps or gas extractors (unset: one of them)
     if (e.src) {
-      const lim = e.srate > 0;
-      if (lim) e.scred = Math.min(Math.max(1, e.srate / 60), (e.scred || 0) + e.srate / 60 * 0.05);
-      this.emit(e, portCells(e, 'out'), () => (this.stock(e.src) > 0 && (!lim || e.scred >= 1) ? [e.src] : []), k => { this.takeDepot(k); e.moved++; if (lim) e.scred -= 1; });
+      const rate = srcRate(e);
+      e.scred = Math.min(Math.max(1, rate / 60), (e.scred || 0) + rate / 60 * 0.05);
+      this.emit(e, portCells(e, 'out'), () => (this.stock(e.src) > 0 && e.scred >= 1 ? [e.src] : []), k => { this.takeDepot(k); e.moved++; e.scred -= 1; });
       return;
     }
     this.emit(e, portCells(e, 'out'), () => (e.q.length ? [e.q[0]] : []), () => { e.q.shift(); });
@@ -2431,7 +2433,7 @@ function plan(item, perMin, depth) {
   return node;
 }
 
-const AIC = { Space, REGIONS, RAW_DEFAULT, EXTRACT, XFER, XFER_MAX, legacyKey, ensureInf, buildWorld, cleanBp, supplyR, kindFits, FSLOT, layerOf, SITES, SITE_MIN, SITE_MAX, resizeWorld, presetSize, bbox, DX, DY, opp, ITEMS, RECIPES, RECIPES_BY_M, TYPES, GROUPS, FUEL, TILE, TILE_KO, World, newWorld, loadPreset, deserialize, PRESETS,
+const AIC = { srcRate, Space, REGIONS, RAW_DEFAULT, EXTRACT, XFER, XFER_MAX, legacyKey, ensureInf, buildWorld, cleanBp, supplyR, kindFits, FSLOT, layerOf, SITES, SITE_MIN, SITE_MAX, resizeWorld, presetSize, bbox, DX, DY, opp, ITEMS, RECIPES, RECIPES_BY_M, TYPES, GROUPS, FUEL, TILE, TILE_KO, World, newWorld, loadPreset, deserialize, PRESETS,
   dims, edgeCells, portCells, isPort, rectDist, plan, producerOf, RAW, IN_CAP, OUT_CAP, bpRotate, isFluid, TOGGLABLE,
   BELT_CELL_T, BELT_GAP, PIPE_CELL_T, PIPE_GAP, cellTOf, M_PER_CELL, PORT_GAP, PYLON_R, PYLON_LINK, RELAY_LINK, PAC_POWER };
 if (typeof module !== 'undefined' && module.exports) module.exports = AIC; else root.AIC = AIC;
@@ -4967,11 +4969,10 @@ function itemOptions(sel, carrier, emptyLabel){
 }
 // supply choices for an outlet that pours a liquid or gas from the depot: as many pumps / gas extractors, or pipe speed
 function srcRateOptions(e){
-  const ex = AIC.EXTRACT[e.src], cur = e.srate || 0, pipeMax = 60 * 2 * AIC.portCells(e, 'out').length;
-  const opts = [[0, `파이프 최대 (분당 ${pipeMax})`]];
-  if (ex){ for (let n = 1; n * ex.hi <= pipeMax; n++) opts.push([n * ex.hi, `${ex.by} ${n}대 (분당 ${n * ex.hi})`]); }
+  const ex = AIC.EXTRACT[e.src], cur = AIC.srcRate(e), pipeMax = 60 * 2 * AIC.portCells(e, 'out').length, opts = [];
+  if (ex) for (let n = 1; n * ex.hi <= pipeMax; n++) opts.push([n * ex.hi, `${ex.by} ${n}대 (분당 ${n * ex.hi})`]);
   else for (const r of [6, 12, 30, 60, 90, 120]) if (r <= pipeMax) opts.push([r, `분당 ${r}`]);
-  if (cur && !opts.some(o => o[0] === cur)) opts.push([cur, `분당 ${cur}`]);
+  if (!opts.some(o => o[0] === cur)) opts.push([cur, `분당 ${cur}`]);
   return opts.map(([v, l]) => `<option value="${v}"${v === cur ? ' selected' : ''}>${esc(l)}</option>`).join('');
 }
 function toolHelp(type){
