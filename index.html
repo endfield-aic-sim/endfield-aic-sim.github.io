@@ -550,7 +550,8 @@ body.resizing.rcol{cursor:col-resize} body.resizing.rrow{cursor:row-resize}
 .cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px}
 .cpi{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;border:1px solid var(--line);background:var(--panel);color:inherit;text-decoration:none;font-size:12px;text-align:center;line-height:1.25}
 .cpi:hover{border-color:var(--ink)} .cpi img{width:40px;height:40px}
-.cstage{position:relative;flex:1;min-height:0;overflow:hidden;cursor:grab;background:var(--cv-bg);touch-action:none}
+.cstage{position:relative;flex:1;min-height:0;overflow:hidden;cursor:grab;background:var(--cv-bg);touch-action:none;user-select:none;-webkit-user-select:none}
+.cstage img{-webkit-user-drag:none;user-select:none}
 .cstage.drag{cursor:grabbing}
 .cplane{position:absolute;left:0;top:0;transform-origin:0 0}
 .clines{position:absolute;left:0;top:0;overflow:visible}
@@ -5289,12 +5290,17 @@ const craft = {
     document.addEventListener('click', ev => { if (!ev.target.closest('.csearch')) res.hidden = true; });
     // pan by dragging the background, zoom with the wheel or the buttons
     const st = $('#cStage');
+    // drag anywhere (also starting on an item) to pan; a press that moves more than a few pixels is a pan, not a click
     st.addEventListener('pointerdown', ev => {
-      if (ev.button !== 0 || ev.target.closest('.cnode, .cpill, .czoom, .ceye')) return;
-      const x0 = ev.clientX, y0 = ev.clientY, px = this.px, py = this.py; st.setPointerCapture(ev.pointerId); st.classList.add('drag');
-      const mv = e => { this.px = px + e.clientX - x0; this.py = py + e.clientY - y0; this.apply(); };
-      const up = () => { st.removeEventListener('pointermove', mv); st.removeEventListener('pointerup', up); st.classList.remove('drag'); };
-      st.addEventListener('pointermove', mv); st.addEventListener('pointerup', up);
+      if (ev.button !== 0 || ev.target.closest('.czoom, .ceye')) return;
+      ev.preventDefault();   // no text selection or image dragging while panning
+      const x0 = ev.clientX, y0 = ev.clientY, px = this.px, py = this.py; let moved = false;
+      const mv = e => { if (!moved && Math.hypot(e.clientX - x0, e.clientY - y0) < 4) return;
+        if (!moved){ moved = true; st.setPointerCapture(ev.pointerId); st.classList.add('drag'); }
+        this.px = px + e.clientX - x0; this.py = py + e.clientY - y0; this.apply(); };
+      const up = () => { st.removeEventListener('pointermove', mv); st.removeEventListener('pointerup', up); st.removeEventListener('pointercancel', up); st.classList.remove('drag');
+        if (moved){ const eat = e => { e.stopPropagation(); e.preventDefault(); }; window.addEventListener('click', eat, { capture: true, once: true }); setTimeout(() => window.removeEventListener('click', eat, true), 50); } };
+      st.addEventListener('pointermove', mv); st.addEventListener('pointerup', up); st.addEventListener('pointercancel', up);
     });
     st.addEventListener('wheel', ev => { ev.preventDefault(); const r = st.getBoundingClientRect(); this.zoomAt(ev.deltaY < 0 ? 1.15 : 1/1.15, ev.clientX - r.left, ev.clientY - r.top); }, { passive: false });
     st.querySelector('.czoom').onclick = ev => { const b = ev.target.closest('[data-z]'); if (!b) return; const r = st.getBoundingClientRect();
