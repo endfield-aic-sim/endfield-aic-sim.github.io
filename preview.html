@@ -1823,7 +1823,13 @@ class World {
     }
     if (e.off) return;
     // an outlet set to a liquid or gas feeds it from the region depot (endless when that item is infinite); otherwise it passes on what its inlet sent
-    if (e.src) { this.emit(e, portCells(e, 'out'), () => (this.stock(e.src) > 0 ? [e.src] : []), k => { this.takeDepot(k); e.moved++; }); return; }
+    // e.srate: units per minute (as if fed by that many pumps or gas extractors); 0 = as fast as the pipes take it
+    if (e.src) {
+      const lim = e.srate > 0;
+      if (lim) e.scred = Math.min(Math.max(1, e.srate / 60), (e.scred || 0) + e.srate / 60 * 0.05);
+      this.emit(e, portCells(e, 'out'), () => (this.stock(e.src) > 0 && (!lim || e.scred >= 1) ? [e.src] : []), k => { this.takeDepot(k); e.moved++; if (lim) e.scred -= 1; });
+      return;
+    }
     this.emit(e, portCells(e, 'out'), () => (e.q.length ? [e.q[0]] : []), () => { e.q.shift(); });
   }
   // ----- conduit channels: strictly one inlet to one outlet of the same kind (single or manifold) -----
@@ -1860,8 +1866,10 @@ class World {
     return out;
   }
   setChannel(e, c) { if (!this.channelOk(e, c)) return false; e.ch = c; return true; }
+  setSourceRate(e, perMin) { e.srate = Math.max(0, Math.min(240, Math.floor(+perMin || 0))); e.scred = 0; }
   setSource(e, item) {
     e.src = item && ITEMS[item] && ITEMS[item].fluid ? item : null;
+    if (!e.src) e.srate = 0;
     if (e.src) e.q = [];
     else if (!this.channelOk(e, e.ch)) e.ch = this.autoChannel(e.type, e); // back to pairing: find a free slot
   }
@@ -1963,7 +1971,7 @@ class World {
     if (e.type === 'pac') o.ports = e.ports.slice();
     if (TYPES[e.type].kind === 'unloader') o.item = e.item;
     if (TYPES[e.type].kind === 'control') { o.filter = e.filter; o.limit = e.limit; o.rate = e.rate; }
-    if (TYPES[e.type].kind === 'conduit') { o.ch = e.ch; if (e.src) o.src = e.src; }
+    if (TYPES[e.type].kind === 'conduit') { o.ch = e.ch; if (e.src) o.src = e.src; if (e.src && e.srate) o.srate = e.srate; }
     if (TYPES[e.type].kind === 'thermal' && e.infFuel) o.infFuel = e.infFuel;
     if (TYPES[e.type].kind === 'stash' && e.slots.some(q => q.n)) o.slots = e.slots.map(q => q.n ? [q.item, q.n] : null);
     if (e.pin != null) o.pin = e.pin;
@@ -1977,7 +1985,7 @@ class World {
     const num = (v, lo, hi) => { v = Math.floor(+v || 0); return Math.max(lo, Math.min(hi, v)); };
     if (s.item !== undefined && TYPES[e.type].kind === 'unloader') e.item = okItem(s.item);
     if (TYPES[e.type].kind === 'control') { e.filter = okItem(s.filter); e.limit = num(s.limit, 0, 5000); e.rate = num(s.rate, 0, 100000); }
-    if (TYPES[e.type].kind === 'conduit') { e.ch = num(s.ch, 1, 9999); e.src = (TYPES[e.type].dirn === 'out' && s.src && ITEMS[s.src] && ITEMS[s.src].fluid) ? s.src : null; }
+    if (TYPES[e.type].kind === 'conduit') { e.ch = num(s.ch, 1, 9999); e.src = (TYPES[e.type].dirn === 'out' && s.src && ITEMS[s.src] && ITEMS[s.src].fluid) ? s.src : null; e.srate = e.src ? num(s.srate, 0, 240) : 0; }
     if (TYPES[e.type].kind === 'thermal') e.infFuel = s.infFuel && FUEL[s.infFuel] ? s.infFuel : null;
     if (TYPES[e.type].kind === 'stash' && Array.isArray(s.slots)) s.slots.slice(0, 6).forEach((q, i) => { if (Array.isArray(q)) this.fillStashSlot(e, i, q[0], q[1]); });
     if (TYPES[e.type].modes && s.mode > 0 && s.mode < TYPES[e.type].modes.length) e.mode = s.mode;
@@ -4840,7 +4848,7 @@ function renderInspector(force){
     h += `<div class="sub">안에 든 기체</div><div class="bufs" id="iin"></div><dl class="kv" id="ikv"></dl>`;
   } else if (k==='conduit'){
     h += `
-      <div class="ports">${t.dirn==='out' ? `<label for="isrc">나오는 재료</label><select id="isrc"><option value="">— 없음 —</option>${fluidOptions(e.src)}</select>` : ''}${e.src ? '' : `<label for="ich">채널</label><select id="ich">${world.channelChoices(e).map(n => `<option value="${n}"${e.ch===n?' selected':''}>${n}</option>`).join('')}</select>`}</div>
+      <div class="ports">${t.dirn==='out' ? `<label for="isrc">나오는 재료</label><select id="isrc"><option value="">— 없음 —</option>${fluidOptions(e.src)}</select>` : ''}${e.src ? `<label for="israte">공급량</label><select id="israte">${srcRateOptions(e)}</select>` : ''}${e.src ? '' : `<label for="ich">채널</label><select id="ich">${world.channelChoices(e).map(n => `<option value="${n}"${e.ch===n?' selected':''}>${n}</option>`).join('')}</select>`}</div>
       <dl class="kv" id="ikv"></dl>`;
   } else if (k==='bus' || k==='busport'){
     h += `<dl class="kv"><dt>상태</dt><dd>${e.busOn?'활성':'핵심 장치와 이어지지 않음'}</dd></dl>`;
@@ -4856,6 +4864,7 @@ function renderInspector(force){
   const md = el.querySelector('#imode'); if (md) md.onchange = () => { world.setMode(e, +md.value); markTouched(); renderInspector(true); };
   const chs = el.querySelector('#ich'); if (chs) chs.onchange = () => { if (!world.setChannel(e, +chs.value)) flash('그 채널은 이미 짝이 있습니다'); markTouched(); renderInspector(true); };
   const src = el.querySelector('#isrc'); if (src) src.onchange = () => { world.setSource(e, src.value || null); markTouched(); renderInspector(true); };
+  const sr = el.querySelector('#israte'); if (sr) sr.onchange = () => { world.setSourceRate(e, +sr.value); markTouched(); renderInspector(true); };
   const cf = el.querySelector('#cflt'); if (cf) cf.onchange = () => { e.filter = cf.value || null; markTouched(); };
   const cl = el.querySelector('#clim'); if (cl) cl.oninput = () => { e.limit = Math.min(5000, Math.max(0, parseInt(cl.value, 10)||0)); markTouched(); };
   const crt = el.querySelector('#crate'); if (crt) crt.onchange = () => { e.rate = Math.min(120, Math.max(0, Math.round((parseInt(crt.value, 10)||0)/6)*6)); crt.value = e.rate; markTouched(); };
@@ -4955,6 +4964,15 @@ function itemOptions(sel, carrier, emptyLabel){
   const rest = keys.filter(k => !inf(k) && !have.includes(k));
   const opt = k => `<option value="${k}"${k===sel?' selected':''}>${esc(ITEMS[k].ko)}${!world.isInf(k) && world.depot[k]?' ('+world.depot[k]+')':''}</option>`;
   return `<option value="">${emptyLabel || (carrier ? '— 모두 통과 —' : '— 끔 —')}</option><optgroup label="무한 (창고 탭에서 바꿈)">${raw.map(opt).join('')}</optgroup>${have.length?`<optgroup label="창고에 있음">${have.map(opt).join('')}</optgroup>`:''}<optgroup label="기타">${rest.map(opt).join('')}</optgroup>`;
+}
+// supply choices for an outlet that pours a liquid or gas from the depot: as many pumps / gas extractors, or pipe speed
+function srcRateOptions(e){
+  const ex = AIC.EXTRACT[e.src], cur = e.srate || 0, pipeMax = 60 * 2 * AIC.portCells(e, 'out').length;
+  const opts = [[0, `파이프 최대 (분당 ${pipeMax})`]];
+  if (ex){ for (let n = 1; n * ex.hi <= pipeMax; n++) opts.push([n * ex.hi, `${ex.by} ${n}대 (분당 ${n * ex.hi})`]); }
+  else for (const r of [6, 12, 30, 60, 90, 120]) if (r <= pipeMax) opts.push([r, `분당 ${r}`]);
+  if (cur && !opts.some(o => o[0] === cur)) opts.push([cur, `분당 ${cur}`]);
+  return opts.map(([v, l]) => `<option value="${v}"${v === cur ? ' selected' : ''}>${esc(l)}</option>`).join('');
 }
 function toolHelp(type){
   const t = TYPES[type];
