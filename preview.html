@@ -2556,7 +2556,7 @@ const ui = { site:'valley:0', tool:'select', rot:2, sel:null, multi:new Set(), p
 // ---------- persistence: account storage when the page has it, browser storage otherwise ----------
 const LS_LAYOUT = 'aic-sim-v2', LS_BP = 'aic-bp-v2', LS_PREFS = 'aic-prefs';
 // screen settings, kept per browser: theme, text size, and what the factory canvas draws
-const PREF_DEF = { theme: 'system', size: 'm', grid: true, labels: true, items: true };
+const PREF_DEF = { theme: 'light', size: 'm', grid: true, labels: true, items: true };
 const prefs = (() => { let o = null; try { o = JSON.parse(localStorage.getItem(LS_PREFS) || 'null'); } catch(e){} return Object.assign({}, PREF_DEF, o && typeof o === 'object' ? o : {}); })();
 function applyPrefs(first){
   const r = document.documentElement;

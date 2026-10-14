@@ -19,9 +19,9 @@
   --bg:#E3E6E2; --panel:#F3F4F1; --panel-2:#E9ECE7; --ink:#15191A; --muted:#15191A; --cv-muted:#58615C; --line:#C6CBC4;
   --accent:#F2D300; --accent-ink:#6B5C00; --on-accent:#15191A;
   --power:#12806F; --ok:#2B8A3E; --warn:#C26A00; --bad:#C0262D;
-  --cv-bg:#D5D9D3; --cv-grid:rgba(21,25,26,.055); --cv-grid2:rgba(21,25,26,.12);
+  --cv-bg:#C9CEC8; --cv-site:#FFFFFF; --cv-grid:rgba(21,25,26,.07); --cv-grid2:rgba(21,25,26,.14);
   --cv-belt:#3B4241; --cv-rail:#262B2A; --cv-belt-mark:#8C9591; --cv-pipe:#2E6F72; --cv-pipe-core:#7FC4C4;
-  --cv-mach:#F8F9F6; --cv-mach-ink:#1B2021; --cv-range:rgba(18,128,111,.09); --cv-range-line:rgba(18,128,111,.45);
+  --cv-mach:#D2D6D3; --cv-mach-ink:#1B2021; --cv-range:rgba(18,128,111,.09); --cv-range-line:rgba(18,128,111,.45);
   --f-display:"Noto Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
   --f-body:"Noto Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
   --f-mono:"Noto Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
@@ -32,7 +32,7 @@
     --bg:#101312; --panel:#171B1A; --panel-2:#1E2321; --ink:#E5E8E3; --muted:#E5E8E3; --cv-muted:#8D9690; --line:#2B312F;
     --accent:#F2D300; --accent-ink:#F2D300; --on-accent:#15191A;
     --power:#2DB3A0; --ok:#51CF66; --warn:#F59F00; --bad:#FF6B6B;
-    --cv-bg:#0D100F; --cv-grid:rgba(229,232,227,.035); --cv-grid2:rgba(229,232,227,.075);
+    --cv-bg:#0D100F; --cv-site:#111413; --cv-grid:rgba(229,232,227,.035); --cv-grid2:rgba(229,232,227,.075);
     --cv-belt:#343B39; --cv-rail:#1A1F1D; --cv-belt-mark:#6B7571; --cv-pipe:#245C5E; --cv-pipe-core:#5FB0B0;
     --cv-mach:#1D2220; --cv-mach-ink:#E5E8E3; --cv-range:rgba(45,179,160,.08); --cv-range-line:rgba(45,179,160,.45);
   }
@@ -42,7 +42,7 @@
   --bg:#101312; --panel:#171B1A; --panel-2:#1E2321; --ink:#E5E8E3; --muted:#E5E8E3; --cv-muted:#8D9690; --line:#2B312F;
   --accent:#F2D300; --accent-ink:#F2D300; --on-accent:#15191A;
   --power:#2DB3A0; --ok:#51CF66; --warn:#F59F00; --bad:#FF6B6B;
-  --cv-bg:#0D100F; --cv-grid:rgba(229,232,227,.035); --cv-grid2:rgba(229,232,227,.075);
+  --cv-bg:#0D100F; --cv-site:#111413; --cv-grid:rgba(229,232,227,.035); --cv-grid2:rgba(229,232,227,.075);
   --cv-belt:#343B39; --cv-rail:#1A1F1D; --cv-belt-mark:#6B7571; --cv-pipe:#245C5E; --cv-pipe-core:#5FB0B0;
   --cv-mach:#1D2220; --cv-mach-ink:#E5E8E3; --cv-range:rgba(45,179,160,.08); --cv-range-line:rgba(45,179,160,.45);
 }
@@ -2504,7 +2504,7 @@ function loadPics(){
 function drawPic(c, p, cx, cy, w, h){ const d = Math.min(w, h); c.drawImage(p.im, p.sx, p.sy, p.s, p.s, cx - d / 2, cy - d / 2, d, d); }
 function readColors(){
   const cs = getComputedStyle(document.documentElement);
-  for (const k of ['cv-bg','cv-grid','cv-grid2','cv-belt','cv-rail','cv-belt-mark','cv-pipe','cv-pipe-core','cv-mach','cv-mach-ink','cv-range','cv-range-line','accent','ink','muted','power','ok','warn','bad','panel','panel-2','line'])
+  for (const k of ['cv-bg','cv-site','cv-grid','cv-grid2','cv-belt','cv-rail','cv-belt-mark','cv-pipe','cv-pipe-core','cv-mach','cv-mach-ink','cv-range','cv-range-line','accent','ink','muted','power','ok','warn','bad','panel','panel-2','line'])
     C[k] = cs.getPropertyValue('--'+k).trim();
   C.muted = cs.getPropertyValue('--cv-muted').trim() || C.muted;   // the canvas keeps a softer grey for idle marks
   C.fDisplay = cs.getPropertyValue('--f-display').trim(); C.fMono = cs.getPropertyValue('--f-mono').trim(); C.fBody = cs.getPropertyValue('--f-body').trim();
@@ -2556,7 +2556,7 @@ const ui = { site:'valley:0', tool:'select', rot:2, sel:null, multi:new Set(), p
 // ---------- persistence: account storage when the page has it, browser storage otherwise ----------
 const LS_LAYOUT = 'aic-sim-v2', LS_BP = 'aic-bp-v2', LS_PREFS = 'aic-prefs';
 // screen settings, kept per browser: theme, text size, and what the factory canvas draws
-const PREF_DEF = { theme: 'system', size: 'm', grid: true, labels: true, items: true };
+const PREF_DEF = { theme: 'light', size: 'm', grid: true, labels: true, items: true };
 const prefs = (() => { let o = null; try { o = JSON.parse(localStorage.getItem(LS_PREFS) || 'null'); } catch(e){} return Object.assign({}, PREF_DEF, o && typeof o === 'object' ? o : {}); })();
 function applyPrefs(first){
   const r = document.documentElement;
@@ -4134,7 +4134,7 @@ function render(){
   ctx.setTransform(dpr*z,0,0,dpr*z,-ui.cam.x*dpr*z,-ui.cam.y*dpr*z);
   const x0 = Math.max(0, Math.floor(ui.cam.x/S)), y0 = Math.max(0, Math.floor(ui.cam.y/S));
   const x1 = Math.min(world.W-1, Math.ceil((ui.cam.x + vw/z)/S)), y1 = Math.min(world.H-1, Math.ceil((ui.cam.y + vh/z)/S));
-  ctx.fillStyle = C['panel']; ctx.globalAlpha = .35; ctx.fillRect(0,0,world.W*S,world.H*S); ctx.globalAlpha = 1;
+  ctx.fillStyle = C['cv-site'] || C['panel']; ctx.fillRect(0,0,world.W*S,world.H*S);   // the ground of the site (white in the light theme)
   ctx.lineWidth = 1/z;
   if (prefs.grid){
   ctx.strokeStyle = C['cv-grid']; ctx.beginPath();
