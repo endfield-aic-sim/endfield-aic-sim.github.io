@@ -4195,9 +4195,6 @@ function render(){
   for (const e of belts){
     const r = world.beltLinkWhy(e.type, e.x, e.y, e.f);
     if (r && (r.d === e.f || !geo.get(e.id) || feeds(e).length === 0)) noLink((e.x+.5+DX[r.d]*.5)*S, (e.y+.5+DY[r.d]*.5)*S);
-    // pointing into the side of a belt that is already fed from behind: blocked (needs a converger)
-    if (K(e.type) === 'belt'){ const n = world.at(e.x + DX[e.f], e.y + DY[e.f], AIC.layerOf(e.type));
-      if (n && K(n.type) === 'belt' && n.f !== e.f && n.f !== opp(e.f) && world.backFed(n)) noLink((e.x+.5+DX[e.f]*.5)*S, (e.y+.5+DY[e.f]*.5)*S); }
   }
   drawCarrierBeds(pipes, geo);
   for (const e of pipes) drawCarrierDetail(e, geo.get(e.id), phase);
