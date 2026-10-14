@@ -5467,12 +5467,16 @@ const craft = {
   ways(id){
     const w = [], ex = AIC.EXTRACT[id];
     if (ex) w.push({ src: true, by: ex.by, t: Math.round(60 / ex.hi * 10) / 10, in: {}, out: { [id]: 1 } });
-    for (const r of RECIPES) if (r.out[id]) w.push(r);
+    // recipes that empty a filled bottle or canister are left out here (they only give back what went in)
+    for (const r of RECIPES) if (r.out[id] && !Object.keys(r.in).some(k => ITEMS[k] && ITEMS[k].cat === 'filled')) w.push(r);
     return w;
   },
+  // a way loops when one of its inputs is the item itself or something further down the chain being drawn
+  loops(r, id, path){ return !r.src && Object.keys(r.in).some(k => k === id || path.has(k)); },
   pick(id, path){
-    const w = this.ways(id); if (!w.length) return { w, i: -1 };
-    // default: the way with the smallest whole chain that does not loop back (gathering counts as 1 step)
+    // only ways that do not loop back (a seed made from the plant it grows into is left out under that plant)
+    const w = this.ways(id).filter(r => !this.loops(r, id, path)); if (!w.length) return { w, i: -1 };
+    // default: the way with the smallest whole chain (gathering counts as 1 step)
     let i = 0, best = Infinity;
     w.forEach((r, j) => { const v = this.wayCost(r, id, path); if (v < best){ best = v; i = j; } });
     return { w, i };
@@ -5492,8 +5496,8 @@ const craft = {
     if (best < 60) this.memo.set(id, best);   // results that hit a loop depend on the path: not cached
     return best;
   },
-  // every way of making an item is shown: the main one (smallest loop-free chain) fully expanded,
-  // the other ways as a short list right under the item card (click an input to follow its own chain)
+  // every way of making an item is shown: the main one (smallest loop-free chain) fully expanded, the other ways
+  // (dashed) right after it with their inputs; an input already drawn elsewhere is a ◉ card
   build(id, path, seen){
     const n = { id, groups: [] };
     if (path.has(id)){ n.loop = true; return n; }
@@ -5502,11 +5506,13 @@ const craft = {
     const { w, i } = this.pick(id, path);
     if (i < 0) return n;
     const p2 = new Set(path); p2.add(id);
-    const way = w[i], g = { way, kids: [] };
-    if (way.src) g.kids.push({ id, deposit: true, groups: [] });
-    else for (const [k, q] of Object.entries(way.in)) g.kids.push(Object.assign(this.build(k, p2, seen), { qty: q }));
-    n.groups.push(g);
-    n.alts = w.filter((_, j) => j !== i);
+    // other ways show their own inputs as cards (click one to follow its chain), so they stay next to the item
+    for (const j of [i, ...w.map((_, j) => j).filter(j => j !== i)]){
+      const way = w[j], alt = j !== i, g = { way, alt, kids: [] };
+      if (way.src) g.kids.push({ id, deposit: true, groups: [], alt });
+      else for (const [k, q] of Object.entries(way.in)) g.kids.push(alt ? { id: k, groups: [], qty: q, alt: true } : Object.assign(this.build(k, p2, seen), { qty: q }));
+      n.groups.push(g);
+    }
     return n;
   },
   show(id){
