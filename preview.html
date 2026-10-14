@@ -1921,6 +1921,16 @@ class World {
     });
   }
   // put n of an item into slot i by hand (replaces what was there); n = 0 empties the slot
+  // put items straight into a machine's input slot, up to a stack of 50 (belts still only top it up to the
+  // normal buffer size); returns how many went in
+  fillMachine(e, item, n) {
+    if (!(IN_CAP[e.type] || {})[item]) return 0;
+    const cap = Math.max(50, IN_CAP[e.type][item]);
+    const have = e.inBuf[item] || 0, add = Math.max(0, Math.min(cap - have, Math.floor(n || 0)));
+    if (add) e.inBuf[item] = have + add;
+    return add;
+  }
+  clearMachine(e) { e.inBuf = {}; }
   fillStashSlot(e, i, item, n) {
     const q = e.slots[i]; if (!q) return;
     n = Math.max(0, Math.min(50, Math.floor(n || 0)));
@@ -4970,7 +4980,7 @@ function recipeRow(r, on){
 function bufList(buf, cap){
   const ks = Object.keys(buf||{}).filter(k => buf[k] > 0);
   if (!ks.length) return '<span class="dim">비어 있음</span>';
-  return ks.map(k => `<span class="buf" title="${esc(ITEMS[k].en)}"><img alt="" src="${iconURL(k)}">${esc(ITEMS[k].ko)} <b>${buf[k]}</b>${cap&&cap[k]?`<span class="dim">/${cap[k]}</span>`:''}</span>`).join('');
+  return ks.map(k => `<span class="buf" title="${esc(ITEMS[k].en)}"><img alt="" src="${iconURL(k)}">${esc(ITEMS[k].ko)} <b>${buf[k]}</b>${cap&&cap[k]&&buf[k]<=cap[k]?`<span class="dim">/${cap[k]}</span>`:''}</span>`).join('');
 }
 function head(t, e){
   return `<div class="row" style="justify-content:space-between;align-items:flex-start"><div><h3>${esc(t.ko)}${t.wuling?'<span class="tag">무릉</span>':''}${t.est?'<span class="tag" title="크기나 전력을 자료에서 확인하지 못해 추정한 값입니다">크기 추정</span>':''}</h3><div class="en">${esc(t.en)} · ${t.sizeLabel || (t.w+'×'+t.h)}${t.power?` · 전력 ${t.power}`:''}${e?` · (${e.x}, ${e.y})`:''}</div></div>${e?'<span id="ipill"></span>':''}</div>`;
@@ -5008,6 +5018,9 @@ function renderInspector(force){
   if (k==='machine'){
     h += `<div class="prog"><i id="iprog"></i></div><dl class="kv" id="ikv"></dl>
       <div class="sub">입력 버퍼</div><div class="bufs" id="iin"></div>
+      <div class="ports mfill"><label for="mfI">직접 넣기</label><select id="mfI">${Object.keys(IN_CAP[e.type] || {}).map(k => `<option value="${k}">${esc(ITEMS[k].ko)}</option>`).join('')}</select>
+        <label for="mfN">개수</label><input id="mfN" type="number" min="1" max="50" value="50"></div>
+      <div class="acts"><button class="btn sm primary" id="mfGo">넣기</button><button class="btn sm" id="mfClr">입력 버퍼 비우기</button></div>
       <div class="sub">출력 버퍼</div><div class="bufs" id="iout"></div>
       <div class="sub">레시피</div><div class="ports">${t.modes ? `<label for="imode">포트 모드</label><select id="imode">${t.modes.map((m, i) => `<option value="${i}"${(e.mode||0)===i?' selected':''}>${esc(m.ko)}</option>`).join('')}</select>` : ''}<label for="ipin">레시피</label><select id="ipin"><option value="">자동</option>${RECIPES_BY_M[e.type].map((r, i) => `<option value="${i}"${e.pin===i?' selected':''}>${t.modes && !world.modeFits(e.type, e.mode||0, r) ? '↻ ' : ''}${esc(Object.keys(r.out).map(x => ITEMS[x].ko).join(' + ') || '폐기')} ← ${esc(Object.entries(r.in).map(([x,n]) => ITEMS[x].ko + ' ' + n).join(', '))}${r.gas ? ' [' + esc(ITEMS[r.gas].ko) + ' 환경]' : ''}</option>`).join('')}</select></div>
       
@@ -5074,6 +5087,10 @@ function renderInspector(force){
   const rp = el.querySelector('#irotpac'); if (rp) rp.onclick = () => { if (world.rotate(world.pac.id) === false) flash('회전할 공간이 없습니다'); markTouched(); renderInspector(true); };
   const cp = el.querySelector('#icopy'); if (cp) cp.onclick = copySel;
   el.querySelectorAll('[data-empty]').forEach(bt => bt.onclick = () => { world.fillStashSlot(e, +bt.dataset.empty, null, 0); markTouched(); renderInspector(true); });
+  const mg = el.querySelector('#mfGo'); if (mg){
+    mg.onclick = () => { const k = $('#mfI').value, n = world.fillMachine(e, k, +$('#mfN').value || 0); flash(n ? `${ITEMS[k].ko} ${n}개를 넣었습니다` : '입력 버퍼가 가득 찼습니다'); updateInspectorDynamic(e); };
+    $('#mfClr').onclick = () => { world.clearMachine(e); updateInspectorDynamic(e); };
+  }
   const sg = el.querySelector('#sfGo'); if (sg){
     const firstEmpty = e.slots.findIndex(q => !q.n); if (firstEmpty >= 0) el.querySelector('#sfS').value = firstEmpty;
     sg.onclick = () => {

@@ -1921,6 +1921,16 @@ class World {
     });
   }
   // put n of an item into slot i by hand (replaces what was there); n = 0 empties the slot
+  // put items straight into a machine's input slot, up to a stack of 50 (belts still only top it up to the
+  // normal buffer size); returns how many went in
+  fillMachine(e, item, n) {
+    if (!(IN_CAP[e.type] || {})[item]) return 0;
+    const cap = Math.max(50, IN_CAP[e.type][item]);
+    const have = e.inBuf[item] || 0, add = Math.max(0, Math.min(cap - have, Math.floor(n || 0)));
+    if (add) e.inBuf[item] = have + add;
+    return add;
+  }
+  clearMachine(e) { e.inBuf = {}; }
   fillStashSlot(e, i, item, n) {
     const q = e.slots[i]; if (!q) return;
     n = Math.max(0, Math.min(50, Math.floor(n || 0)));
@@ -4970,7 +4980,7 @@ function recipeRow(r, on){
 function bufList(buf, cap){
   const ks = Object.keys(buf||{}).filter(k => buf[k] > 0);
   if (!ks.length) return '<span class="dim">비어 있음</span>';
-  return ks.map(k => `<span class="buf" title="${esc(ITEMS[k].en)}"><img alt="" src="${iconURL(k)}">${esc(ITEMS[k].ko)} <b>${buf[k]}</b>${cap&&cap[k]?`<span class="dim">/${cap[k]}</span>`:''}</span>`).join('');
+  return ks.map(k => `<span class="buf" title="${esc(ITEMS[k].en)}"><img alt="" src="${iconURL(k)}">${esc(ITEMS[k].ko)} <b>${buf[k]}</b>${cap&&cap[k]&&buf[k]<=cap[k]?`<span class="dim">/${cap[k]}</span>`:''}</span>`).join('');
 }
 function head(t, e){
   return `<div class="row" style="justify-content:space-between;align-items:flex-start"><div><h3>${esc(t.ko)}${t.wuling?'<span class="tag">무릉</span>':''}${t.est?'<span class="tag" title="크기나 전력을 자료에서 확인하지 못해 추정한 값입니다">크기 추정</span>':''}</h3><div class="en">${esc(t.en)} · ${t.sizeLabel || (t.w+'×'+t.h)}${t.power?` · 전력 ${t.power}`:''}${e?` · (${e.x}, ${e.y})`:''}</div></div>${e?'<span id="ipill"></span>':''}</div>`;
@@ -5008,6 +5018,9 @@ function renderInspector(force){
   if (k==='machine'){
     h += `<div class="prog"><i id="iprog"></i></div><dl class="kv" id="ikv"></dl>
       <div class="sub">입력 버퍼</div><div class="bufs" id="iin"></div>
+      <div class="ports mfill"><label for="mfI">직접 넣기</label><select id="mfI">${Object.keys(IN_CAP[e.type] || {}).map(k => `<option value="${k}">${esc(ITEMS[k].ko)}</option>`).join('')}</select>
+        <label for="mfN">개수</label><input id="mfN" type="number" min="1" max="50" value="50"></div>
+      <div class="acts"><button class="btn sm primary" id="mfGo">넣기</button><button class="btn sm" id="mfClr">입력 버퍼 비우기</button></div>
       <div class="sub">출력 버퍼</div><div class="bufs" id="iout"></div>
       <div class="sub">레시피</div><div class="ports">${t.modes ? `<label for="imode">포트 모드</label><select id="imode">${t.modes.map((m, i) => `<option value="${i}"${(e.mode||0)===i?' selected':''}>${esc(m.ko)}</option>`).join('')}</select>` : ''}<label for="ipin">레시피</label><select id="ipin"><option value="">자동</option>${RECIPES_BY_M[e.type].map((r, i) => `<option value="${i}"${e.pin===i?' selected':''}>${t.modes && !world.modeFits(e.type, e.mode||0, r) ? '↻ ' : ''}${esc(Object.keys(r.out).map(x => ITEMS[x].ko).join(' + ') || '폐기')} ← ${esc(Object.entries(r.in).map(([x,n]) => ITEMS[x].ko + ' ' + n).join(', '))}${r.gas ? ' [' + esc(ITEMS[r.gas].ko) + ' 환경]' : ''}</option>`).join('')}</select></div>
       
@@ -5074,6 +5087,10 @@ function renderInspector(force){
   const rp = el.querySelector('#irotpac'); if (rp) rp.onclick = () => { if (world.rotate(world.pac.id) === false) flash('회전할 공간이 없습니다'); markTouched(); renderInspector(true); };
   const cp = el.querySelector('#icopy'); if (cp) cp.onclick = copySel;
   el.querySelectorAll('[data-empty]').forEach(bt => bt.onclick = () => { world.fillStashSlot(e, +bt.dataset.empty, null, 0); markTouched(); renderInspector(true); });
+  const mg = el.querySelector('#mfGo'); if (mg){
+    mg.onclick = () => { const k = $('#mfI').value, n = world.fillMachine(e, k, +$('#mfN').value || 0); flash(n ? `${ITEMS[k].ko} ${n}개를 넣었습니다` : '입력 버퍼가 가득 찼습니다'); updateInspectorDynamic(e); };
+    $('#mfClr').onclick = () => { world.clearMachine(e); updateInspectorDynamic(e); };
+  }
   const sg = el.querySelector('#sfGo'); if (sg){
     const firstEmpty = e.slots.findIndex(q => !q.n); if (firstEmpty >= 0) el.querySelector('#sfS').value = firstEmpty;
     sg.onclick = () => {
@@ -5594,20 +5611,37 @@ const craft = {
     const root = this.build(this.target, new Set(), new Set());
     // layout: depth → column (target on the right), leaves take rows top to bottom, a parent sits on its first input's row
     const CW = 64, PW = 132, G = 30, PITCH = CW + PW + 2 * G, RH = 104, M = 40, AT = 88, AR = 25, AW = 236;
-    let row = 0, maxD = 0;
-    const place = (n, d) => { n.d = d; maxD = Math.max(maxD, d);
-      if (!n.groups.length){ n.row = row++; return; }
+    // compact layout: every subtree has a shape (lowest used row per column, relative to its own row 0); each input
+    // is pushed down only as far as needed so that no column overlaps what is already there, so a short input
+    // sits right under its neighbour even when that neighbour's own chain runs long further left
+    let maxD = 0;
+    const shape = (n, d) => {
+      n.d = d; maxD = Math.max(maxD, d);
+      const bot = [0];   // bot[k] = lowest row used k columns to the left of n (relative to n's row)
+      const merge = (sb, sh, k0) => sb.forEach((v, k) => { if (v == null) return; const i = k + k0; bot[i] = Math.max(bot[i] == null ? -1 : bot[i], v + sh); });
+      if (!n.groups.length) return bot;
       const [mg, ...ag] = n.groups;
-      mg.kids.forEach(c => place(c, d + 1)); mg.row = mg.kids.length ? mg.kids[0].row : row++;
-      n.row = mg.row;
-      // other ways go right under the main way's own inputs (that column is free below them: the main inputs'
-      // own chains sit further left), not after the whole main chain
-      if (ag.length){
-        let r = Math.max(n.row, ...mg.kids.map(c => c.row)) + 1;
-        for (const g of ag){ g.row = r; for (const c of g.kids){ c.d = d + 1; maxD = Math.max(maxD, d + 1); c.row = r++; } if (!g.kids.length) r++; }
-        row = Math.max(row, r);
-      } };
-    place(root, 0);
+      mg.kids.forEach((c, i) => {
+        const sb = shape(c, d + 1);
+        let sh = 0;
+        if (i > 0) sb.forEach((v, k) => { const used = bot[k + 1]; if (used != null) sh = Math.max(sh, used + 1); });   // every column of c starts at its row 0
+        c.off = sh; merge(sb, sh, 1);
+      });
+      mg.off = 0;
+      // other ways right below: their pills sit in n's gap (column 0) and their input cards in column 1
+      let r = Math.max(bot[0], bot[1] == null ? 0 : bot[1]) + 1;
+      for (const g of ag){
+        g.off = r;
+        for (const c of g.kids){ c.d = d + 1; maxD = Math.max(maxD, d + 1); c.off = r; bot[1] = Math.max(bot[1] == null ? -1 : bot[1], r); r++; }
+        if (!g.kids.length) r++;
+        bot[0] = r - 1;
+      }
+      return bot;
+    };
+    const rootShape = shape(root, 0);
+    const absRows = (n, base) => { n.row = base; n.groups.forEach((g, gi) => { g.row = base + (gi === 0 ? 0 : g.off); g.kids.forEach(c => { if (c.groups && c.groups.length || gi === 0) absRows(c, base + (c.off || 0)); else c.row = base + c.off; }); }); };
+    absRows(root, 0);
+    const row = Math.max(...rootShape.filter(v => v != null)) + 1;
     if (this.rate > 0) this.rates(root, this.rate);
     const W = (maxD + 1) * PITCH - PW - 2 * G + 2 * M, H = row * RH + 2 * M - 20;
     const cx = n => M + (maxD - n.d) * PITCH, cy = n => M + n.row * RH;
