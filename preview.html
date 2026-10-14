@@ -5594,20 +5594,37 @@ const craft = {
     const root = this.build(this.target, new Set(), new Set());
     // layout: depth → column (target on the right), leaves take rows top to bottom, a parent sits on its first input's row
     const CW = 64, PW = 132, G = 30, PITCH = CW + PW + 2 * G, RH = 104, M = 40, AT = 88, AR = 25, AW = 236;
-    let row = 0, maxD = 0;
-    const place = (n, d) => { n.d = d; maxD = Math.max(maxD, d);
-      if (!n.groups.length){ n.row = row++; return; }
+    // compact layout: every subtree has a shape (lowest used row per column, relative to its own row 0); each input
+    // is pushed down only as far as needed so that no column overlaps what is already there, so a short input
+    // sits right under its neighbour even when that neighbour's own chain runs long further left
+    let maxD = 0;
+    const shape = (n, d) => {
+      n.d = d; maxD = Math.max(maxD, d);
+      const bot = [0];   // bot[k] = lowest row used k columns to the left of n (relative to n's row)
+      const merge = (sb, sh, k0) => sb.forEach((v, k) => { if (v == null) return; const i = k + k0; bot[i] = Math.max(bot[i] == null ? -1 : bot[i], v + sh); });
+      if (!n.groups.length) return bot;
       const [mg, ...ag] = n.groups;
-      mg.kids.forEach(c => place(c, d + 1)); mg.row = mg.kids.length ? mg.kids[0].row : row++;
-      n.row = mg.row;
-      // other ways go right under the main way's own inputs (that column is free below them: the main inputs'
-      // own chains sit further left), not after the whole main chain
-      if (ag.length){
-        let r = Math.max(n.row, ...mg.kids.map(c => c.row)) + 1;
-        for (const g of ag){ g.row = r; for (const c of g.kids){ c.d = d + 1; maxD = Math.max(maxD, d + 1); c.row = r++; } if (!g.kids.length) r++; }
-        row = Math.max(row, r);
-      } };
-    place(root, 0);
+      mg.kids.forEach((c, i) => {
+        const sb = shape(c, d + 1);
+        let sh = 0;
+        if (i > 0) sb.forEach((v, k) => { const used = bot[k + 1]; if (used != null) sh = Math.max(sh, used + 1); });   // every column of c starts at its row 0
+        c.off = sh; merge(sb, sh, 1);
+      });
+      mg.off = 0;
+      // other ways right below: their pills sit in n's gap (column 0) and their input cards in column 1
+      let r = Math.max(bot[0], bot[1] == null ? 0 : bot[1]) + 1;
+      for (const g of ag){
+        g.off = r;
+        for (const c of g.kids){ c.d = d + 1; maxD = Math.max(maxD, d + 1); c.off = r; bot[1] = Math.max(bot[1] == null ? -1 : bot[1], r); r++; }
+        if (!g.kids.length) r++;
+        bot[0] = r - 1;
+      }
+      return bot;
+    };
+    const rootShape = shape(root, 0);
+    const absRows = (n, base) => { n.row = base; n.groups.forEach((g, gi) => { g.row = base + (gi === 0 ? 0 : g.off); g.kids.forEach(c => { if (c.groups && c.groups.length || gi === 0) absRows(c, base + (c.off || 0)); else c.row = base + c.off; }); }); };
+    absRows(root, 0);
+    const row = Math.max(...rootShape.filter(v => v != null)) + 1;
     if (this.rate > 0) this.rates(root, this.rate);
     const W = (maxD + 1) * PITCH - PW - 2 * G + 2 * M, H = row * RH + 2 * M - 20;
     const cx = n => M + (maxD - n.d) * PITCH, cy = n => M + n.row * RH;
