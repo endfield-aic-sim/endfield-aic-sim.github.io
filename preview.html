@@ -107,14 +107,19 @@ input.num{width:58px;border:1px solid var(--line);background:var(--panel-2);bord
 .bp .dim{font-size:11px}
 .bp .row{gap:4px;margin-top:auto}
 .snote{flex:none;align-self:center;max-width:260px;margin:0 4px;font-size:11.5px}
-.keys{font-size:11px;color:var(--muted);padding:5px 12px 6px;line-height:1.6;border-top:1px solid var(--line)}
+.keys{display:none;margin:0;font-size:11px;line-height:1.35}
+.keys>div{padding:3px 0}
+.keys dt{font-weight:700}
+.keys dd{margin:0;opacity:.85}
 kbd{font:inherit;font-weight:700;color:var(--ink)}
 
 main.stage{grid-column:1;grid-row:2;position:relative;min-width:0;min-height:0;background:var(--cv-bg);overflow:hidden}
 #cv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
 .sites{position:absolute;left:12px;top:12px;right:12px;display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start;pointer-events:none}
 .sites .rg{display:flex;align-items:center;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:3px;pointer-events:auto;max-width:100%;overflow-x:auto}
-.sites .rg>b{font-size:11px;color:var(--muted);padding:0 6px 0 5px;font-weight:600;white-space:nowrap}
+.sites .rg>.rgh{font-size:12px;font-weight:700;padding:4px 8px;white-space:nowrap}
+.sites .rg>.rgh span{font-weight:400;opacity:.8}
+.sites .rg>.rgh[aria-expanded="true"]{background:var(--panel-2)}
 .sites .rg button{border:0;background:transparent;border-radius:2px;padding:4px 8px;font-size:12px;color:var(--ink);white-space:nowrap;line-height:1.2}
 .sites .rg button:hover{background:var(--panel-2)}
 .sites .rg button[aria-pressed="true"]{background:var(--ink);color:var(--panel);font-weight:600}
@@ -587,22 +592,28 @@ body.resizing.rcol{cursor:col-resize} body.resizing.rrow{cursor:row-resize}
 .cai i{position:absolute;right:-3px;bottom:-3px;font-style:normal;font-size:9px;font-weight:700;background:var(--ink);color:var(--bg);padding:0 2px;line-height:1.2}
 .cam{display:flex;align-items:center;gap:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .cam img{width:16px;height:16px}
+.crate{display:flex;align-items:center;gap:6px;font-size:13px;white-space:nowrap}
+.crate input{width:80px}
+.crt{position:absolute;bottom:calc(100% + 3px);left:50%;transform:translateX(-50%);white-space:nowrap;background:var(--ink);color:var(--bg);font-size:10.5px;font-weight:700;padding:1px 5px}
+.cpill .cmc{display:inline;color:var(--accent)}
+.cpill[data-build]{cursor:pointer}
+.cpill[data-build]:hover{border-color:var(--accent)}
 .czoom{position:absolute;right:12px;bottom:12px;display:flex;gap:4px}
 /* desktop layout: factory | facility panel | side panel, the factory gets the full height;
    the facility panel: search and tools on top, categories as a vertical list beside the facility cards */
 @media (min-width: 961px){
-  .app{grid-template-columns:minmax(0,1fr) var(--build-w,330px) var(--side-w,350px);grid-template-rows:auto minmax(0,1fr) auto}
-  .build{grid-column:2;grid-row:2/4;border-top:0;border-left:1px solid var(--line);min-height:0;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr)}
-  aside.side{grid-column:3;grid-row:2/4}
-  .keys{grid-column:1;grid-row:3;border-top:1px solid var(--line);background:var(--panel)}
-  .app.craftmode .craft,.app.boardmode .board{grid-row:2/4}
+  .app{grid-template-columns:minmax(0,1fr) var(--build-w,330px) var(--side-w,350px);grid-template-rows:auto minmax(0,1fr)}
+  .build{grid-column:2;grid-row:2;border-top:0;border-left:1px solid var(--line);min-height:0;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto auto minmax(0,1fr)}
+  aside.side{grid-column:3;grid-row:2}
+  .keys{display:block;grid-column:1;grid-row:4;overflow-y:auto;min-height:0;border-right:1px solid var(--line);border-top:1px solid var(--line);padding:8px 12px 10px;width:0;min-width:100%}
+  .app.craftmode .craft,.app.boardmode .board{grid-row:2}
   .brow{display:contents}
   .search{grid-column:1/-1;grid-row:1;width:auto;padding:10px 10px 8px}
   .tools{grid-column:1/-1;grid-row:2;padding:0 10px 10px;border-bottom:1px solid var(--line)}
   .cats{grid-column:1;grid-row:3;flex-direction:column;flex:none;gap:0;overflow-y:auto;overflow-x:hidden;border-right:1px solid var(--line);padding:6px 0;min-width:0}
   .cats button{display:flex;justify-content:space-between;align-items:baseline;gap:10px;width:100%;text-align:left;border:0;border-radius:0;margin:0;padding:8px 12px;background:transparent;box-shadow:none;font-size:12.5px;white-space:nowrap}
   .cats button[aria-selected="true"]{background:var(--panel-2);box-shadow:inset 3px 0 0 var(--accent)}
-  .strip{grid-column:2;grid-row:3;min-height:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));grid-auto-rows:max-content;overflow-x:hidden;overflow-y:auto;align-content:start;padding:8px;gap:5px}
+  .strip{grid-column:2;grid-row:3/5;min-height:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));grid-auto-rows:max-content;overflow-x:hidden;overflow-y:auto;align-content:start;padding:8px;gap:5px}
   .tool{width:auto;padding:6px 4px 5px;gap:3px}
   .tool canvas{width:42px;height:42px}
   .tool .nm{font-size:11.5px}
@@ -639,6 +650,7 @@ body.resizing.rcol{cursor:col-resize} body.resizing.rrow{cursor:row-resize}
         <label class="lbl" for="site" style="font-size:11px;color:var(--muted)">부지</label>
         <select class="sel" id="site" aria-label="부지 크기"></select>
         <span class="row" id="siteCustom" hidden style="gap:4px"><input id="sw" type="number" min="12" max="120" aria-label="부지 가로 칸 수" class="num"> × <input id="sh" type="number" min="12" max="120" aria-label="부지 세로 칸 수" class="num"><button class="btn sm primary" id="siteApply">적용</button><button class="btn sm" id="siteCancel">취소</button></span>
+        <button class="btn" id="undoBtn" title="되돌리기 (Ctrl + Z)" disabled>↶ 되돌리기</button><button class="btn" id="redoBtn" title="다시 실행 (Ctrl + Y)" disabled>↷ 다시</button>
         <button class="btn" id="newFac" title="빈 공장으로 새로 시작">새 공장</button>
         <button class="btn" id="io">레이아웃 코드</button>
         <button class="btn" id="facSave" hidden title="지금 공장을 내 계정에 저장">공장 저장</button>
@@ -650,7 +662,7 @@ body.resizing.rcol{cursor:col-resize} body.resizing.rrow{cursor:row-resize}
     <canvas id="cv" aria-label="공장 부지. 설비를 골라 클릭해서 배치합니다."></canvas>
     <nav class="sites" id="sites" aria-label="부지 (지역마다 창고를 함께 씀)"></nav>
     <div class="selbar" id="selbar" hidden></div>
-    <div class="hud"><span class="chip warn" id="warn" hidden></span><span class="chip mono" id="siteInfo">부지</span><span class="chip mono" id="hover">—</span></div>
+    <div class="hud"><span class="chip warn" id="warn" hidden></span><span class="chip mono" id="hover">—</span></div>
   </main>
 
   <section class="build" aria-label="설비">
@@ -661,8 +673,8 @@ body.resizing.rcol{cursor:col-resize} body.resizing.rrow{cursor:row-resize}
       <div class="search"><input id="q" type="search" placeholder="설비 찾기" aria-label="설비 검색"></div>
     </div>
     <div class="strip" id="plist" role="tabpanel" aria-label="설비 목록"></div>
+    <dl class="keys" aria-label="단축키"><div><dt>E</dt><dd>컨베이어 벨트</dd></div><div><dt>Q</dt><dd>파이프</dd></div><div><dt>R</dt><dd>회전</dd></div><div><dt>M</dt><dd>이동</dd></div><div><dt>Del</dt><dd>철거</dd></div><div><dt>Esc</dt><dd>취소</dd></div><div><dt>Space</dt><dd>재생 · 일시정지</dd></div><div><dt>1 – 4</dt><dd>배속</dd></div><div><dt>드래그</dt><dd>범위 선택</dd></div><div><dt>Shift + 드래그</dt><dd>선택에서 빼기</dd></div><div><dt>Ctrl + 드래그</dt><dd>선택에 더하기</dd></div><div><dt>Ctrl + C / V</dt><dd>복사 · 붙여넣기</dd></div><div><dt>Ctrl + Z / Y</dt><dd>되돌리기 · 다시</dd></div></dl>
   </section>
-  <div class="keys simonly"><kbd>E</kbd> 컨베이어 벨트 · <kbd>Q</kbd> 파이프 · <kbd>R</kbd> 회전 · <kbd>M</kbd> 이동 · <kbd>Esc</kbd> 취소 · <kbd>Del</kbd> 철거 · 범위 드래그 = 선택 · <kbd>Shift</kbd> + 드래그 = 선택에서 빼기 · <kbd>Ctrl</kbd> + 드래그 = 더하기 · <kbd>Ctrl</kbd> + <kbd>C</kbd> / <kbd>V</kbd> 복사·붙여넣기</div>
 
   <aside class="side">
     <div class="rz col" id="rzSide" title="드래그해서 너비 조절" aria-hidden="true"></div>
@@ -2593,7 +2605,7 @@ function loadWorld(w){
 // 을/를, 이/가 … after a Korean word (final consonant check); non-Hangul endings take the vowel form
 function josa(w, withF, without){ const c = String(w).trim().slice(-1).charCodeAt(0); return (c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28) ? withF : without; }
 // replace the whole space (saves and codes made with all eight sites)
-function loadSpace(sp, active){ space = sp; ui.site = sp.get(active) ? active : 'valley:0'; ui.fac = null; showSite(); }
+function loadSpace(sp, active){ space = sp; ui.site = sp.get(active) ? active : 'valley:0'; ui.fac = null; showSite(); hist.reset(); }
 function loadData(o){ if (o && o.space) loadSpace(AIC.Space.deserialize(o), o.active); else loadWorld(AIC.deserialize(o)); }
 function showSite(){
   world = space.get(ui.site); ui.sel = null; ui.multi.clear(); ui.paste = null; ui.move = null;
@@ -2604,7 +2616,7 @@ function switchSite(key){
   if (key === ui.site || !space.get(key)) return;
   if (ui.move) cancelMove();
   if (space.regionOf(key) !== space.regionOf(ui.site)) dep.picked.clear();
-  ui.site = key; ui.presetNote = null; dep.rg = null; dep.edit = null; showSite(); setTool(ui.tool.startsWith('build:') ? ui.tool : 'select');
+  hist.commit(); ui.site = key; ui.presetNote = null; dep.rg = null; dep.edit = null; showSite(); hist.base(); setTool(ui.tool.startsWith('build:') ? ui.tool : 'select');
 }
 // the site moved from rlawnstjr0611.github.io/endfield_AIC_simulation; that address's redirect page passes along
 // what the visitor had saved in that browser as #migrate=<base64url JSON {bps, layout, hash}>
@@ -2729,7 +2741,50 @@ async function saveBp(name, bp){
   if (acct.user){ try { await acct.addBp(name, bp); return 'account'; } catch(e){ flash('계정에 저장하지 못해 이 브라우저에 저장했습니다 · ' + acctError(e)); } }
   await store.addBp(name, bp); return 'local';
 }
-const markTouched = () => { ui.touched = true; };
+const markTouched = () => { ui.touched = true; hist.soon(); };
+// ---------- undo / redo: snapshots of a site's layout (settings included, running contents not) ----------
+// any change is noticed by comparing snapshots after an action ends (pointer up, key up, a setting changed),
+// so a whole belt drag or a multi-move is one step
+const hist = {
+  undo: [], redo: [], last: new Map(), t: 0, MAX: 80,
+  snap(w){ const o = w.serialize(); delete o.depot; for (const c of o.ents) delete c.slots; return JSON.stringify(o); },
+  base(){ if (space && world && !this.last.has(ui.site)) this.last.set(ui.site, this.snap(world)); },
+  reset(){ this.undo = []; this.redo = []; this.last.clear(); this.base(); this.ui(); },
+  soon(){ clearTimeout(this.t); this.t = setTimeout(() => { if (!ui.ptrDown) this.commit(); }, 0); },
+  commit(){
+    if (!space || !world) return;
+    const key = ui.site, cur = this.snap(world), prev = this.last.get(key);
+    if (prev == null){ this.last.set(key, cur); return; }
+    if (cur === prev) return;
+    this.undo.push({ key, json: prev }); if (this.undo.length > this.MAX) this.undo.shift();
+    this.redo = []; this.last.set(key, cur); this.ui();
+  },
+  step(from, to){
+    this.commit();
+    const e = from.pop(); if (!e) return;
+    const w0 = space.get(e.key); to.push({ key: e.key, json: this.snap(w0) });
+    const nw = AIC.deserialize(JSON.parse(e.json)); nw.time = w0.time; nw.stats = w0.stats;
+    space.set(e.key, nw); this.last.set(e.key, e.json);
+    if (ui.move) cancelMove();
+    if (e.key !== ui.site) switchSite(e.key);
+    else if (nw.W !== w0.W || nw.H !== w0.H) showSite();
+    else { world = nw; ui.sel = null; ui.multi.clear(); renderInspector(true); renderSelbar(); renderStats(); renderFacs(); renderDepot(true); renderSites(); }
+    ui.touched = true; this.ui();
+  },
+  // drop changes made since the last step without recording them (a touch that turned into a two-finger gesture)
+  revert(){
+    const prev = this.last.get(ui.site); if (!prev || this.snap(world) === prev) return;
+    const w0 = world, nw = AIC.deserialize(JSON.parse(prev)); nw.time = w0.time; nw.stats = w0.stats;
+    space.set(ui.site, nw); world = nw; ui.sel = null; ui.multi.clear(); renderInspector(true); renderSelbar(); renderFacs();
+  },
+  ui(){ const u = $('#undoBtn'), r = $('#redoBtn'); if (u) u.disabled = !this.undo.length; if (r) r.disabled = !this.redo.length; },
+};
+const downIds = new Set();
+window.addEventListener('pointerdown', ev => { if (!downIds.size){ clearTimeout(hist.t); hist.commit(); } downIds.add(ev.pointerId); ui.ptrDown = true; }, true);   // close the previous step before a new action starts (not when a second finger joins)
+const ptrUp = ev => { downIds.delete(ev.pointerId); if (!downIds.size){ ui.ptrDown = false; hist.soon(); } };
+window.addEventListener('pointerup', ptrUp, true);
+window.addEventListener('pointercancel', ptrUp, true);
+window.addEventListener('keyup', () => hist.soon(), true);
 
 // ---------- palette ----------
 const TOOLS = [['select','선택','선택 (클릭)'],['area','범위','범위 선택 (드래그)'],['pan','화면','화면 끌기'],['delete','철거','철거']];
@@ -2988,7 +3043,7 @@ const board = {
     if (!acct.enabled()){ el.innerHTML = '<div class="bwrap"><p class="note">게시판은 공개 사이트에서만 열립니다.</p></div>'; return; }
     if (!acct.client && !acct.down){ el.innerHTML = '<div class="bwrap"><p class="note">게시판에 연결하는 중…</p></div>'; await acct.wait(); if (my !== this.seq) return; }
     if (acct.down || !acct.client){ el.innerHTML = '<div class="bwrap"><p class="note">게시판 서버에 연결하지 못했습니다. 잠시 후 새로고침해 주세요.</p><p><a class="btn" href="#">공장으로 돌아가기</a></p></div>'; return; }
-    if (v === 'board'){ this.lv = this.boardLv; return this.list(true, my); }
+    if (v === 'board'){ this.lv = this.boardLv; if (arg === 'q') this.boardLv.q = decodeURIComponent(arg2 || '').slice(0, 60); return this.list(true, my); }   // #board/q/<text>: search
     if (v === 'user') return arg2 === 'factories' ? this.myFactories(decodeURIComponent(arg || '').toLowerCase(), my) : this.profile(decodeURIComponent(arg || '').toLowerCase(), my);
     if (v === 'post') return this.open(+arg, my);
     if (v === 'write') return this.write(null, my);
@@ -3767,6 +3822,8 @@ function route(){
   board.show(v, arg, arg2);
 }
 window.addEventListener('hashchange', route);
+$('#undoBtn').onclick = () => hist.step(hist.undo, hist.redo);
+$('#redoBtn').onclick = () => hist.step(hist.redo, hist.undo);
 $('#viewSw').onclick = ev => {
   const b = ev.target.closest('button'); if (!b) return;
   if (b.dataset.v === 'craft'){ const h = '#craft' + (craft.target ? '/' + craft.target : ''); if (location.hash !== h) location.hash = h; else route(); }
@@ -4394,7 +4451,14 @@ function areaRect(){ const a = ui.drag.a, b = ui.drag.b; return { x: Math.min(a.
 cv.addEventListener('pointerdown', ev => {
   cv.setPointerCapture(ev.pointerId);
   pointers.set(ev.pointerId, { x: ev.offsetX, y: ev.offsetY });
-  if (pointers.size === 2){ const [a,b] = [...pointers.values()]; pinch = { d: Math.hypot(a.x-b.x, a.y-b.y), z: ui.cam.z, mid: toWorld((a.x+b.x)/2, (a.y+b.y)/2) }; ui.drag = null; return; }
+  if (pointers.size === 2){
+    // second finger: zoom and pan with two fingers; whatever the first finger just started (placing, a belt line, removing) is undone
+    const [a,b] = [...pointers.values()]; pinch = { d: Math.hypot(a.x-b.x, a.y-b.y), z: ui.cam.z, mid: toWorld((a.x+b.x)/2, (a.y+b.y)/2) };
+    if (ui.drag && ['line', 'build', 'delete', 'area', 'grab'].includes(ui.drag.kind) && performance.now() - (ui.drag.t0 || 0) < 400) hist.revert();
+    if (ui.move) cancelMove();
+    ui.drag = null; return;
+  }
+  if (pointers.size > 2) return;
   const c = toCell(ev.offsetX, ev.offsetY); ui.hover = c;
   const panBtn = ev.button === 1 || ev.button === 2;
   if (panBtn || ui.tool === 'pan'){ ui.drag = { kind:'pan', sx:ev.offsetX, sy:ev.offsetY, cam:Object.assign({}, ui.cam), moved:false, btn:ev.button }; return; }
@@ -4416,6 +4480,7 @@ cv.addEventListener('pointerdown', ev => {
   }
   else ui.drag = { kind:'pan', sx:ev.offsetX, sy:ev.offsetY, cam:Object.assign({}, ui.cam), moved:false, desel:true };
 });
+cv.addEventListener('pointerdown', () => { if (ui.drag && !ui.drag.t0) ui.drag.t0 = performance.now(); });   // runs after the handler above
 cv.addEventListener('pointermove', ev => {
   if (pointers.has(ev.pointerId)) pointers.set(ev.pointerId, { x: ev.offsetX, y: ev.offsetY });
   if (pinch && pointers.size === 2){
@@ -4604,6 +4669,8 @@ function renderSelbar(){
 document.addEventListener('keydown', ev => {
   if (ui.view !== 'sim' || ev.target.closest('input,select,textarea,dialog')) return;
   const k = ev.key.toLowerCase(), mod = ev.ctrlKey || ev.metaKey;
+  if (mod && k==='z' && !ev.shiftKey){ hist.step(hist.undo, hist.redo); ev.preventDefault(); return; }
+  if (mod && (k==='y' || (k==='z' && ev.shiftKey))){ hist.step(hist.redo, hist.undo); ev.preventDefault(); return; }
   if (mod && k==='c'){ copySel(); ev.preventDefault(); return; }
   if (mod && k==='v'){ if (ui.clip) startPaste(ui.clip); ev.preventDefault(); return; }
   if (k==='r'){ rotateAction(); ev.preventDefault(); }
@@ -4677,16 +4744,20 @@ const siteSel = $('#site');
 function siteFacCount(w){ let n = 0; for (const e of w.ents.values()) if (!CARRIER.has(K(e.type)) && K(e.type) !== 'bus' && e.type !== 'pac') n++; return n; }
 function renderSites(){
   const nav = $('#sites'); if (!nav || !space) return;
-  nav.innerHTML = space.regions.map(r => `<div class="rg" role="group" aria-label="${esc(r.ko)}"><b>${esc(r.ko)}</b>${r.sites.map((w, i) => {
+  // folded: one button per region (with the site on screen); clicking a region unfolds its sites
+  const curR = space.regionOf(ui.site), curI = space.parse(ui.site).i;
+  nav.innerHTML = space.regions.map(r => `<div class="rg" role="group" aria-label="${esc(r.ko)}"><button class="rgh" data-rg="${r.id}" aria-expanded="${ui.sitesOpen === r.id}">${esc(r.ko)}${r === curR ? ` <span>· ${esc(r.names[curI])}</span>` : ''} ${ui.sitesOpen === r.id ? '▴' : '▾'}</button>${ui.sitesOpen !== r.id ? '' : r.sites.map((w, i) => {
     const key = AIC.Space.key(r.id, i), n = siteFacCount(w);
     return `<button data-site="${key}" aria-pressed="${key === ui.site}" title="${esc(r.ko + ' ' + r.names[i])} · ${w.W}×${w.H} · 설비 ${n}개 (두 번 누르면 이름 바꾸기)">${esc(r.names[i])}<small>${w.W}×${w.H}</small>${n ? '<i aria-hidden="true"></i>' : ''}</button>`;
   }).join('')}</div>`).join('');
   nav.querySelectorAll('button[data-site]').forEach(b => {
-    b.onclick = () => switchSite(b.dataset.site);
+    b.onclick = () => { if (b.dataset.site === ui.site) return; ui.sitesOpen = null; switchSite(b.dataset.site); renderSites(); };   // the site on screen stays open so a double click can rename it
     b.ondblclick = () => renameSite(b);
   });
+  nav.querySelectorAll('[data-rg]').forEach(b => b.onclick = () => { ui.sitesOpen = ui.sitesOpen === b.dataset.rg ? null : b.dataset.rg; renderSites(); });
   syncSitesH();
 }
+document.addEventListener('pointerdown', ev => { if (ui.sitesOpen && !ev.target.closest('#sites')){ ui.sitesOpen = null; renderSites(); } });
 function syncSitesH(){ const nav = $('#sites'); if (nav) $('#stage').style.setProperty('--sites-h', nav.offsetHeight + 'px'); }
 function renameSite(b){
   const key = b.dataset.site, p = space.parse(key); if (!p) return;
@@ -4709,7 +4780,6 @@ function syncSite(){
   siteSel.title = `${space.regionOf(ui.site).ko} ${d.name} 부지 크기 (업그레이드 단계에 맞춰 고르세요)`;
   $('#sw').value = world.W; $('#sh').value = world.H;
   $('#siteCustom').hidden = true;
-  $('#siteInfo').textContent = `${space.regionOf(ui.site).ko} · ${d.name} · 부지 ${world.W}×${world.H}`;
   syncEdgeBus();
 }
 function applySite(W, H){
@@ -5319,16 +5389,20 @@ const craft = {
     this.target = id;
     $('#cCrumb').innerHTML = `<a href="#craft">조합식</a>${id ? ` <span>›</span> <b>${esc(ITEMS[id].ko)}</b>` : ''}`;
     $('#cPick').hidden = !!id; $('#cStage').hidden = !id;
+    const cb = $('#cBoard'); cb.hidden = !id || !acct.enabled(); if (id) cb.href = '#board/q/' + encodeURIComponent(ITEMS[id].ko);
     if (!id){ this.picker(); return; }
     this.draw(true);
   },
   shell(){
     this.el().innerHTML = `<div class="cbar"><nav class="ccrumb" id="cCrumb"></nav>
+      <a class="btn sm" id="cBoard" hidden title="이 아이템이 나오는 게시판 글 찾기">게시판에서 찾기</a>
+      <label class="crate" title="이만큼 만들려면 단계마다 설비가 몇 대 필요한지 보여 줍니다">분당 <input id="cRate" type="number" min="0" max="100000" step="1" inputmode="decimal" placeholder="목표"> 개</label>
       <div class="csearch"><input id="cq" type="search" placeholder="생산품·원재료 찾기" autocomplete="off" aria-label="아이템 찾기"><div class="cres" id="cRes" hidden></div></div></div>
       <div class="cpick" id="cPick"></div>
       <div class="cstage" id="cStage" hidden><div class="cplane" id="cPlane"></div>
         <div class="czoom"><button class="btn sm" data-z="in" aria-label="확대">+</button><button class="btn sm" data-z="out" aria-label="축소">−</button><button class="btn sm" data-z="fit">맞추기</button></div></div>
 `;
+    $('#cRate').oninput = ev => { this.rate = Math.max(0, +ev.target.value || 0); if (this.target) this.draw(false); };
     const q = $('#cq'), res = $('#cRes');
     const find = () => { const v = q.value.trim().toLowerCase(); if (!v){ res.hidden = true; return []; }
       const hits = Object.keys(ITEMS).filter(k => ITEMS[k].ko.toLowerCase().includes(v) || ITEMS[k].en.toLowerCase().includes(v))
@@ -5346,18 +5420,29 @@ const craft = {
       if (ev.button !== 0 || ev.target.closest('.czoom, .ceye')) return;
       ev.preventDefault();   // no text selection or image dragging while panning
       const x0 = ev.clientX, y0 = ev.clientY, px = this.px, py = this.py; let moved = false;
-      const mv = e => { if (!moved && Math.hypot(e.clientX - x0, e.clientY - y0) < 4) return;
+      const mv = e => { if (this.pinch){ moved = true; return; } if (!moved && Math.hypot(e.clientX - x0, e.clientY - y0) < 4) return;
         if (!moved){ moved = true; st.setPointerCapture(ev.pointerId); st.classList.add('drag'); }
         this.px = px + e.clientX - x0; this.py = py + e.clientY - y0; this.apply(); };
       const up = () => { st.removeEventListener('pointermove', mv); st.removeEventListener('pointerup', up); st.removeEventListener('pointercancel', up); st.classList.remove('drag');
         if (moved){ const eat = e => { e.stopPropagation(); e.preventDefault(); }; window.addEventListener('click', eat, { capture: true, once: true }); setTimeout(() => window.removeEventListener('click', eat, true), 50); } };
       st.addEventListener('pointermove', mv); st.addEventListener('pointerup', up); st.addEventListener('pointercancel', up);
     });
+    // two fingers on a tablet: zoom and pan
+    const touches = new Map();
+    st.addEventListener('pointerdown', ev => { if (ev.pointerType !== 'touch') return; touches.set(ev.pointerId, [ev.clientX, ev.clientY]);
+      if (touches.size === 2){ const [a, b] = [...touches.values()], r = st.getBoundingClientRect(), mx = (a[0] + b[0]) / 2 - r.left, my = (a[1] + b[1]) / 2 - r.top;
+        this.pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]), z: this.z, wx: (mx - this.px) / this.z, wy: (my - this.py) / this.z }; } }, true);
+    st.addEventListener('pointermove', ev => { if (!touches.has(ev.pointerId)) return; touches.set(ev.pointerId, [ev.clientX, ev.clientY]);
+      if (this.pinch && touches.size === 2){ const [a, b] = [...touches.values()], r = st.getBoundingClientRect(), mx = (a[0] + b[0]) / 2 - r.left, my = (a[1] + b[1]) / 2 - r.top;
+        this.z = Math.max(.25, Math.min(2.5, this.pinch.z * Math.hypot(a[0] - b[0], a[1] - b[1]) / this.pinch.d)); this.px = mx - this.pinch.wx * this.z; this.py = my - this.pinch.wy * this.z; this.apply(); } }, true);
+    const lift = ev => { touches.delete(ev.pointerId); if (touches.size < 2) this.pinch = null; };
+    st.addEventListener('pointerup', lift, true); st.addEventListener('pointercancel', lift, true);
     st.addEventListener('wheel', ev => { ev.preventDefault(); const r = st.getBoundingClientRect(); this.zoomAt(ev.deltaY < 0 ? 1.15 : 1/1.15, ev.clientX - r.left, ev.clientY - r.top); }, { passive: false });
     st.querySelector('.czoom').onclick = ev => { const b = ev.target.closest('[data-z]'); if (!b) return; const r = st.getBoundingClientRect();
       if (b.dataset.z === 'fit') this.fit(); else this.zoomAt(b.dataset.z === 'in' ? 1.25 : 1/1.25, r.width / 2, r.height / 2); };
     $('#cPlane').addEventListener('click', ev => {
       const go = ev.target.closest('[data-go]'); if (go){ location.hash = 'craft/' + go.dataset.go; return; }
+      const pb = ev.target.closest('.cpill[data-build]'); if (pb){ history.pushState(null, '', location.pathname + location.search); route(); setTool('build:' + pb.dataset.build); const t = TYPES[pb.dataset.build]; if (t && t.group && ui.cat !== t.group){ ui.cat = t.group; ui.q = ''; $('#q').value = ''; renderPalette(); } flash(`${t.ko}을(를) 골랐습니다`.replace('을(를)', josa(t.ko, '을', '를'))); return; }
       const eye = ev.target.closest('.ceye'); if (eye){ const o = $('#cPlane').querySelector(`.cnode[data-main="${eye.dataset.item}"]`); if (o){ o.classList.remove('flash'); void o.offsetWidth; o.classList.add('flash'); } return; }
       const nd = ev.target.closest('.cnode'); if (nd && nd.dataset.item && nd.dataset.item !== this.target) location.hash = 'craft/' + nd.dataset.item;
       else if (nd && nd.dataset.item) openItem(nd.dataset.item);
@@ -5384,14 +5469,16 @@ const craft = {
       // keep the rows under the item free for its list of other ways
       if (n.alts && n.alts.length) row = Math.max(row, n.row + Math.ceil((AT + 20 + n.alts.length * AR) / RH)); };
     place(root, 0);
+    if (this.rate > 0) this.rates(root, this.rate);
     const W = (maxD + 1) * PITCH - PW - 2 * G + 2 * M, H = row * RH + 2 * M - 20;
     const cx = n => M + (maxD - n.d) * PITCH, cy = n => M + n.row * RH;
     let html = '', lines = '', alines = '';
     const all = []; const walk = n => { all.push(n); n.groups.forEach(g => g.kids.forEach(walk)); }; walk(root);
     for (const n of all){
       const x = cx(n), y = cy(n), it = ITEMS[n.id];
+      const rl = n.flow > 0 ? `<span class="crt">${n.qty > 1 ? `×${n.qty} · ` : ''}분당 ${fmt(n.flow)}</span>` : '';
       html += `<div class="cnode${n.deposit ? ' dep' : ''}${n.alt ? ' alt' : ''}${n === root ? ' root' : ''}" data-item="${n.id}"${!n.deposit && !n.dup && !n.loop && !n.alt ? ` data-main="${n.id}"` : ''} style="left:${x}px;top:${y}px" title="${esc(it.ko)}${n.deposit ? ' (매장지)' : ''}">
-        <div class="cimg" style="--mc:${MAT[it.mat] || '#888'}"><img alt="" src="${iconURL(n.id)}"></div>${n.qty > 1 ? `<span class="cq">×${n.qty}</span>` : ''}
+        <div class="cimg" style="--mc:${MAT[it.mat] || '#888'}"><img alt="" src="${iconURL(n.id)}"></div>${rl || (n.qty > 1 ? `<span class="cq">×${n.qty}</span>` : '')}
         ${n.dup ? `<button class="ceye" type="button" data-item="${n.id}" title="위에서 이미 펼친 재료 (눌러서 찾기)">◉</button>` : ''}${n.loop ? '<span class="cloop" title="이 재료는 위 단계에서 다시 만들어짐">↻</span>' : ''}
         <div class="cname">${esc(it.ko)}</div></div>`;
       const my = y + CW / 2, pr = x - G, pl = pr - PW, jx = pl - G / 2, jo = x - G / 2;
@@ -5405,8 +5492,8 @@ const craft = {
         // the machine (or extractor) pill for this way, wires from its inputs to it and from it to the item
         const gy = M + g.row * RH + CW / 2, wy = g.way;
         const name = wy.src ? wy.by : MNAME(wy.m), icon = wy.src ? '' : facIconURL(wy.m);
-        html += `<div class="cpill${g.alt ? ' alt' : ''}" style="left:${pl}px;top:${gy - 19}px;width:${PW}px">${wy.gas ? `<span class="cgas" style="--gc:${MAT[ITEMS[wy.gas].mat]}">${esc(ITEMS[wy.gas].ko)} 환경</span>` : ''}${g.alt ? `<span class="caltag">기타 ${gi}</span>` : ''}
-          <b>${icon ? `<img alt="" src="${icon}">` : ''}${esc(name)}</b><span>${wy.t}초</span></div>`;
+        html += `<div class="cpill${g.alt ? ' alt' : ''}"${wy.src ? '' : ` data-build="${wy.m}" title="눌러서 공장에서 ${esc(name)} 고르기"`} style="left:${pl}px;top:${gy - 19}px;width:${PW}px">${wy.gas ? `<span class="cgas" style="--gc:${MAT[ITEMS[wy.gas].mat]}">${esc(ITEMS[wy.gas].ko)} 환경</span>` : ''}${g.alt ? `<span class="caltag">기타 ${gi}</span>` : ''}
+          <b>${icon ? `<img alt="" src="${icon}">` : ''}${esc(name)}</b><span>${wy.t}초${n.mach > 0 ? ` · <b class="cmc" title="정확히 ${fmt(n.mach)}대">${Math.ceil(n.mach - 1e-9)}대</b>` : ''}</span></div>`;
         const tgt = g.alt ? 'alines' : 'lines';
         const seg = gy === my ? `<path d="M${pr} ${gy}H${x}"/>` : `<path d="M${pr} ${gy}H${jo}V${my}H${x}"/>`;
         if (g.alt) alines += seg; else lines += seg;
@@ -5418,6 +5505,23 @@ const craft = {
     pl.innerHTML = `<svg class="clines" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" aria-hidden="true">${lines}</svg>` + html;
     this.W = W; this.H = H;
     if (refit) this.fit(); else this.apply();
+  },
+  // target rate → per-minute flow on every card and machine counts on every pill (inputs used in several places add up)
+  rates(root, rate){
+    const main = new Map(), order = [], seen = new Set();
+    const visit = n => { for (const g of n.groups) for (const c of g.kids) visit(c); if (n.groups.length && !main.has(n.id)) main.set(n.id, n); };
+    visit(root);
+    const dfs = id => { if (seen.has(id)) return; seen.add(id); const n = main.get(id); if (n) for (const c of n.groups[0].kids) if (!c.loop && !c.deposit) dfs(c.id); order.push(id); };
+    dfs(root.id); order.reverse();   // every item before the inputs it needs
+    const need = new Map([[root.id, rate]]);
+    for (const id of order){
+      const n = main.get(id), d = need.get(id) || 0; if (!n || !(d > 0)) continue;
+      const way = n.groups[0].way;
+      if (way.src){ n.mach = d / AIC.EXTRACT[id].hi; n.groups[0].kids[0].flow = d; continue; }
+      const crafts = d / (way.out[id] || 1); n.mach = crafts * way.t / 60;
+      for (const c of n.groups[0].kids){ c.flow = crafts * (c.qty || 1); if (!c.loop) need.set(c.id, (need.get(c.id) || 0) + c.flow); }
+    }
+    root.flow = rate;
   },
   apply(){ $('#cPlane').style.transform = `translate(${this.px}px, ${this.py}px) scale(${this.z})`; },
   fit(){
@@ -5433,8 +5537,29 @@ const craft = {
 
 // ---------- loop ----------
 let last = performance.now(), uiT = 0, statT = 0, saveT = 0;
+// time spent in a background tab (browsers stop the page there) is run when the tab comes back, a slice per frame
+const catchup = { hiddenAt: 0, left: 0, total: 0 };
+const minSec = s => s >= 3600 ? `${Math.floor(s / 3600)}시간 ${Math.round(s % 3600 / 60)}분` : s >= 60 ? `${Math.round(s / 60)}분` : `${Math.round(s)}초`;
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden'){ catchup.hiddenAt = performance.now(); return; }
+  if (catchup.hiddenAt && ui.playing){
+    const gone = (performance.now() - catchup.hiddenAt) / 1000;
+    if (gone > 2){ catchup.left = Math.min(catchup.left + gone * ui.speed, 2 * 3600); catchup.total = catchup.left; }
+  }
+  catchup.hiddenAt = 0;
+});
+function runCatchup(){
+  if (!(catchup.left > 0)) return;
+  if (!ui.playing){ catchup.left = 0; return; }   // pausing drops the rest
+  const t0 = performance.now();
+  while (catchup.left >= 0.05 && performance.now() - t0 < 30){ space.step(0.05); catchup.left -= 0.05; }
+  const w = $('#warn');
+  if (catchup.left < 0.05){ catchup.left = 0; flash(`자리를 비운 ${minSec(catchup.total)} 동안의 생산을 계산했습니다`); }
+  else { w.hidden = false; w.textContent = `자리를 비운 ${minSec(catchup.total)} 계산 중… ${Math.floor((1 - catchup.left / catchup.total) * 100)}% (일시정지하면 멈춤)`; flashT = performance.now() + 500; }
+}
 function frame(now){
   const dt = Math.min(0.25, (now - last)/1000); last = now;
+  runCatchup();
   if (ui.playing){
     ui.acc += dt * ui.speed;
     let n = 0; while (ui.acc >= 0.05 && n < 400){ space.step(0.05); ui.acc -= 0.05; n++; }
@@ -5508,7 +5633,7 @@ window.addEventListener('pagehide', saveNow);
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveNow(); });
 
 readColors();
-boot();
+boot(); hist.reset();
 renderTools(); renderPalette();
 syncSite(); renderSites(); fitView();
 renderInspector(true); renderStats(); renderRecipes();
