@@ -107,14 +107,19 @@ input.num{width:58px;border:1px solid var(--line);background:var(--panel-2);bord
 .bp .dim{font-size:11px}
 .bp .row{gap:4px;margin-top:auto}
 .snote{flex:none;align-self:center;max-width:260px;margin:0 4px;font-size:11.5px}
-.keys{font-size:11px;color:var(--muted);padding:5px 12px 6px;line-height:1.6;border-top:1px solid var(--line)}
+.keys{display:none;margin:0;font-size:11px;line-height:1.35}
+.keys>div{padding:3px 0}
+.keys dt{font-weight:700}
+.keys dd{margin:0;opacity:.85}
 kbd{font:inherit;font-weight:700;color:var(--ink)}
 
 main.stage{grid-column:1;grid-row:2;position:relative;min-width:0;min-height:0;background:var(--cv-bg);overflow:hidden}
 #cv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
 .sites{position:absolute;left:12px;top:12px;right:12px;display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start;pointer-events:none}
 .sites .rg{display:flex;align-items:center;gap:2px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:3px;pointer-events:auto;max-width:100%;overflow-x:auto}
-.sites .rg>b{font-size:11px;color:var(--muted);padding:0 6px 0 5px;font-weight:600;white-space:nowrap}
+.sites .rg>.rgh{font-size:12px;font-weight:700;padding:4px 8px;white-space:nowrap}
+.sites .rg>.rgh span{font-weight:400;opacity:.8}
+.sites .rg>.rgh[aria-expanded="true"]{background:var(--panel-2)}
 .sites .rg button{border:0;background:transparent;border-radius:2px;padding:4px 8px;font-size:12px;color:var(--ink);white-space:nowrap;line-height:1.2}
 .sites .rg button:hover{background:var(--panel-2)}
 .sites .rg button[aria-pressed="true"]{background:var(--ink);color:var(--panel);font-weight:600}
@@ -587,28 +592,52 @@ body.resizing.rcol{cursor:col-resize} body.resizing.rrow{cursor:row-resize}
 .cai i{position:absolute;right:-3px;bottom:-3px;font-style:normal;font-size:9px;font-weight:700;background:var(--ink);color:var(--bg);padding:0 2px;line-height:1.2}
 .cam{display:flex;align-items:center;gap:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .cam img{width:16px;height:16px}
+.crate{display:flex;align-items:center;gap:6px;font-size:13px;white-space:nowrap}
+.crate input{width:80px}
+.crt{position:absolute;bottom:calc(100% + 3px);left:50%;transform:translateX(-50%);white-space:nowrap;background:var(--ink);color:var(--bg);font-size:10.5px;font-weight:700;padding:1px 5px}
+.cpill .cmc{display:inline;color:var(--accent)}
+.cpill[data-build]{cursor:pointer}
+.cpill[data-build]:hover{border-color:var(--accent)}
 .czoom{position:absolute;right:12px;bottom:12px;display:flex;gap:4px}
 /* desktop layout: factory | facility panel | side panel, the factory gets the full height;
    the facility panel: search and tools on top, categories as a vertical list beside the facility cards */
 @media (min-width: 961px){
-  .app{grid-template-columns:minmax(0,1fr) var(--build-w,330px) var(--side-w,350px);grid-template-rows:auto minmax(0,1fr) auto}
-  .build{grid-column:2;grid-row:2/4;border-top:0;border-left:1px solid var(--line);min-height:0;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr)}
-  aside.side{grid-column:3;grid-row:2/4}
-  .keys{grid-column:1;grid-row:3;border-top:1px solid var(--line);background:var(--panel)}
-  .app.craftmode .craft,.app.boardmode .board{grid-row:2/4}
+  .app{grid-template-columns:minmax(0,1fr) var(--build-w,330px) var(--side-w,350px);grid-template-rows:auto minmax(0,1fr)}
+  .build{grid-column:2;grid-row:2;border-top:0;border-left:1px solid var(--line);min-height:0;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto auto minmax(0,1fr)}
+  aside.side{grid-column:3;grid-row:2}
+  .keys{display:block;grid-column:1;grid-row:4;overflow-y:auto;min-height:0;border-right:1px solid var(--line);border-top:1px solid var(--line);padding:8px 12px 10px;width:0;min-width:100%}
+  .app.craftmode .craft,.app.boardmode .board{grid-row:2}
   .brow{display:contents}
   .search{grid-column:1/-1;grid-row:1;width:auto;padding:10px 10px 8px}
   .tools{grid-column:1/-1;grid-row:2;padding:0 10px 10px;border-bottom:1px solid var(--line)}
   .cats{grid-column:1;grid-row:3;flex-direction:column;flex:none;gap:0;overflow-y:auto;overflow-x:hidden;border-right:1px solid var(--line);padding:6px 0;min-width:0}
   .cats button{display:flex;justify-content:space-between;align-items:baseline;gap:10px;width:100%;text-align:left;border:0;border-radius:0;margin:0;padding:8px 12px;background:transparent;box-shadow:none;font-size:12.5px;white-space:nowrap}
   .cats button[aria-selected="true"]{background:var(--panel-2);box-shadow:inset 3px 0 0 var(--accent)}
-  .strip{grid-column:2;grid-row:3;min-height:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));grid-auto-rows:max-content;overflow-x:hidden;overflow-y:auto;align-content:start;padding:8px;gap:5px}
+  .strip{grid-column:2;grid-row:3/5;min-height:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));grid-auto-rows:max-content;overflow-x:hidden;overflow-y:auto;align-content:start;padding:8px;gap:5px}
   .tool{width:auto;padding:6px 4px 5px;gap:3px}
   .tool canvas{width:42px;height:42px}
   .tool .nm{font-size:11.5px}
   .strip>:not(.tool){grid-column:1/-1}
 }
 }
+.siteinfo{font-size:12.5px;white-space:nowrap;padding-left:14px;border-left:1px solid var(--line)}
+/* blueprint posts: several blueprints, main item, game code */
+.pitems{display:inline-flex;gap:2px;margin-left:8px;vertical-align:middle}
+.pitems img{width:20px;height:20px}
+.wbpe{border:1px solid var(--line);padding:10px;margin-bottom:10px;background:var(--panel)}
+.wbph{display:flex;align-items:center;margin-bottom:8px}
+.wbpg{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 10px;align-items:center}
+.wbpg label{font-size:12.5px;font-weight:600}
+.wbpg textarea,.wbpg input{width:100%}
+.wpaint{display:flex;align-items:center;gap:6px;margin:10px 0 6px;font-size:12.5px;flex-wrap:wrap}
+.swatch{width:20px;height:20px;border:2px solid transparent;background:var(--sw);padding:0;cursor:pointer;opacity:.75}
+.swatch[aria-pressed="true"]{border-color:var(--ink);opacity:1}
+.wprev{width:100%;height:280px;display:block;background:var(--cv-bg);cursor:crosshair;touch-action:none}
+.bpth{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.gcode{display:flex;align-items:center;gap:8px;margin:8px 0;padding:6px 8px;border:1px solid var(--line);background:var(--panel-2)}
+.gcode .glabel{font-size:12px;font-weight:700;white-space:nowrap}
+.gcode code{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+.bpfig canvas[data-bi]{width:100%;height:clamp(240px,52vw,460px);display:block;background:var(--cv-bg)}
 .note:empty{display:none}
 </style>
 
@@ -634,11 +663,13 @@ body.resizing.rcol{cursor:col-resize} body.resizing.rrow{cursor:row-resize}
         <div class="meter" id="meter"><i></i></div>
         <b id="pwrtxt">0 / 200</b>
       </div>
+      <span class="siteinfo" id="siteInfo"></span>
       <div class="spacer"></div>
       <div class="ctl">
         <label class="lbl" for="site" style="font-size:11px;color:var(--muted)">부지</label>
         <select class="sel" id="site" aria-label="부지 크기"></select>
         <span class="row" id="siteCustom" hidden style="gap:4px"><input id="sw" type="number" min="12" max="120" aria-label="부지 가로 칸 수" class="num"> × <input id="sh" type="number" min="12" max="120" aria-label="부지 세로 칸 수" class="num"><button class="btn sm primary" id="siteApply">적용</button><button class="btn sm" id="siteCancel">취소</button></span>
+        <button class="btn" id="undoBtn" title="되돌리기 (Ctrl + Z)" disabled>↶ 되돌리기</button><button class="btn" id="redoBtn" title="다시 실행 (Ctrl + Y)" disabled>↷ 다시</button>
         <button class="btn" id="newFac" title="빈 공장으로 새로 시작">새 공장</button>
         <button class="btn" id="io">레이아웃 코드</button>
         <button class="btn" id="facSave" hidden title="지금 공장을 내 계정에 저장">공장 저장</button>
@@ -650,7 +681,7 @@ body.resizing.rcol{cursor:col-resize} body.resizing.rrow{cursor:row-resize}
     <canvas id="cv" aria-label="공장 부지. 설비를 골라 클릭해서 배치합니다."></canvas>
     <nav class="sites" id="sites" aria-label="부지 (지역마다 창고를 함께 씀)"></nav>
     <div class="selbar" id="selbar" hidden></div>
-    <div class="hud"><span class="chip warn" id="warn" hidden></span><span class="chip mono" id="siteInfo">부지</span><span class="chip mono" id="hover">—</span></div>
+    <div class="hud"><span class="chip warn" id="warn" hidden></span><span class="chip mono" id="hover">—</span></div>
   </main>
 
   <section class="build" aria-label="설비">
@@ -661,8 +692,8 @@ body.resizing.rcol{cursor:col-resize} body.resizing.rrow{cursor:row-resize}
       <div class="search"><input id="q" type="search" placeholder="설비 찾기" aria-label="설비 검색"></div>
     </div>
     <div class="strip" id="plist" role="tabpanel" aria-label="설비 목록"></div>
+    <dl class="keys" aria-label="단축키"><div><dt>E</dt><dd>컨베이어 벨트</dd></div><div><dt>Q</dt><dd>파이프</dd></div><div><dt>R</dt><dd>회전</dd></div><div><dt>M</dt><dd>이동</dd></div><div><dt>Del</dt><dd>철거</dd></div><div><dt>Esc</dt><dd>취소</dd></div><div><dt>Space</dt><dd>재생 · 일시정지</dd></div><div><dt>1 – 4</dt><dd>배속</dd></div><div><dt>드래그</dt><dd>범위 선택</dd></div><div><dt>Shift + 드래그</dt><dd>선택에서 빼기</dd></div><div><dt>Ctrl + 드래그</dt><dd>선택에 더하기</dd></div><div><dt>Ctrl + C / V</dt><dd>복사 · 붙여넣기</dd></div><div><dt>Ctrl + Z / Y</dt><dd>되돌리기 · 다시</dd></div></dl>
   </section>
-  <div class="keys simonly"><kbd>E</kbd> 컨베이어 벨트 · <kbd>Q</kbd> 파이프 · <kbd>R</kbd> 회전 · <kbd>M</kbd> 이동 · <kbd>Esc</kbd> 취소 · <kbd>Del</kbd> 철거 · 범위 드래그 = 선택 · <kbd>Shift</kbd> + 드래그 = 선택에서 빼기 · <kbd>Ctrl</kbd> + 드래그 = 더하기 · <kbd>Ctrl</kbd> + <kbd>C</kbd> / <kbd>V</kbd> 복사·붙여넣기</div>
 
   <aside class="side">
     <div class="rz col" id="rzSide" title="드래그해서 너비 조절" aria-hidden="true"></div>
@@ -2593,7 +2624,7 @@ function loadWorld(w){
 // 을/를, 이/가 … after a Korean word (final consonant check); non-Hangul endings take the vowel form
 function josa(w, withF, without){ const c = String(w).trim().slice(-1).charCodeAt(0); return (c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28) ? withF : without; }
 // replace the whole space (saves and codes made with all eight sites)
-function loadSpace(sp, active){ space = sp; ui.site = sp.get(active) ? active : 'valley:0'; ui.fac = null; showSite(); }
+function loadSpace(sp, active){ space = sp; ui.site = sp.get(active) ? active : 'valley:0'; ui.fac = null; showSite(); hist.reset(); }
 function loadData(o){ if (o && o.space) loadSpace(AIC.Space.deserialize(o), o.active); else loadWorld(AIC.deserialize(o)); }
 function showSite(){
   world = space.get(ui.site); ui.sel = null; ui.multi.clear(); ui.paste = null; ui.move = null;
@@ -2604,7 +2635,7 @@ function switchSite(key){
   if (key === ui.site || !space.get(key)) return;
   if (ui.move) cancelMove();
   if (space.regionOf(key) !== space.regionOf(ui.site)) dep.picked.clear();
-  ui.site = key; ui.presetNote = null; dep.rg = null; dep.edit = null; showSite(); setTool(ui.tool.startsWith('build:') ? ui.tool : 'select');
+  hist.commit(); ui.site = key; ui.presetNote = null; dep.rg = null; dep.edit = null; showSite(); hist.base(); setTool(ui.tool.startsWith('build:') ? ui.tool : 'select');
 }
 // the site moved from rlawnstjr0611.github.io/endfield_AIC_simulation; that address's redirect page passes along
 // what the visitor had saved in that browser as #migrate=<base64url JSON {bps, layout, hash}>
@@ -2729,7 +2760,50 @@ async function saveBp(name, bp){
   if (acct.user){ try { await acct.addBp(name, bp); return 'account'; } catch(e){ flash('계정에 저장하지 못해 이 브라우저에 저장했습니다 · ' + acctError(e)); } }
   await store.addBp(name, bp); return 'local';
 }
-const markTouched = () => { ui.touched = true; };
+const markTouched = () => { ui.touched = true; hist.soon(); };
+// ---------- undo / redo: snapshots of a site's layout (settings included, running contents not) ----------
+// any change is noticed by comparing snapshots after an action ends (pointer up, key up, a setting changed),
+// so a whole belt drag or a multi-move is one step
+const hist = {
+  undo: [], redo: [], last: new Map(), t: 0, MAX: 80,
+  snap(w){ const o = w.serialize(); delete o.depot; for (const c of o.ents) delete c.slots; return JSON.stringify(o); },
+  base(){ if (space && world && !this.last.has(ui.site)) this.last.set(ui.site, this.snap(world)); },
+  reset(){ this.undo = []; this.redo = []; this.last.clear(); this.base(); this.ui(); },
+  soon(){ clearTimeout(this.t); this.t = setTimeout(() => { if (!ui.ptrDown) this.commit(); }, 0); },
+  commit(){
+    if (!space || !world) return;
+    const key = ui.site, cur = this.snap(world), prev = this.last.get(key);
+    if (prev == null){ this.last.set(key, cur); return; }
+    if (cur === prev) return;
+    this.undo.push({ key, json: prev }); if (this.undo.length > this.MAX) this.undo.shift();
+    this.redo = []; this.last.set(key, cur); this.ui();
+  },
+  step(from, to){
+    this.commit();
+    const e = from.pop(); if (!e) return;
+    const w0 = space.get(e.key); to.push({ key: e.key, json: this.snap(w0) });
+    const nw = AIC.deserialize(JSON.parse(e.json)); nw.time = w0.time; nw.stats = w0.stats;
+    space.set(e.key, nw); this.last.set(e.key, e.json);
+    if (ui.move) cancelMove();
+    if (e.key !== ui.site) switchSite(e.key);
+    else if (nw.W !== w0.W || nw.H !== w0.H) showSite();
+    else { world = nw; ui.sel = null; ui.multi.clear(); renderInspector(true); renderSelbar(); renderStats(); renderFacs(); renderDepot(true); renderSites(); }
+    ui.touched = true; this.ui();
+  },
+  // drop changes made since the last step without recording them (a touch that turned into a two-finger gesture)
+  revert(){
+    const prev = this.last.get(ui.site); if (!prev || this.snap(world) === prev) return;
+    const w0 = world, nw = AIC.deserialize(JSON.parse(prev)); nw.time = w0.time; nw.stats = w0.stats;
+    space.set(ui.site, nw); world = nw; ui.sel = null; ui.multi.clear(); renderInspector(true); renderSelbar(); renderFacs();
+  },
+  ui(){ const u = $('#undoBtn'), r = $('#redoBtn'); if (u) u.disabled = !this.undo.length; if (r) r.disabled = !this.redo.length; },
+};
+const downIds = new Set();
+window.addEventListener('pointerdown', ev => { if (!downIds.size){ clearTimeout(hist.t); hist.commit(); } downIds.add(ev.pointerId); ui.ptrDown = true; }, true);   // close the previous step before a new action starts (not when a second finger joins)
+const ptrUp = ev => { downIds.delete(ev.pointerId); if (!downIds.size){ ui.ptrDown = false; hist.soon(); } };
+window.addEventListener('pointerup', ptrUp, true);
+window.addEventListener('pointercancel', ptrUp, true);
+window.addEventListener('keyup', () => hist.soon(), true);
 
 // ---------- palette ----------
 const TOOLS = [['select','선택','선택 (클릭)'],['area','범위','범위 선택 (드래그)'],['pan','화면','화면 끌기'],['delete','철거','철거']];
@@ -2880,6 +2954,7 @@ function previewWorld(bp){
   const w = new AIC.World(x1 - x0 + 2, y1 - y0 + 2);
   if (b.pac){ const pc = w.place('pac', ox + b.pac.x, oy + b.pac.y, b.pac.f); if (pc && b.pac.ports) b.pac.ports.forEach((v, i) => { if (i < pc.ports.length) pc.ports[i] = v; }); }
   if (!w.bpPlace(b, ox, oy)) for (const q of b.ents){ const e = w.place(q.t, q.x + ox, q.y + oy, q.f == null ? 2 : q.f); if (e) w.applyCfg(e, q); }
+  w.bpOx = ox; w.bpOy = oy; w.bpW = b.w; w.bpH = b.h;
   return w;
 }
 // draw world w into canvas c at css size cw×ch; margin = extra cells shown around the site (outer bus)
@@ -2900,10 +2975,54 @@ function paintWorld(c, w, cw, ch, margin){
   }
 }
 // draw a blueprint into a canvas at its on-screen size
-function paintBp(c, bp){
+function paintBp(c, bp, marks){
   const r = c.getBoundingClientRect(); if (!r.width) return;
   const w = previewWorld(bp); if (!w) return;
   paintWorld(c, w, r.width, r.height, 0);
+  if (marks && marks.length){
+    // painted areas: translucent fill, a firmer outline
+    const v = bpViewOf(w, r.width, r.height), g = c.getContext('2d'), d = window.devicePixelRatio || 1;
+    g.save(); g.setTransform(d, 0, 0, d, 0, 0);
+    for (const m of marks){ const x = v.sx(m.x), y = v.sy(m.y), ww = m.w * v.cell, hh = m.h * v.cell, col = MARK_COLORS[m.c] || MARK_COLORS[0];
+      g.globalAlpha = .26; g.fillStyle = col; g.fillRect(x, y, ww, hh); g.globalAlpha = .9; g.strokeStyle = col; g.lineWidth = 2; g.strokeRect(x + 1, y + 1, ww - 2, hh - 2); }
+    g.restore();
+  }
+}
+// colours for painted areas on blueprints in posts
+const MARK_COLORS = ['#F2D300', '#FF5A5A', '#3FA9F5', '#4CD07A', '#B07CFF', '#FF9F40'];
+// screen position of blueprint cells in a preview painted by paintWorld (same camera maths)
+function bpViewOf(w, cw, ch){
+  const pad = Math.min(cw, ch) * 0.04, z = Math.min((cw - 2 * pad) / (w.W * S), (ch - 2 * pad) / (w.H * S));
+  const camX = (w.W * S - cw / z) / 2, camY = (w.H * S - ch / z) / 2, cell = S * z;
+  return { cell, sx: bx => ((bx + w.bpOx) * S - camX) * z, sy: by => ((by + w.bpOy) * S - camY) * z, cx: px => Math.floor((px / z + camX) / S - w.bpOx), cy: py => Math.floor((py / z + camY) / S - w.bpOy) };
+}
+// the blueprint cell under a pointer on a preview canvas (clamped to the blueprint when asked)
+function bpCellAt(cv, bp, ev, clamp){
+  const r = cv.getBoundingClientRect(), w = previewWorld(bp); if (!w) return null;
+  const v = bpViewOf(w, r.width, r.height); let x = v.cx(ev.clientX - r.left), y = v.cy(ev.clientY - r.top);
+  if (clamp){ x = Math.max(0, Math.min(w.bpW - 1, x)); y = Math.max(0, Math.min(w.bpH - 1, y)); }
+  else if (x < 0 || y < 0 || x >= w.bpW || y >= w.bpH) return null;
+  return { x, y };
+}
+// item choices for a post's main item, by category
+function itemPickOptions(cur){
+  const groups = {}; for (const [k, it] of Object.entries(ITEMS)) (groups[it.cat] = groups[it.cat] || []).push(k);
+  const order = ['final', 'battery', 'comp', 'part', 'bottle', 'refined', 'powder', 'plant', 'seed', 'ore', 'fluid', 'gas', 'filled'];
+  return `<option value="">— 없음 —</option>` + order.filter(c => groups[c]).map(c => `<optgroup label="${esc(CAT_KO[c] || c)}">${groups[c].map(k => `<option value="${k}"${k === cur ? ' selected' : ''}>${esc(ITEMS[k].ko)}</option>`).join('')}</optgroup>`).join('');
+}
+// a post's blueprints: the post's bp is the first one, bp.more holds the rest (each with main item, game code, painted areas)
+function postBps(p){
+  if (!p || !p.bp || !p.bp.ents) return [];
+  const strip = bp => { const o = Object.assign({}, bp); for (const k of ['more', 'items', 'item', 'code', 'marks']) delete o[k]; return o; };
+  const list = [{ bp: strip(p.bp), item: ITEMS[p.bp.item] ? p.bp.item : null, code: typeof p.bp.code === 'string' ? p.bp.code : '', marks: Array.isArray(p.bp.marks) ? p.bp.marks : [] }];
+  for (const m of Array.isArray(p.bp.more) ? p.bp.more : []) if (m && m.bp && Array.isArray(m.bp.ents)) list.push({ bp: m.bp, item: ITEMS[m.item] ? m.item : null, code: typeof m.code === 'string' ? m.code : '', marks: Array.isArray(m.marks) ? m.marks : [] });
+  return list;
+}
+// copy text to the clipboard (falls back to a hidden text box)
+async function copyText(t){
+  try { await navigator.clipboard.writeText(t); return true; } catch(e){}
+  const ta = document.createElement('textarea'); ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select();
+  let ok = false; try { ok = document.execCommand('copy'); } catch(e){} ta.remove(); return ok;
 }
 function thumbURL(bp){
   const w = previewWorld(bp); if (!w) return null;
@@ -2977,9 +3096,9 @@ const board = {
   compose(name, bp){ this.pending = { name, bp }; location.hash = 'write'; },
   redraw(){
     if (ui.view !== 'board') return;
-    const big = $('#bBig'); if (big && this.post && this.post.bp) paintBp(big, this.post.bp);
     if ($('#bList')) this.paintThumbs();
-    const pv = $('#wPrev'); if (pv && this.wbp) paintBp(pv, this.wbp.bp);
+    if ($('#wBps') && this.wDraw) this.wDraw();
+    if ($('.bpfig canvas[data-bi]')) this.paintPostBps();
   },
   async show(v, arg, arg2){
     const my = ++this.seq;
@@ -2988,7 +3107,8 @@ const board = {
     if (!acct.enabled()){ el.innerHTML = '<div class="bwrap"><p class="note">게시판은 공개 사이트에서만 열립니다.</p></div>'; return; }
     if (!acct.client && !acct.down){ el.innerHTML = '<div class="bwrap"><p class="note">게시판에 연결하는 중…</p></div>'; await acct.wait(); if (my !== this.seq) return; }
     if (acct.down || !acct.client){ el.innerHTML = '<div class="bwrap"><p class="note">게시판 서버에 연결하지 못했습니다. 잠시 후 새로고침해 주세요.</p><p><a class="btn" href="#">공장으로 돌아가기</a></p></div>'; return; }
-    if (v === 'board'){ this.lv = this.boardLv; return this.list(true, my); }
+    // #board/q/<text>: search · #board/item/<id>: blueprints whose main item is that item
+    if (v === 'board'){ this.lv = this.boardLv; this.boardLv.item = arg === 'item' && ITEMS[arg2] ? arg2 : ''; if (arg === 'q') this.boardLv.q = decodeURIComponent(arg2 || '').slice(0, 60); return this.list(true, my); }
     if (v === 'user') return arg2 === 'factories' ? this.myFactories(decodeURIComponent(arg || '').toLowerCase(), my) : this.profile(decodeURIComponent(arg || '').toLowerCase(), my);
     if (v === 'post') return this.open(+arg, my);
     if (v === 'write') return this.write(null, my);
@@ -3058,14 +3178,15 @@ const board = {
     const db = this.db(), from = this.rows.length;
     let q = db.from('posts').select(LIST_COLS);
     if (user) q = q.eq('author_name', lv.name);
-    if (lv.filter !== 'all') q = q.eq('kind', lv.filter);
-    else if (!user) q = q.in('kind', ['bp', 'text']);
+    // blueprint board only: blueprint posts (notices stay pinned on top); old text posts are no longer listed
+    q = user ? q.in('kind', ['bp', 'notice']) : q.eq('kind', 'bp');
+    if (!user && lv.item) q = q.contains('bp', { items: [lv.item] });
     const term = lv.q.replace(/[,()*%"\\]/g, ' ').trim();
     if (term) q = q.or(`title.ilike.*${term}*,body.ilike.*${term}*,author_name.ilike.*${term}*`);
     if (lv.sort === 'like') q = q.order('like_count', { ascending: false });
     if (lv.sort === 'cmt') q = q.order('comment_count', { ascending: false });
     q = q.order('created_at', { ascending: false }).range(from, from + PAGE);
-    const wantNotices = !user && reset && !term && lv.filter !== 'notice';   // newest notice stays pinned on top
+    const wantNotices = !user && reset && !term && !lv.item;   // newest notice stays pinned on top
     const [res, nres] = await Promise.all([q, wantNotices ? db.from('posts').select(LIST_COLS).eq('kind', 'notice').order('created_at', { ascending: false }).limit(1) : null]);
     if ((my != null && my !== this.seq) || this.lv !== lv) return;
     if (res.error){ this.renderList('error'); return; }
@@ -3090,32 +3211,31 @@ const board = {
     if (!$('#bList') || $('#bList').dataset.lv !== key){
       el.innerHTML = `<div class="bwrap">
         ${banBar()}${user ? `<a class="back" href="#board">← 게시판</a><div class="uhead" id="uHead"></div>${ownSubtabs(lv.name, 'posts') || '<h3 class="usub">쓴 글</h3>'}`
-          : `<div class="bhead"><h2>게시판</h2><span class="spacer"></span><button class="btn primary" id="bWrite">글쓰기</button></div>`}
+          : `<div class="bhead"><h2>게시판</h2><span class="spacer"></span><button class="btn primary" id="bWrite">청사진 올리기</button></div>`}
         <div class="btool">
-          <div class="seg" id="bFilter" role="group" aria-label="글 종류"><button data-f="all">전체</button><button data-f="bp">청사진</button><button data-f="text">일반</button><button data-f="notice">공지</button></div>
           ${user ? '<span class="spacer"></span>' : '<form class="bsearch" id="bSearch" role="search"><input type="search" id="bQ" placeholder="제목·내용·작성자 검색" aria-label="게시글 검색" maxlength="40"><button class="btn">검색</button></form>'}
+          ${user ? '' : `<select class="sel" id="bItem" aria-label="대표 아이템으로 찾기">${itemPickOptions(lv.item || '').replace('— 없음 —', '대표 아이템: 전체')}</select>`}
           <select class="sel" id="bSort" aria-label="정렬"><option value="new">최신순</option><option value="like">추천순</option><option value="cmt">댓글순</option></select>
         </div>
         <div class="blist" id="bList" data-lv="${esc(key)}" aria-live="polite"></div>
         <div class="bmore"><button class="btn" id="bMore" hidden>더 보기</button></div>
       </div>`;
       if (!user){ $('#bWrite').onclick = () => { this.pending = null; location.hash = 'write'; }; }
-      $('#bFilter').onclick = ev => { const b = ev.target.closest('button'); if (!b) return; this.lv.filter = b.dataset.f; this.list(true, this.seq); };
       if (!user) $('#bSearch').onsubmit = ev => { ev.preventDefault(); this.lv.q = $('#bQ').value.trim(); this.list(true, this.seq); };
       $('#bSort').onchange = ev => { this.lv.sort = ev.target.value; this.list(true, this.seq); };
+      const bi = $('#bItem'); if (bi) bi.onchange = ev => { const v = ev.target.value; location.hash = v ? 'board/item/' + v : 'board'; };
       $('#bMore').onclick = () => this.list(false, this.seq);
       if (user) this.renderUserHead();
     }
-    document.querySelectorAll('#bFilter button').forEach(b => b.setAttribute('aria-pressed', b.dataset.f === lv.filter));
     if ($('#bQ')) $('#bQ').value = lv.q;
-    $('#bSort').value = lv.sort;
+    $('#bSort').value = lv.sort; if ($('#bItem')) $('#bItem').value = lv.item || '';
     const list = $('#bList');
     $('#bMore').hidden = !(state === 'ok' && this.more);
     if (state === 'loading' && !this.rows.length){ list.innerHTML = '<p class="note bempty">불러오는 중…</p>'; return; }
     if (state === 'error'){ list.innerHTML = '<p class="note bempty">글을 불러오지 못했습니다. 잠시 후 다시 시도하세요.</p>'; return; }
     const rows = this.notices.concat(this.rows);
     if (!rows.length){
-      list.innerHTML = `<p class="note bempty">${lv.q ? `"${esc(lv.q)}"와 맞는 글이 없습니다.` : user ? (lv.filter === 'all' ? '아직 쓴 글이 없습니다.' : '이 종류로 쓴 글이 없습니다.') : lv.filter === 'notice' ? '아직 공지가 없습니다.' : '아직 글이 없습니다. 첫 글을 올려 보세요.'}</p>`; return;
+      list.innerHTML = `<p class="note bempty">${lv.q ? `"${esc(lv.q)}"와 맞는 글이 없습니다.` : user ? '아직 올린 청사진이 없습니다.' : '아직 올라온 청사진이 없습니다. 첫 청사진을 올려 보세요.'}</p>`; return;
     }
     list.innerHTML = rows.map(p => this.rowHTML(p)).join('');
     this.paintThumbs();
@@ -3131,7 +3251,7 @@ const board = {
     return `<div class="prow k-${p.kind}">
       <span class="pthumb">${thumb}</span>
       <span class="pmain">
-        <span class="ptitle"><span class="kbadge k-${p.kind}">${KIND_KO[p.kind]}</span><a class="plink" href="#post/${p.id}"><b>${esc(p.title)}</b></a></span>
+        <span class="ptitle"><span class="kbadge k-${p.kind}">${KIND_KO[p.kind]}</span><a class="plink" href="#post/${p.id}"><b>${esc(p.title)}</b></a>${p.bp && Array.isArray(p.bp.items) && p.bp.items.length ? `<span class="pitems">${p.bp.items.filter(k => ITEMS[k]).slice(0, 6).map(k => `<a href="#board/item/${k}" title="${esc(ITEMS[k].ko)} 청사진만 보기"><img alt="${esc(ITEMS[k].ko)}" src="${iconURL(k)}"></a>`).join('')}</span>` : ''}</span>
         ${ex ? `<span class="pex">${esc(ex)}</span>` : ''}
         <span class="pmeta">${auLink(p.author_name)} · <time datetime="${esc(p.created_at)}" title="${esc(fullDate(p.created_at))}">${ago(p.created_at)}</time>${size}</span>
       </span>
@@ -3158,17 +3278,18 @@ const board = {
   renderPost(){
     const p = this.post, me = acct.user ? acct.user.id : null, mine = me && p.author === me;
     const el = this.el();
-    let bpBlock = '';
-    if (p.bp && p.bp.ents){
-      const f = bpFacts(p.bp);
-      const extra = [f.belts ? `벨트 ${f.belts}칸` : '', f.pipes ? `파이프 ${f.pipes}칸` : ''].filter(Boolean).join(' · ');
-      bpBlock = `<figure class="bpfig">
-        <canvas id="bBig" role="img" aria-label="청사진 미리보기: ${esc(p.title)}"></canvas>
-        <figcaption><b>${p.bp.w}×${p.bp.h}</b> · 설비 ${f.facs}개${extra ? ' · ' + extra : ''}</figcaption>
+    // every blueprint of the post: picture with painted areas, main item, game code with a copy button, actions
+    const bps = postBps(p); this.postBpList = bps;
+    const bpBlock = bps.map((x, i) => {
+      const f = bpFacts(x.bp), extra = [f.belts ? `벨트 ${f.belts}칸` : '', f.pipes ? `파이프 ${f.pipes}칸` : ''].filter(Boolean).join(' · ');
+      return `<figure class="bpfig">
+        ${bps.length > 1 || x.item ? `<div class="bpth">${bps.length > 1 ? `<b>청사진 ${i + 1}</b>` : ''}${x.item ? ic(x.item) : ''}</div>` : ''}
+        <canvas data-bi="${i}" role="img" aria-label="청사진 미리보기: ${esc(p.title)} ${i + 1}"></canvas>
+        <figcaption><b>${x.bp.w}×${x.bp.h}</b> · 설비 ${f.facs}개${extra ? ' · ' + extra : ''}</figcaption>
         <div class="fchips">${f.list.map(([t, c]) => `<span class="mchip">${esc(TYPES[t].ko)} ×${c}</span>`).join('')}</div>
-        <div class="row"><button class="btn primary" id="bUse">공장에 배치</button><button class="btn" id="bSave">내 청사진에 저장</button><button class="btn" id="bCode">청사진 코드</button></div>
-      </figure>`;
-    }
+        ${x.code ? `<div class="gcode"><span class="glabel">게임 코드</span><code>${esc(x.code)}</code><button class="btn sm primary" data-copy="${i}">복사</button></div>` : ''}
+        <div class="row"><button class="btn primary" data-use="${i}">공장에 배치</button><button class="btn" data-save="${i}">내 청사진에 저장</button><button class="btn" data-code="${i}">사이트 코드</button></div>
+      </figure>`; }).join('');
     el.innerHTML = `<article class="bwrap post">
       ${banBar()}<a class="back" href="#board">← 목록</a>
       <header class="phead">
@@ -3192,11 +3313,16 @@ const board = {
           : '<p class="note">댓글을 쓰려면 <button class="linkbtn" id="cLogin">로그인</button>하세요.</p>'}
       </section>
     </article>`;
-    if (p.bp && p.bp.ents){
-      paintBp($('#bBig'), p.bp);
-      $('#bUse').onclick = () => { history.pushState(null, '', location.pathname + location.search); route(); startPaste(p.bp, p.title); flash('놓을 곳을 클릭하세요 · R 회전 · Esc 취소'); };
-      $('#bSave').onclick = async () => { const where = await saveBp(p.title, p.bp); flash(where === 'account' ? '내 계정 청사진에 저장했습니다' : '이 브라우저 청사진에 저장했습니다'); };
-      $('#bCode').onclick = () => openDialog('bpcode', { name: p.title, bp: p.bp });
+    if (bps.length){
+      this.paintPostBps();
+      const nm = i => bps.length > 1 ? `${p.title} ${i + 1}` : p.title;
+      el.querySelectorAll('.bpfig').forEach(fig => fig.onclick = async ev => {
+        const b = ev.target.closest('button'); if (!b) return;
+        if (b.dataset.use != null){ const x = bps[+b.dataset.use]; history.pushState(null, '', location.pathname + location.search); route(); startPaste(x.bp, nm(+b.dataset.use)); flash('놓을 곳을 클릭하세요 · R 회전 · Esc 취소'); }
+        else if (b.dataset.save != null){ const where = await saveBp(nm(+b.dataset.save), bps[+b.dataset.save].bp); flash(where === 'account' ? '내 계정 청사진에 저장했습니다' : '이 브라우저 청사진에 저장했습니다'); }
+        else if (b.dataset.code != null) openDialog('bpcode', { name: nm(+b.dataset.code), bp: bps[+b.dataset.code].bp });
+        else if (b.dataset.copy != null){ const ok = await copyText(bps[+b.dataset.copy].code); b.textContent = ok ? '복사됨' : '복사 실패'; setTimeout(() => { if (b.isConnected) b.textContent = '복사'; }, 1500); }
+      });
     }
     $('#bLike').onclick = () => this.toggleLike();
     const rb = $('#bReport'); if (rb) rb.onclick = () => openReport('post', p.id, p);
@@ -3223,6 +3349,7 @@ const board = {
     };
     this.bindCmtDel();
   },
+  paintPostBps(){ (this.postBpList || []).forEach((x, i) => { const cv = document.querySelector(`.bpfig canvas[data-bi="${i}"]`); if (cv) paintBp(cv, x.bp, x.marks); }); },
   cmtHTML(c){
     const me = acct.user ? acct.user.id : null, can = me && (c.author === me || acct.isAdmin());
     return `<li class="cmt"><div class="cmeta">${auLink(c.author_name)}${c.author === this.post.author ? '<span class="kbadge k-op">작성자</span>' : ''} <time datetime="${esc(c.created_at)}" title="${esc(fullDate(c.created_at))}">${ago(c.created_at)}</time>
@@ -3284,33 +3411,34 @@ const board = {
       if (p.author !== acct.user.id){ el.innerHTML = `<div class="bwrap"><a class="back" href="#post/${p.id}">← 글로 돌아가기</a><p class="note">내가 쓴 글만 고칠 수 있습니다.</p></div>`; return; }
     }
     const pend = !id ? this.pending : null; this.pending = null;
-    // where the attached blueprint can come from
+    // where each attached blueprint can come from (the same choices for every blueprint of the post)
+    const all = [...world.ents.keys()];
+    const nFac = ids => ids.filter(i => { const e = world.ents.get(i); return e && !CARRIER.has(K(e.type)) && e.type !== 'pac'; }).length;
     const src = [];
-    if (p && p.bp) src.push(['keep', '지금 붙어 있는 청사진 그대로', () => ({ name: p.title, bp: p.bp })]);
     if (pend) src.push(['pend', `고른 청사진 · ${pend.name}`, () => pend]);
-    const sel = selectionIds().filter(i => !world.pac || i !== world.pac.id);
-    if (sel.length) src.push(['sel', `공장에서 선택한 범위 (설비 ${sel.filter(i => !CARRIER.has(K(world.ents.get(i).type))).length}개)`, () => ({ name: '선택한 설비', bp: world.blueprint(selectionIds()) })]);
-    const all = [...world.ents.keys()].filter(i => !world.pac || i !== world.pac.id);
-    const nFac = ids => ids.filter(i => !CARRIER.has(K(world.ents.get(i).type))).length;
-    if (all.length) src.push(['all', `공장 전체 (설비 ${nFac(all)}개)`, () => ({ name: '내 공장', bp: world.blueprint([...world.ents.keys()]) })]);
+    if (ui.multi.size) src.push(['sel', `공장에서 고른 범위 (설비 ${nFac([...ui.multi])}개)`, () => ({ name: '고른 범위', bp: world.blueprint([...ui.multi]) })]);
+    if (all.length) src.push(['all', `공장 전체 (설비 ${nFac(all)}개)`, () => ({ name: '내 공장', bp: world.blueprint(all) })]);
     for (const b of acct.mine) src.push(['a' + b.id, `내 계정 · ${b.name}`, async () => b.data ? { name: b.name, bp: b.data } : { name: b.name, bp: (await acct.fetchData(b.id)).data }]);
     for (const b of store.bps) src.push(['l' + b.id, `이 브라우저 · ${b.name}`, () => ({ name: b.name, bp: b.bp })]);
     src.push(['code', '청사진 코드 붙여넣기…', null]);
-    const kind0 = p ? p.kind : (pend || this.filter === 'bp' ? 'bp' : this.filter === 'notice' && acct.isAdmin() ? 'notice' : 'text');
+    const kind0 = p ? p.kind : 'bp';   // new posts are blueprint posts (admins can also post a notice); an old text post keeps its kind when edited
+    // blueprints of the post: the first one is the post's bp itself, the rest go in bp.more; each has a main item, a game code and painted areas
+    const strip = bp => { const o = Object.assign({}, bp); for (const k of ['more', 'items', 'item', 'code', 'marks']) delete o[k]; return o; };
+    const entries = [];
+    if (p && p.bp && p.bp.ents){
+      entries.push({ src: 'keep', bp: strip(p.bp), item: p.bp.item || '', code: p.bp.code || '', marks: (p.bp.marks || []).slice() });
+      for (const m of Array.isArray(p.bp.more) ? p.bp.more : []) if (m && m.bp && m.bp.ents) entries.push({ src: 'keep', bp: m.bp, item: m.item || '', code: m.code || '', marks: (m.marks || []).slice() });
+    }
+    if (!entries.length) entries.push({ src: pend ? 'pend' : (src[0] ? src[0][0] : 'code'), bp: null, item: '', code: '', marks: [] });
+    this.entries = entries;
     el.innerHTML = `<form class="bwrap pwrite" id="wForm" novalidate>
       <a class="back" href="${p ? '#post/' + p.id : '#board'}">← ${p ? '글로 돌아가기' : '목록'}</a>
-      <h2>${p ? '글 고치기' : '글쓰기'}</h2>
-      <div class="field"><span class="flabel" id="wKindL">종류</span>
-        <div class="seg" id="wKind" role="group" aria-labelledby="wKindL"><button type="button" data-k="bp">청사진 글</button><button type="button" data-k="text">일반 글</button>${acct.isAdmin() ? '<button type="button" data-k="notice">공지</button>' : ''}</div></div>
+      <h2>${p ? '글 고치기' : '청사진 올리기'}</h2>
+      <div class="field"${acct.isAdmin() && (!p || p.kind !== 'text') ? '' : ' hidden'}><span class="flabel" id="wKindL">종류</span>
+        <div class="seg" id="wKind" role="group" aria-labelledby="wKindL"><button type="button" data-k="bp">청사진 글</button><button type="button" data-k="notice">공지</button></div></div>
       <label class="field"><span class="flabel">제목</span><input id="wTitle" maxlength="80" required placeholder="제목"></label>
-      <div class="field" id="wBpF"><label class="flabel" for="wSrc">청사진</label>
-        <div class="wbp">
-          <select class="sel" id="wSrc">${src.map(([v, l]) => `<option value="${esc(v)}">${esc(l)}</option>`).join('')}</select>
-          <textarea id="wCode" hidden rows="3" placeholder="청사진 코드" spellcheck="false" aria-label="청사진 코드"></textarea>
-          <canvas id="wPrev" role="img" aria-label="붙일 청사진 미리보기"></canvas>
-          <p class="note" id="wPrevNote"></p>
-        </div></div>
-      <label class="field"><span class="flabel">내용</span><textarea id="wBody" maxlength="5000" rows="10" placeholder="내용"></textarea></label>
+      <div class="field" id="wBpF"><span class="flabel">청사진</span><div><div id="wBps"></div><button type="button" class="btn" id="wAdd">+ 청사진 추가</button></div></div>
+      <label class="field"><span class="flabel">내용</span><textarea id="wBody" maxlength="5000" rows="8" placeholder="내용"></textarea></label>
       <div class="msg" id="wMsg" role="alert"></div>
       <div class="acts"><button class="btn primary" type="submit" id="wGo">${p ? '고친 내용 저장' : '올리기'}</button><a class="btn" href="${p ? '#post/' + p.id : '#board'}">취소</a></div>
     </form>`;
@@ -3319,34 +3447,88 @@ const board = {
     $('#wKind').onclick = ev => { const b = ev.target.closest('button'); if (b) setKind(b.dataset.k); };
     if (p){ $('#wTitle').value = p.title; $('#wBody').value = p.body || ''; }
     else if (pend) $('#wTitle').value = pend.name.slice(0, 80);
-    this.wbp = null;
-    const pick = async () => {
-      const v = $('#wSrc').value, s = src.find(x => x[0] === v), note = $('#wPrevNote');
-      $('#wCode').hidden = v !== 'code';
-      try {
-        if (v === 'code'){ const t = $('#wCode').value.trim(); if (!t){ this.wbp = null; note.textContent = '코드를 붙여넣으면 미리보기가 나옵니다.'; } else { const o = dec(t), bp = o.bp || o; if (!bp.ents) throw 0; this.wbp = { name: o.name || '청사진', bp }; } }
-        else this.wbp = await s[2]();
-      } catch(e){ this.wbp = null; note.textContent = '읽을 수 없는 청사진 코드입니다.'; }
-      const cv = $('#wPrev');
-      if (this.wbp && this.wbp.bp){ const f = bpFacts(this.wbp.bp); note.textContent = `${this.wbp.bp.w}×${this.wbp.bp.h} · 설비 ${f.facs}개${f.belts ? ' · 벨트 ' + f.belts + '칸' : ''}${f.pipes ? ' · 파이프 ' + f.pipes + '칸' : ''}`; cv.hidden = false; paintBp(cv, this.wbp.bp); }
-      else cv.hidden = true;
+    const MAXBP = 6;
+    const renderEntries = () => {
+      const box = $('#wBps');
+      box.innerHTML = entries.map((en, i) => `<div class="wbpe" data-i="${i}">
+        <div class="wbph"><b>청사진 ${i + 1}</b><span class="spacer"></span>${entries.length > 1 ? `<button type="button" class="linkbtn danger" data-rm="${i}">빼기</button>` : ''}</div>
+        <div class="wbpg">
+          <label>가져오기</label><select class="sel" data-f="src">${en.src === 'keep' ? '<option value="keep">지금 붙어 있는 청사진 그대로</option>' : ''}${src.map(([v, l]) => `<option value="${esc(v)}"${en.src === v ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>
+          <label${en.src === 'code' ? '' : ' hidden'}>사이트 코드</label><textarea data-f="paste" rows="2" placeholder="이 사이트의 청사진 코드" spellcheck="false"${en.src === 'code' ? '' : ' hidden'}>${esc(en.paste || '')}</textarea>
+          <label>대표 아이템</label><select class="sel" data-f="item">${itemPickOptions(en.item)}</select>
+          <label>게임 코드</label><input data-f="code" maxlength="400" placeholder="게임에서 복사한 청사진 코드" value="${esc(en.code)}">
+        </div>
+        <div class="wpaint"><span>칠하기</span>${MARK_COLORS.map((c, j) => `<button type="button" class="swatch" data-c="${j}" style="--sw:${c}" aria-pressed="${(en.color || 0) === j}" aria-label="색 ${j + 1}"></button>`).join('')}
+          <button type="button" class="linkbtn" data-undo="${i}"${en.marks.length ? '' : ' disabled'}>하나 지우기</button><button type="button" class="linkbtn" data-clr="${i}"${en.marks.length ? '' : ' disabled'}>모두 지우기</button></div>
+        <canvas class="wprev" data-cv="${i}" role="img" aria-label="청사진 ${i + 1} 미리보기 (끌어서 범위 칠하기)"></canvas>
+        <p class="note" data-note="${i}"></p>
+      </div>`).join('');
+      $('#wAdd').hidden = entries.length >= MAXBP;
+      entries.forEach((en, i) => paintEntry(i));
     };
-    $('#wSrc').onchange = pick; $('#wCode').oninput = pick;
-    setKind(kind); pick();
+    const paintEntry = i => {
+      const en = entries[i], cv = document.querySelector(`[data-cv="${i}"]`), note = document.querySelector(`[data-note="${i}"]`); if (!cv) return;
+      if (en.bp && en.bp.ents){ cv.hidden = false; paintBp(cv, en.bp, en.marks); const f = bpFacts(en.bp); note.textContent = `${en.bp.w}×${en.bp.h} · 설비 ${f.facs}개${f.belts ? ' · 벨트 ' + f.belts + '칸' : ''}${f.pipes ? ' · 파이프 ' + f.pipes + '칸' : ''}`; }
+      else { cv.hidden = true; note.textContent = en.err || (en.src === 'code' ? '코드를 붙여넣으면 미리보기가 나옵니다.' : ''); }
+    };
+    const load = async i => {
+      const en = entries[i]; en.err = '';
+      if (en.src === 'keep'){ paintEntry(i); return; }
+      try {
+        if (en.src === 'code'){ const t = (en.paste || '').trim(); if (!t){ en.bp = null; } else { const o = dec(t), bp = o.bp || o; if (!bp.ents) throw 0; en.bp = bp; } }
+        else { const s = src.find(x => x[0] === en.src); const r = s ? await s[2]() : null; en.bp = r && r.bp; }
+      } catch(e){ en.bp = null; en.err = '읽을 수 없는 청사진 코드입니다.'; }
+      en.marks = []; renderEntries();
+    };
+    this.wDraw = () => entries.forEach((en, i) => paintEntry(i));
+    const box = $('#wBps');
+    box.onchange = ev => {
+      const t = ev.target, i = +t.closest('.wbpe').dataset.i, en = entries[i];
+      if (t.dataset.f === 'src'){ en.src = t.value; load(i); }
+      else if (t.dataset.f === 'item') en.item = t.value;
+    };
+    box.oninput = ev => {
+      const t = ev.target, wrap = t.closest('.wbpe'); if (!wrap) return; const i = +wrap.dataset.i, en = entries[i];
+      if (t.dataset.f === 'code') en.code = t.value;
+      else if (t.dataset.f === 'paste'){ en.paste = t.value; clearTimeout(this.pasteT); this.pasteT = setTimeout(() => load(i), 300); }
+    };
+    box.onclick = ev => {
+      const b = ev.target.closest('button'); if (!b) return; const wrap = b.closest('.wbpe'), i = wrap ? +wrap.dataset.i : -1;
+      if (b.dataset.rm != null){ entries.splice(+b.dataset.rm, 1); renderEntries(); }
+      else if (b.dataset.c != null){ entries[i].color = +b.dataset.c; wrap.querySelectorAll('.swatch').forEach(s => s.setAttribute('aria-pressed', s === b)); }
+      else if (b.dataset.undo != null){ entries[i].marks.pop(); renderEntries(); }
+      else if (b.dataset.clr != null){ entries[i].marks = []; renderEntries(); }
+    };
+    // drag on a preview to paint an area (in blueprint cells)
+    box.onpointerdown = ev => {
+      const cv = ev.target.closest('canvas[data-cv]'); if (!cv) return;
+      const i = +cv.dataset.cv, en = entries[i]; if (!en.bp) return;
+      const a = bpCellAt(cv, en.bp, ev); if (!a) return;
+      ev.preventDefault(); cv.setPointerCapture(ev.pointerId);
+      const mk = { x: a.x, y: a.y, w: 1, h: 1, c: en.color || 0 }; en.marks.push(mk);
+      const mv = e => { const b = bpCellAt(cv, en.bp, e, true); if (!b) return; mk.x = Math.min(a.x, b.x); mk.y = Math.min(a.y, b.y); mk.w = Math.abs(a.x - b.x) + 1; mk.h = Math.abs(a.y - b.y) + 1; paintEntry(i); };
+      const up = () => { cv.removeEventListener('pointermove', mv); cv.removeEventListener('pointerup', up); renderEntries(); };
+      cv.addEventListener('pointermove', mv); cv.addEventListener('pointerup', up); paintEntry(i);
+    };
+    $('#wAdd').onclick = () => { if (entries.length >= MAXBP) return; entries.push({ src: 'code', bp: null, item: '', code: '', marks: [] }); renderEntries(); };
+    renderEntries(); entries.forEach((en, i) => { if (!en.bp && en.src !== 'keep') load(i); });
+    setKind(kind);
     $('#wForm').onsubmit = async ev => {
       ev.preventDefault();
       const msg = $('#wMsg'), title = $('#wTitle').value.trim(), body = $('#wBody').value.trim();
       if (!title){ msg.textContent = '제목을 쓰세요'; $('#wTitle').focus(); return; }
       const row = { kind, title: title.slice(0, 80), body: body.slice(0, 5000) };
       if (kind === 'bp'){
-        if (!this.wbp || !this.wbp.bp || !this.wbp.bp.ents || !this.wbp.bp.ents.length){ msg.textContent = '붙일 청사진을 고르세요'; return; }
-        if ($('#wSrc').value === 'keep') row.thumb = thumbURL(this.wbp.bp);
-        else {
-          const bp = this.wbp.bp;
-          if (JSON.stringify(bp).length > 380000){ msg.textContent = '청사진이 너무 큽니다. 범위를 나눠서 올려 주세요.'; return; }
-          Object.assign(row, { bp, bp_w: bp.w, bp_h: bp.h, bp_ents: bpFacts(bp).facs, thumb: thumbURL(bp) });
-        }
-      } else Object.assign(row, { bp: null, bp_w: null, bp_h: null, bp_ents: null, thumb: null });
+        const list = entries.filter(en => en.bp && en.bp.ents && en.bp.ents.length);
+        if (!list.length){ msg.textContent = '붙일 청사진을 고르세요'; return; }
+        const pack = en => ({ item: ITEMS[en.item] ? en.item : null, code: String(en.code || '').trim().slice(0, 400) || null, marks: en.marks.filter(m => m.w > 0 && m.h > 0).slice(0, 40).map(m => ({ x: m.x, y: m.y, w: m.w, h: m.h, c: m.c })) });
+        const first = list[0];
+        const bp = Object.assign({}, strip(first.bp), pack(first));
+        bp.more = list.slice(1).map(en => Object.assign({ bp: strip(en.bp) }, pack(en)));
+        bp.items = [...new Set(list.map(en => en.item).filter(k => ITEMS[k]))];
+        if (JSON.stringify(bp).length > 380000){ msg.textContent = '청사진이 너무 큽니다. 개수를 줄이거나 범위를 나눠서 올려 주세요.'; return; }
+        Object.assign(row, { bp, bp_w: first.bp.w, bp_h: first.bp.h, bp_ents: list.reduce((a, en) => a + bpFacts(en.bp).facs, 0), thumb: thumbURL(first.bp) });
+      } else if (kind === 'notice') Object.assign(row, { bp: null, bp_w: null, bp_h: null, bp_ents: null, thumb: null });
       $('#wGo').disabled = true; msg.textContent = p ? '저장하는 중…' : '올리는 중…';
       const db = this.db();
       const r = p ? await db.from('posts').update(row).eq('id', p.id).select('id').maybeSingle() : await db.from('posts').insert(row).select('id').single();
@@ -3767,6 +3949,8 @@ function route(){
   board.show(v, arg, arg2);
 }
 window.addEventListener('hashchange', route);
+$('#undoBtn').onclick = () => hist.step(hist.undo, hist.redo);
+$('#redoBtn').onclick = () => hist.step(hist.redo, hist.undo);
 $('#viewSw').onclick = ev => {
   const b = ev.target.closest('button'); if (!b) return;
   if (b.dataset.v === 'craft'){ const h = '#craft' + (craft.target ? '/' + craft.target : ''); if (location.hash !== h) location.hash = h; else route(); }
@@ -4394,7 +4578,14 @@ function areaRect(){ const a = ui.drag.a, b = ui.drag.b; return { x: Math.min(a.
 cv.addEventListener('pointerdown', ev => {
   cv.setPointerCapture(ev.pointerId);
   pointers.set(ev.pointerId, { x: ev.offsetX, y: ev.offsetY });
-  if (pointers.size === 2){ const [a,b] = [...pointers.values()]; pinch = { d: Math.hypot(a.x-b.x, a.y-b.y), z: ui.cam.z, mid: toWorld((a.x+b.x)/2, (a.y+b.y)/2) }; ui.drag = null; return; }
+  if (pointers.size === 2){
+    // second finger: zoom and pan with two fingers; whatever the first finger just started (placing, a belt line, removing) is undone
+    const [a,b] = [...pointers.values()]; pinch = { d: Math.hypot(a.x-b.x, a.y-b.y), z: ui.cam.z, mid: toWorld((a.x+b.x)/2, (a.y+b.y)/2) };
+    if (ui.drag && ['line', 'build', 'delete', 'area', 'grab'].includes(ui.drag.kind) && performance.now() - (ui.drag.t0 || 0) < 400) hist.revert();
+    if (ui.move) cancelMove();
+    ui.drag = null; return;
+  }
+  if (pointers.size > 2) return;
   const c = toCell(ev.offsetX, ev.offsetY); ui.hover = c;
   const panBtn = ev.button === 1 || ev.button === 2;
   if (panBtn || ui.tool === 'pan'){ ui.drag = { kind:'pan', sx:ev.offsetX, sy:ev.offsetY, cam:Object.assign({}, ui.cam), moved:false, btn:ev.button }; return; }
@@ -4416,6 +4607,7 @@ cv.addEventListener('pointerdown', ev => {
   }
   else ui.drag = { kind:'pan', sx:ev.offsetX, sy:ev.offsetY, cam:Object.assign({}, ui.cam), moved:false, desel:true };
 });
+cv.addEventListener('pointerdown', () => { if (ui.drag && !ui.drag.t0) ui.drag.t0 = performance.now(); });   // runs after the handler above
 cv.addEventListener('pointermove', ev => {
   if (pointers.has(ev.pointerId)) pointers.set(ev.pointerId, { x: ev.offsetX, y: ev.offsetY });
   if (pinch && pointers.size === 2){
@@ -4604,6 +4796,8 @@ function renderSelbar(){
 document.addEventListener('keydown', ev => {
   if (ui.view !== 'sim' || ev.target.closest('input,select,textarea,dialog')) return;
   const k = ev.key.toLowerCase(), mod = ev.ctrlKey || ev.metaKey;
+  if (mod && k==='z' && !ev.shiftKey){ hist.step(hist.undo, hist.redo); ev.preventDefault(); return; }
+  if (mod && (k==='y' || (k==='z' && ev.shiftKey))){ hist.step(hist.redo, hist.undo); ev.preventDefault(); return; }
   if (mod && k==='c'){ copySel(); ev.preventDefault(); return; }
   if (mod && k==='v'){ if (ui.clip) startPaste(ui.clip); ev.preventDefault(); return; }
   if (k==='r'){ rotateAction(); ev.preventDefault(); }
@@ -4677,16 +4871,20 @@ const siteSel = $('#site');
 function siteFacCount(w){ let n = 0; for (const e of w.ents.values()) if (!CARRIER.has(K(e.type)) && K(e.type) !== 'bus' && e.type !== 'pac') n++; return n; }
 function renderSites(){
   const nav = $('#sites'); if (!nav || !space) return;
-  nav.innerHTML = space.regions.map(r => `<div class="rg" role="group" aria-label="${esc(r.ko)}"><b>${esc(r.ko)}</b>${r.sites.map((w, i) => {
+  // folded: one button per region (with the site on screen); clicking a region unfolds its sites
+  const curR = space.regionOf(ui.site), curI = space.parse(ui.site).i;
+  nav.innerHTML = space.regions.map(r => `<div class="rg" role="group" aria-label="${esc(r.ko)}"><button class="rgh" data-rg="${r.id}" aria-expanded="${ui.sitesOpen === r.id}">${esc(r.ko)}${r === curR ? ` <span>· ${esc(r.names[curI])}</span>` : ''} ${ui.sitesOpen === r.id ? '▴' : '▾'}</button>${ui.sitesOpen !== r.id ? '' : r.sites.map((w, i) => {
     const key = AIC.Space.key(r.id, i), n = siteFacCount(w);
     return `<button data-site="${key}" aria-pressed="${key === ui.site}" title="${esc(r.ko + ' ' + r.names[i])} · ${w.W}×${w.H} · 설비 ${n}개 (두 번 누르면 이름 바꾸기)">${esc(r.names[i])}<small>${w.W}×${w.H}</small>${n ? '<i aria-hidden="true"></i>' : ''}</button>`;
   }).join('')}</div>`).join('');
   nav.querySelectorAll('button[data-site]').forEach(b => {
-    b.onclick = () => switchSite(b.dataset.site);
+    b.onclick = () => { if (b.dataset.site === ui.site) return; ui.sitesOpen = null; switchSite(b.dataset.site); renderSites(); };   // the site on screen stays open so a double click can rename it
     b.ondblclick = () => renameSite(b);
   });
+  nav.querySelectorAll('[data-rg]').forEach(b => b.onclick = () => { ui.sitesOpen = ui.sitesOpen === b.dataset.rg ? null : b.dataset.rg; renderSites(); });
   syncSitesH();
 }
+document.addEventListener('pointerdown', ev => { if (ui.sitesOpen && !ev.target.closest('#sites')){ ui.sitesOpen = null; renderSites(); } });
 function syncSitesH(){ const nav = $('#sites'); if (nav) $('#stage').style.setProperty('--sites-h', nav.offsetHeight + 'px'); }
 function renameSite(b){
   const key = b.dataset.site, p = space.parse(key); if (!p) return;
@@ -4706,10 +4904,10 @@ function syncSite(){
   siteSel.innerHTML = `<optgroup label="${esc(list[0] ? list[0].region : '')}">${list.map(s => `<option value="${s.id}">${esc(s.ko)} · ${s.w}×${s.h}</option>`).join('')}</optgroup>`
     + `<optgroup label="기타"><option value="custom" id="siteCustomOpt">${m ? '직접 입력…' : `직접 입력 · ${world.W}×${world.H}`}</option></optgroup>`;
   siteSel.value = m ? m.id : 'custom';
+  $('#siteInfo').innerHTML = `<b>${esc(space.regionOf(ui.site).ko)}</b> · ${esc(d.name)} · ${world.W}×${world.H}`;
   siteSel.title = `${space.regionOf(ui.site).ko} ${d.name} 부지 크기 (업그레이드 단계에 맞춰 고르세요)`;
   $('#sw').value = world.W; $('#sh').value = world.H;
   $('#siteCustom').hidden = true;
-  $('#siteInfo').textContent = `${space.regionOf(ui.site).ko} · ${d.name} · 부지 ${world.W}×${world.H}`;
   syncEdgeBus();
 }
 function applySite(W, H){
@@ -5048,6 +5246,18 @@ function extractCell(k, pm){
   if (pm <= 0) return '<span class="dim">—</span>';
   return `${esc(x.by)} <b>${ceilN(pm / x.hi)}</b>대` + (x.lo ? ` <span class="dim">(저${k.endsWith('_ore') ? '순도' : '농도'} ${ceilN(pm / x.lo)}대)</span>` : '');
 }
+// extraction facilities that would supply these per-minute amounts, summed by kind (high purity / concentration, rounded up)
+function extractTotals(keys, perMin){
+  const tot = {}; let cupWater = 0;
+  for (const k of keys){
+    const x = AIC.EXTRACT[k], pm = perMin[k]; if (!x || !(pm > 0)) continue;
+    const t = tot[x.by] || (tot[x.by] = { hi: 0, lo: 0, lofine: !!x.lo });
+    t.hi += ceilN(pm / x.hi); t.lo += ceilN(pm / (x.lo || x.hi));
+    if (x.water) cupWater += pm * x.water;
+  }
+  return Object.entries(tot).map(([by, t]) => `<span class="mchip">${esc(by)} ${t.hi}대${t.lofine && t.lo !== t.hi ? ` <span class="dim">(낮은 순도·농도 ${t.lo}대)</span>` : ''}</span>`).join('')
+    + (cupWater > 0 ? `<span class="mchip">적동 광석 채굴용 청정수 분당 ${fmt(cupWater)} → 양수기 ${ceilN(cupWater / 60)}대 더</span>` : '');
+}
 function renderDepot(force){
   const el = $('#pane-depot'); if (!el || ui.tab !== 'depot' || !space) return;
   const a = document.activeElement;
@@ -5057,16 +5267,8 @@ function renderDepot(force){
   const flow = k => (rr.in[k] || 0) - (rr.out[k] || 0) + (r.xfer[k] || 0) / 60;
   // 1. endless raw materials in use, and the extraction facilities that would sustain them
   const used = [...r.inf].filter(k => (rr.out[k] || 0) > 0).sort(byDep);
-  const tot = {}; let cupWater = 0;
-  for (const k of used){
-    const x = AIC.EXTRACT[k], pm = rr.out[k]; if (!x) continue;
-    const t = tot[x.by] || (tot[x.by] = { hi: 0, lo: 0, lofine: !!x.lo });
-    t.hi += ceilN(pm / x.hi); t.lo += ceilN(pm / (x.lo || x.hi));
-    if (x.water) cupWater += pm * x.water;
-  }
   const useRows = used.map(k => `<tr><td>${ic(k)}</td><td class="neg">${fmt(rr.out[k])}</td><td class="neg">${fmt(rr.out[k]*60)}</td><td style="text-align:left;font-family:var(--f-body);white-space:normal">${extractCell(k, rr.out[k])}</td></tr>`).join('');
-  const totLine = Object.entries(tot).map(([by, t]) => `<span class="mchip">${esc(by)} ${t.hi}대${t.lofine && t.lo !== t.hi ? ` <span class="dim">(낮은 순도·농도 ${t.lo}대)</span>` : ''}</span>`).join('')
-    + (cupWater > 0 ? `<span class="mchip">적동 광석 채굴용 청정수 분당 ${fmt(cupWater)} → 양수기 ${ceilN(cupWater / 60)}대 더</span>` : '');
+  const totLine = extractTotals(used, rr.out);
   // 2. metastorage transfers into this region
   const X = AIC.XFER, isDest = r.id === X.to, src = space.region(X.from), dst = space.region(X.to);
   const xk = Object.keys(r.xfer).find(k => X.items[k]) || '', xn = xk ? r.xfer[xk] : 0, xv = xk ? X.items[xk].v : 0, xmax = xk ? Math.floor(X.cap / xv) : 0;
@@ -5315,16 +5517,20 @@ const craft = {
     this.target = id;
     $('#cCrumb').innerHTML = `<a href="#craft">조합식</a>${id ? ` <span>›</span> <b>${esc(ITEMS[id].ko)}</b>` : ''}`;
     $('#cPick').hidden = !!id; $('#cStage').hidden = !id;
+    const cb = $('#cBoard'); cb.hidden = !id || !acct.enabled(); if (id) cb.href = '#board/item/' + id;
     if (!id){ this.picker(); return; }
     this.draw(true);
   },
   shell(){
     this.el().innerHTML = `<div class="cbar"><nav class="ccrumb" id="cCrumb"></nav>
+      <a class="btn sm" id="cBoard" hidden title="이 아이템을 대표 아이템으로 고른 청사진 글">게시판에서 찾기</a>
+      <label class="crate" title="이만큼 만들려면 단계마다 설비가 몇 대 필요한지 보여 줍니다">분당 <input id="cRate" type="number" min="0" max="100000" step="1" inputmode="decimal" placeholder="목표"> 개</label>
       <div class="csearch"><input id="cq" type="search" placeholder="생산품·원재료 찾기" autocomplete="off" aria-label="아이템 찾기"><div class="cres" id="cRes" hidden></div></div></div>
       <div class="cpick" id="cPick"></div>
       <div class="cstage" id="cStage" hidden><div class="cplane" id="cPlane"></div>
         <div class="czoom"><button class="btn sm" data-z="in" aria-label="확대">+</button><button class="btn sm" data-z="out" aria-label="축소">−</button><button class="btn sm" data-z="fit">맞추기</button></div></div>
 `;
+    $('#cRate').oninput = ev => { this.rate = Math.max(0, +ev.target.value || 0); if (this.target) this.draw(false); };
     const q = $('#cq'), res = $('#cRes');
     const find = () => { const v = q.value.trim().toLowerCase(); if (!v){ res.hidden = true; return []; }
       const hits = Object.keys(ITEMS).filter(k => ITEMS[k].ko.toLowerCase().includes(v) || ITEMS[k].en.toLowerCase().includes(v))
@@ -5342,18 +5548,29 @@ const craft = {
       if (ev.button !== 0 || ev.target.closest('.czoom, .ceye')) return;
       ev.preventDefault();   // no text selection or image dragging while panning
       const x0 = ev.clientX, y0 = ev.clientY, px = this.px, py = this.py; let moved = false;
-      const mv = e => { if (!moved && Math.hypot(e.clientX - x0, e.clientY - y0) < 4) return;
+      const mv = e => { if (this.pinch){ moved = true; return; } if (!moved && Math.hypot(e.clientX - x0, e.clientY - y0) < 4) return;
         if (!moved){ moved = true; st.setPointerCapture(ev.pointerId); st.classList.add('drag'); }
         this.px = px + e.clientX - x0; this.py = py + e.clientY - y0; this.apply(); };
       const up = () => { st.removeEventListener('pointermove', mv); st.removeEventListener('pointerup', up); st.removeEventListener('pointercancel', up); st.classList.remove('drag');
         if (moved){ const eat = e => { e.stopPropagation(); e.preventDefault(); }; window.addEventListener('click', eat, { capture: true, once: true }); setTimeout(() => window.removeEventListener('click', eat, true), 50); } };
       st.addEventListener('pointermove', mv); st.addEventListener('pointerup', up); st.addEventListener('pointercancel', up);
     });
+    // two fingers on a tablet: zoom and pan
+    const touches = new Map();
+    st.addEventListener('pointerdown', ev => { if (ev.pointerType !== 'touch') return; touches.set(ev.pointerId, [ev.clientX, ev.clientY]);
+      if (touches.size === 2){ const [a, b] = [...touches.values()], r = st.getBoundingClientRect(), mx = (a[0] + b[0]) / 2 - r.left, my = (a[1] + b[1]) / 2 - r.top;
+        this.pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]), z: this.z, wx: (mx - this.px) / this.z, wy: (my - this.py) / this.z }; } }, true);
+    st.addEventListener('pointermove', ev => { if (!touches.has(ev.pointerId)) return; touches.set(ev.pointerId, [ev.clientX, ev.clientY]);
+      if (this.pinch && touches.size === 2){ const [a, b] = [...touches.values()], r = st.getBoundingClientRect(), mx = (a[0] + b[0]) / 2 - r.left, my = (a[1] + b[1]) / 2 - r.top;
+        this.z = Math.max(.25, Math.min(2.5, this.pinch.z * Math.hypot(a[0] - b[0], a[1] - b[1]) / this.pinch.d)); this.px = mx - this.pinch.wx * this.z; this.py = my - this.pinch.wy * this.z; this.apply(); } }, true);
+    const lift = ev => { touches.delete(ev.pointerId); if (touches.size < 2) this.pinch = null; };
+    st.addEventListener('pointerup', lift, true); st.addEventListener('pointercancel', lift, true);
     st.addEventListener('wheel', ev => { ev.preventDefault(); const r = st.getBoundingClientRect(); this.zoomAt(ev.deltaY < 0 ? 1.15 : 1/1.15, ev.clientX - r.left, ev.clientY - r.top); }, { passive: false });
     st.querySelector('.czoom').onclick = ev => { const b = ev.target.closest('[data-z]'); if (!b) return; const r = st.getBoundingClientRect();
       if (b.dataset.z === 'fit') this.fit(); else this.zoomAt(b.dataset.z === 'in' ? 1.25 : 1/1.25, r.width / 2, r.height / 2); };
     $('#cPlane').addEventListener('click', ev => {
       const go = ev.target.closest('[data-go]'); if (go){ location.hash = 'craft/' + go.dataset.go; return; }
+      const pb = ev.target.closest('.cpill[data-build]'); if (pb){ history.pushState(null, '', location.pathname + location.search); route(); setTool('build:' + pb.dataset.build); const t = TYPES[pb.dataset.build]; if (t && t.group && ui.cat !== t.group){ ui.cat = t.group; ui.q = ''; $('#q').value = ''; renderPalette(); } flash(`${t.ko}을(를) 골랐습니다`.replace('을(를)', josa(t.ko, '을', '를'))); return; }
       const eye = ev.target.closest('.ceye'); if (eye){ const o = $('#cPlane').querySelector(`.cnode[data-main="${eye.dataset.item}"]`); if (o){ o.classList.remove('flash'); void o.offsetWidth; o.classList.add('flash'); } return; }
       const nd = ev.target.closest('.cnode'); if (nd && nd.dataset.item && nd.dataset.item !== this.target) location.hash = 'craft/' + nd.dataset.item;
       else if (nd && nd.dataset.item) openItem(nd.dataset.item);
@@ -5380,14 +5597,16 @@ const craft = {
       // keep the rows under the item free for its list of other ways
       if (n.alts && n.alts.length) row = Math.max(row, n.row + Math.ceil((AT + 20 + n.alts.length * AR) / RH)); };
     place(root, 0);
+    if (this.rate > 0) this.rates(root, this.rate);
     const W = (maxD + 1) * PITCH - PW - 2 * G + 2 * M, H = row * RH + 2 * M - 20;
     const cx = n => M + (maxD - n.d) * PITCH, cy = n => M + n.row * RH;
     let html = '', lines = '', alines = '';
     const all = []; const walk = n => { all.push(n); n.groups.forEach(g => g.kids.forEach(walk)); }; walk(root);
     for (const n of all){
       const x = cx(n), y = cy(n), it = ITEMS[n.id];
+      const rl = n.flow > 0 ? `<span class="crt">${n.qty > 1 ? `×${n.qty} · ` : ''}분당 ${fmt(n.flow)}</span>` : '';
       html += `<div class="cnode${n.deposit ? ' dep' : ''}${n.alt ? ' alt' : ''}${n === root ? ' root' : ''}" data-item="${n.id}"${!n.deposit && !n.dup && !n.loop && !n.alt ? ` data-main="${n.id}"` : ''} style="left:${x}px;top:${y}px" title="${esc(it.ko)}${n.deposit ? ' (매장지)' : ''}">
-        <div class="cimg" style="--mc:${MAT[it.mat] || '#888'}"><img alt="" src="${iconURL(n.id)}"></div>${n.qty > 1 ? `<span class="cq">×${n.qty}</span>` : ''}
+        <div class="cimg" style="--mc:${MAT[it.mat] || '#888'}"><img alt="" src="${iconURL(n.id)}"></div>${rl || (n.qty > 1 ? `<span class="cq">×${n.qty}</span>` : '')}
         ${n.dup ? `<button class="ceye" type="button" data-item="${n.id}" title="위에서 이미 펼친 재료 (눌러서 찾기)">◉</button>` : ''}${n.loop ? '<span class="cloop" title="이 재료는 위 단계에서 다시 만들어짐">↻</span>' : ''}
         <div class="cname">${esc(it.ko)}</div></div>`;
       const my = y + CW / 2, pr = x - G, pl = pr - PW, jx = pl - G / 2, jo = x - G / 2;
@@ -5401,8 +5620,8 @@ const craft = {
         // the machine (or extractor) pill for this way, wires from its inputs to it and from it to the item
         const gy = M + g.row * RH + CW / 2, wy = g.way;
         const name = wy.src ? wy.by : MNAME(wy.m), icon = wy.src ? '' : facIconURL(wy.m);
-        html += `<div class="cpill${g.alt ? ' alt' : ''}" style="left:${pl}px;top:${gy - 19}px;width:${PW}px">${wy.gas ? `<span class="cgas" style="--gc:${MAT[ITEMS[wy.gas].mat]}">${esc(ITEMS[wy.gas].ko)} 환경</span>` : ''}${g.alt ? `<span class="caltag">기타 ${gi}</span>` : ''}
-          <b>${icon ? `<img alt="" src="${icon}">` : ''}${esc(name)}</b><span>${wy.t}초</span></div>`;
+        html += `<div class="cpill${g.alt ? ' alt' : ''}"${wy.src ? '' : ` data-build="${wy.m}" title="눌러서 공장에서 ${esc(name)} 고르기"`} style="left:${pl}px;top:${gy - 19}px;width:${PW}px">${wy.gas ? `<span class="cgas" style="--gc:${MAT[ITEMS[wy.gas].mat]}">${esc(ITEMS[wy.gas].ko)} 환경</span>` : ''}${g.alt ? `<span class="caltag">기타 ${gi}</span>` : ''}
+          <b>${icon ? `<img alt="" src="${icon}">` : ''}${esc(name)}</b><span>${wy.t}초${n.mach > 0 ? ` · <b class="cmc" title="정확히 ${fmt(n.mach)}대">${Math.ceil(n.mach - 1e-9)}대</b>` : ''}</span></div>`;
         const tgt = g.alt ? 'alines' : 'lines';
         const seg = gy === my ? `<path d="M${pr} ${gy}H${x}"/>` : `<path d="M${pr} ${gy}H${jo}V${my}H${x}"/>`;
         if (g.alt) alines += seg; else lines += seg;
@@ -5414,6 +5633,23 @@ const craft = {
     pl.innerHTML = `<svg class="clines" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" aria-hidden="true">${lines}</svg>` + html;
     this.W = W; this.H = H;
     if (refit) this.fit(); else this.apply();
+  },
+  // target rate → per-minute flow on every card and machine counts on every pill (inputs used in several places add up)
+  rates(root, rate){
+    const main = new Map(), order = [], seen = new Set();
+    const visit = n => { for (const g of n.groups) for (const c of g.kids) visit(c); if (n.groups.length && !main.has(n.id)) main.set(n.id, n); };
+    visit(root);
+    const dfs = id => { if (seen.has(id)) return; seen.add(id); const n = main.get(id); if (n) for (const c of n.groups[0].kids) if (!c.loop && !c.deposit) dfs(c.id); order.push(id); };
+    dfs(root.id); order.reverse();   // every item before the inputs it needs
+    const need = new Map([[root.id, rate]]);
+    for (const id of order){
+      const n = main.get(id), d = need.get(id) || 0; if (!n || !(d > 0)) continue;
+      const way = n.groups[0].way;
+      if (way.src){ n.mach = d / AIC.EXTRACT[id].hi; n.groups[0].kids[0].flow = d; continue; }
+      const crafts = d / (way.out[id] || 1); n.mach = crafts * way.t / 60;
+      for (const c of n.groups[0].kids){ c.flow = crafts * (c.qty || 1); if (!c.loop) need.set(c.id, (need.get(c.id) || 0) + c.flow); }
+    }
+    root.flow = rate;
   },
   apply(){ $('#cPlane').style.transform = `translate(${this.px}px, ${this.py}px) scale(${this.z})`; },
   fit(){
@@ -5429,8 +5665,29 @@ const craft = {
 
 // ---------- loop ----------
 let last = performance.now(), uiT = 0, statT = 0, saveT = 0;
+// time spent in a background tab (browsers stop the page there) is run when the tab comes back, a slice per frame
+const catchup = { hiddenAt: 0, left: 0, total: 0 };
+const minSec = s => s >= 3600 ? `${Math.floor(s / 3600)}시간 ${Math.round(s % 3600 / 60)}분` : s >= 60 ? `${Math.round(s / 60)}분` : `${Math.round(s)}초`;
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden'){ catchup.hiddenAt = performance.now(); return; }
+  if (catchup.hiddenAt && ui.playing){
+    const gone = (performance.now() - catchup.hiddenAt) / 1000;
+    if (gone > 2){ catchup.left = Math.min(catchup.left + gone * ui.speed, 2 * 3600); catchup.total = catchup.left; }
+  }
+  catchup.hiddenAt = 0;
+});
+function runCatchup(){
+  if (!(catchup.left > 0)) return;
+  if (!ui.playing){ catchup.left = 0; return; }   // pausing drops the rest
+  const t0 = performance.now();
+  while (catchup.left >= 0.05 && performance.now() - t0 < 30){ space.step(0.05); catchup.left -= 0.05; }
+  const w = $('#warn');
+  if (catchup.left < 0.05){ catchup.left = 0; flash(`자리를 비운 ${minSec(catchup.total)} 동안의 생산을 계산했습니다`); }
+  else { w.hidden = false; w.textContent = `자리를 비운 ${minSec(catchup.total)} 계산 중… ${Math.floor((1 - catchup.left / catchup.total) * 100)}% (일시정지하면 멈춤)`; flashT = performance.now() + 500; }
+}
 function frame(now){
   const dt = Math.min(0.25, (now - last)/1000); last = now;
+  runCatchup();
   if (ui.playing){
     ui.acc += dt * ui.speed;
     let n = 0; while (ui.acc >= 0.05 && n < 400){ space.step(0.05); ui.acc -= 0.05; n++; }
@@ -5504,7 +5761,7 @@ window.addEventListener('pagehide', saveNow);
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveNow(); });
 
 readColors();
-boot();
+boot(); hist.reset();
 renderTools(); renderPalette();
 syncSite(); renderSites(); fitView();
 renderInspector(true); renderStats(); renderRecipes();
