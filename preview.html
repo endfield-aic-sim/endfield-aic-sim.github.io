@@ -620,6 +620,7 @@ body.resizing.rcol{cursor:col-resize} body.resizing.rrow{cursor:row-resize}
   .strip>:not(.tool){grid-column:1/-1}
 }
 }
+.siteinfo{font-size:12.5px;white-space:nowrap;padding-left:14px;border-left:1px solid var(--line)}
 .note:empty{display:none}
 </style>
 
@@ -645,6 +646,7 @@ body.resizing.rcol{cursor:col-resize} body.resizing.rrow{cursor:row-resize}
         <div class="meter" id="meter"><i></i></div>
         <b id="pwrtxt">0 / 200</b>
       </div>
+      <span class="siteinfo" id="siteInfo"></span>
       <div class="spacer"></div>
       <div class="ctl">
         <label class="lbl" for="site" style="font-size:11px;color:var(--muted)">부지</label>
@@ -4777,6 +4779,7 @@ function syncSite(){
   siteSel.innerHTML = `<optgroup label="${esc(list[0] ? list[0].region : '')}">${list.map(s => `<option value="${s.id}">${esc(s.ko)} · ${s.w}×${s.h}</option>`).join('')}</optgroup>`
     + `<optgroup label="기타"><option value="custom" id="siteCustomOpt">${m ? '직접 입력…' : `직접 입력 · ${world.W}×${world.H}`}</option></optgroup>`;
   siteSel.value = m ? m.id : 'custom';
+  $('#siteInfo').innerHTML = `<b>${esc(space.regionOf(ui.site).ko)}</b> · ${esc(d.name)} · ${world.W}×${world.H}`;
   siteSel.title = `${space.regionOf(ui.site).ko} ${d.name} 부지 크기 (업그레이드 단계에 맞춰 고르세요)`;
   $('#sw').value = world.W; $('#sh').value = world.H;
   $('#siteCustom').hidden = true;
