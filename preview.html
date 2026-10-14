@@ -1559,6 +1559,15 @@ class World {
     const e = this.atFor(nx, ny, item); if (!e) return false;
     return this.accept(e, nx, ny, d, item);
   }
+  // is something pushing into this carrier from directly behind it?
+  backFed(e) {
+    const b = opp(e.f), nx = e.x + DX[b], ny = e.y + DY[b], n = this.at(nx, ny, layerOf(e.type)); if (!n) return false;
+    const nk = TYPES[n.type].kind;
+    if (nk === 'belt' || nk === 'converger' || nk === 'control') return n.f === e.f;
+    if (nk === 'splitter') return n.f !== b;
+    if (nk === 'bridge') return true;
+    return isPort(n, nx, ny, 'out', e.f);
+  }
   // could the cell in direction d accept this kind of item at all (ignoring momentary fullness)?
   connected(fromX, fromY, d, item) {
     const nx = fromX + DX[d], ny = fromY + DY[d];
@@ -1587,6 +1596,9 @@ class World {
       case 'belt': case 'splitter': case 'converger': case 'control':
         if (e.item) return false;
         if ((t.kind === 'belt' || t.kind === 'converger') && d === opp(e.f)) return false;
+        // a plain belt only turns a corner: from the side it takes items only while nothing feeds it from behind
+        // (joining the side of a running belt needs a converger, otherwise the side belt just stops)
+        if (t.kind === 'belt' && d !== e.f && this.backFed(e)) return false;
         if ((t.kind === 'splitter' || t.kind === 'control') && d !== e.f) return false;
         if (t.kind !== 'converger' && this.time - e.lastIn < gapOf(item) - 1e-9) return false;
         if (t.kind === 'converger' && d === e.lastSide) {
@@ -4123,6 +4135,8 @@ function feeds(e){ // sides of a carrier cell that something pushes into
     else if (nk==='bridge'){ ins.push(s); }
     else if (AIC.isPort(n, nx, ny, 'out', toMe)) ins.push(s);
   }
+  // a plain belt fed from behind does not take side inputs (see World.accept): draw it that way
+  if (K(e.type) === 'belt' && ins.includes(opp(e.f))) return [opp(e.f)];
   return ins;
 }
 function outs(e){
@@ -4181,6 +4195,9 @@ function render(){
   for (const e of belts){
     const r = world.beltLinkWhy(e.type, e.x, e.y, e.f);
     if (r && (r.d === e.f || !geo.get(e.id) || feeds(e).length === 0)) noLink((e.x+.5+DX[r.d]*.5)*S, (e.y+.5+DY[r.d]*.5)*S);
+    // pointing into the side of a belt that is already fed from behind: blocked (needs a converger)
+    if (K(e.type) === 'belt'){ const n = world.at(e.x + DX[e.f], e.y + DY[e.f], AIC.layerOf(e.type));
+      if (n && K(n.type) === 'belt' && n.f !== e.f && n.f !== opp(e.f) && world.backFed(n)) noLink((e.x+.5+DX[e.f]*.5)*S, (e.y+.5+DY[e.f]*.5)*S); }
   }
   drawCarrierBeds(pipes, geo);
   for (const e of pipes) drawCarrierDetail(e, geo.get(e.id), phase);
