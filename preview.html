@@ -621,6 +621,23 @@ body.resizing.rcol{cursor:col-resize} body.resizing.rrow{cursor:row-resize}
 }
 }
 .siteinfo{font-size:12.5px;white-space:nowrap;padding-left:14px;border-left:1px solid var(--line)}
+/* blueprint posts: several blueprints, main item, game code */
+.pitems{display:inline-flex;gap:2px;margin-left:8px;vertical-align:middle}
+.pitems img{width:20px;height:20px}
+.wbpe{border:1px solid var(--line);padding:10px;margin-bottom:10px;background:var(--panel)}
+.wbph{display:flex;align-items:center;margin-bottom:8px}
+.wbpg{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 10px;align-items:center}
+.wbpg label{font-size:12.5px;font-weight:600}
+.wbpg textarea,.wbpg input{width:100%}
+.wpaint{display:flex;align-items:center;gap:6px;margin:10px 0 6px;font-size:12.5px;flex-wrap:wrap}
+.swatch{width:20px;height:20px;border:2px solid transparent;background:var(--sw);padding:0;cursor:pointer;opacity:.75}
+.swatch[aria-pressed="true"]{border-color:var(--ink);opacity:1}
+.wprev{width:100%;height:280px;display:block;background:var(--cv-bg);cursor:crosshair;touch-action:none}
+.bpth{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.gcode{display:flex;align-items:center;gap:8px;margin:8px 0;padding:6px 8px;border:1px solid var(--line);background:var(--panel-2)}
+.gcode .glabel{font-size:12px;font-weight:700;white-space:nowrap}
+.gcode code{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+.bpfig canvas[data-bi]{width:100%;height:clamp(240px,52vw,460px);display:block;background:var(--cv-bg)}
 .note:empty{display:none}
 </style>
 
@@ -631,7 +648,7 @@ body.resizing.rcol{cursor:col-resize} body.resizing.rrow{cursor:row-resize}
 <div class="app" id="app">
   <header class="bar" id="bar">
     <div class="brand"><h1>AIC 공장 시뮬레이터</h1></div>
-    <nav class="seg view" id="viewSw" aria-label="화면"><button data-v="sim" aria-pressed="true">공장</button><button data-v="board" aria-pressed="false">청사진 게시판</button><button data-v="craft" aria-pressed="false">조합식</button><button data-v="admin" aria-pressed="false" hidden>관리자</button></nav>
+    <nav class="seg view" id="viewSw" aria-label="화면"><button data-v="sim" aria-pressed="true">공장</button><button data-v="board" aria-pressed="false">게시판</button><button data-v="craft" aria-pressed="false">조합식</button><button data-v="admin" aria-pressed="false" hidden>관리자</button></nav>
     <nav class="hlinks" aria-label="도움"><button id="bugBtn" hidden title="문제를 운영자에게 알리기">버그 제보</button><button id="setBtn" title="화면 설정">설정</button></nav>
     <span class="acct" id="acct" hidden></span>
     <div class="toolbar simonly">
@@ -2937,6 +2954,7 @@ function previewWorld(bp){
   const w = new AIC.World(x1 - x0 + 2, y1 - y0 + 2);
   if (b.pac){ const pc = w.place('pac', ox + b.pac.x, oy + b.pac.y, b.pac.f); if (pc && b.pac.ports) b.pac.ports.forEach((v, i) => { if (i < pc.ports.length) pc.ports[i] = v; }); }
   if (!w.bpPlace(b, ox, oy)) for (const q of b.ents){ const e = w.place(q.t, q.x + ox, q.y + oy, q.f == null ? 2 : q.f); if (e) w.applyCfg(e, q); }
+  w.bpOx = ox; w.bpOy = oy; w.bpW = b.w; w.bpH = b.h;
   return w;
 }
 // draw world w into canvas c at css size cw×ch; margin = extra cells shown around the site (outer bus)
@@ -2957,10 +2975,54 @@ function paintWorld(c, w, cw, ch, margin){
   }
 }
 // draw a blueprint into a canvas at its on-screen size
-function paintBp(c, bp){
+function paintBp(c, bp, marks){
   const r = c.getBoundingClientRect(); if (!r.width) return;
   const w = previewWorld(bp); if (!w) return;
   paintWorld(c, w, r.width, r.height, 0);
+  if (marks && marks.length){
+    // painted areas: translucent fill, a firmer outline
+    const v = bpViewOf(w, r.width, r.height), g = c.getContext('2d'), d = window.devicePixelRatio || 1;
+    g.save(); g.setTransform(d, 0, 0, d, 0, 0);
+    for (const m of marks){ const x = v.sx(m.x), y = v.sy(m.y), ww = m.w * v.cell, hh = m.h * v.cell, col = MARK_COLORS[m.c] || MARK_COLORS[0];
+      g.globalAlpha = .26; g.fillStyle = col; g.fillRect(x, y, ww, hh); g.globalAlpha = .9; g.strokeStyle = col; g.lineWidth = 2; g.strokeRect(x + 1, y + 1, ww - 2, hh - 2); }
+    g.restore();
+  }
+}
+// colours for painted areas on blueprints in posts
+const MARK_COLORS = ['#F2D300', '#FF5A5A', '#3FA9F5', '#4CD07A', '#B07CFF', '#FF9F40'];
+// screen position of blueprint cells in a preview painted by paintWorld (same camera maths)
+function bpViewOf(w, cw, ch){
+  const pad = Math.min(cw, ch) * 0.04, z = Math.min((cw - 2 * pad) / (w.W * S), (ch - 2 * pad) / (w.H * S));
+  const camX = (w.W * S - cw / z) / 2, camY = (w.H * S - ch / z) / 2, cell = S * z;
+  return { cell, sx: bx => ((bx + w.bpOx) * S - camX) * z, sy: by => ((by + w.bpOy) * S - camY) * z, cx: px => Math.floor((px / z + camX) / S - w.bpOx), cy: py => Math.floor((py / z + camY) / S - w.bpOy) };
+}
+// the blueprint cell under a pointer on a preview canvas (clamped to the blueprint when asked)
+function bpCellAt(cv, bp, ev, clamp){
+  const r = cv.getBoundingClientRect(), w = previewWorld(bp); if (!w) return null;
+  const v = bpViewOf(w, r.width, r.height); let x = v.cx(ev.clientX - r.left), y = v.cy(ev.clientY - r.top);
+  if (clamp){ x = Math.max(0, Math.min(w.bpW - 1, x)); y = Math.max(0, Math.min(w.bpH - 1, y)); }
+  else if (x < 0 || y < 0 || x >= w.bpW || y >= w.bpH) return null;
+  return { x, y };
+}
+// item choices for a post's main item, by category
+function itemPickOptions(cur){
+  const groups = {}; for (const [k, it] of Object.entries(ITEMS)) (groups[it.cat] = groups[it.cat] || []).push(k);
+  const order = ['final', 'battery', 'comp', 'part', 'bottle', 'refined', 'powder', 'plant', 'seed', 'ore', 'fluid', 'gas', 'filled'];
+  return `<option value="">— 없음 —</option>` + order.filter(c => groups[c]).map(c => `<optgroup label="${esc(CAT_KO[c] || c)}">${groups[c].map(k => `<option value="${k}"${k === cur ? ' selected' : ''}>${esc(ITEMS[k].ko)}</option>`).join('')}</optgroup>`).join('');
+}
+// a post's blueprints: the post's bp is the first one, bp.more holds the rest (each with main item, game code, painted areas)
+function postBps(p){
+  if (!p || !p.bp || !p.bp.ents) return [];
+  const strip = bp => { const o = Object.assign({}, bp); for (const k of ['more', 'items', 'item', 'code', 'marks']) delete o[k]; return o; };
+  const list = [{ bp: strip(p.bp), item: ITEMS[p.bp.item] ? p.bp.item : null, code: typeof p.bp.code === 'string' ? p.bp.code : '', marks: Array.isArray(p.bp.marks) ? p.bp.marks : [] }];
+  for (const m of Array.isArray(p.bp.more) ? p.bp.more : []) if (m && m.bp && Array.isArray(m.bp.ents)) list.push({ bp: m.bp, item: ITEMS[m.item] ? m.item : null, code: typeof m.code === 'string' ? m.code : '', marks: Array.isArray(m.marks) ? m.marks : [] });
+  return list;
+}
+// copy text to the clipboard (falls back to a hidden text box)
+async function copyText(t){
+  try { await navigator.clipboard.writeText(t); return true; } catch(e){}
+  const ta = document.createElement('textarea'); ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select();
+  let ok = false; try { ok = document.execCommand('copy'); } catch(e){} ta.remove(); return ok;
 }
 function thumbURL(bp){
   const w = previewWorld(bp); if (!w) return null;
@@ -3034,9 +3096,9 @@ const board = {
   compose(name, bp){ this.pending = { name, bp }; location.hash = 'write'; },
   redraw(){
     if (ui.view !== 'board') return;
-    const big = $('#bBig'); if (big && this.post && this.post.bp) paintBp(big, this.post.bp);
     if ($('#bList')) this.paintThumbs();
-    const pv = $('#wPrev'); if (pv && this.wbp) paintBp(pv, this.wbp.bp);
+    if ($('#wBps') && this.wDraw) this.wDraw();
+    if ($('.bpfig canvas[data-bi]')) this.paintPostBps();
   },
   async show(v, arg, arg2){
     const my = ++this.seq;
@@ -3045,7 +3107,8 @@ const board = {
     if (!acct.enabled()){ el.innerHTML = '<div class="bwrap"><p class="note">게시판은 공개 사이트에서만 열립니다.</p></div>'; return; }
     if (!acct.client && !acct.down){ el.innerHTML = '<div class="bwrap"><p class="note">게시판에 연결하는 중…</p></div>'; await acct.wait(); if (my !== this.seq) return; }
     if (acct.down || !acct.client){ el.innerHTML = '<div class="bwrap"><p class="note">게시판 서버에 연결하지 못했습니다. 잠시 후 새로고침해 주세요.</p><p><a class="btn" href="#">공장으로 돌아가기</a></p></div>'; return; }
-    if (v === 'board'){ this.lv = this.boardLv; if (arg === 'q') this.boardLv.q = decodeURIComponent(arg2 || '').slice(0, 60); return this.list(true, my); }   // #board/q/<text>: search
+    // #board/q/<text>: search · #board/item/<id>: blueprints whose main item is that item
+    if (v === 'board'){ this.lv = this.boardLv; this.boardLv.item = arg === 'item' && ITEMS[arg2] ? arg2 : ''; if (arg === 'q') this.boardLv.q = decodeURIComponent(arg2 || '').slice(0, 60); return this.list(true, my); }
     if (v === 'user') return arg2 === 'factories' ? this.myFactories(decodeURIComponent(arg || '').toLowerCase(), my) : this.profile(decodeURIComponent(arg || '').toLowerCase(), my);
     if (v === 'post') return this.open(+arg, my);
     if (v === 'write') return this.write(null, my);
@@ -3117,12 +3180,13 @@ const board = {
     if (user) q = q.eq('author_name', lv.name);
     // blueprint board only: blueprint posts (notices stay pinned on top); old text posts are no longer listed
     q = user ? q.in('kind', ['bp', 'notice']) : q.eq('kind', 'bp');
+    if (!user && lv.item) q = q.contains('bp', { items: [lv.item] });
     const term = lv.q.replace(/[,()*%"\\]/g, ' ').trim();
     if (term) q = q.or(`title.ilike.*${term}*,body.ilike.*${term}*,author_name.ilike.*${term}*`);
     if (lv.sort === 'like') q = q.order('like_count', { ascending: false });
     if (lv.sort === 'cmt') q = q.order('comment_count', { ascending: false });
     q = q.order('created_at', { ascending: false }).range(from, from + PAGE);
-    const wantNotices = !user && reset && !term;   // newest notice stays pinned on top
+    const wantNotices = !user && reset && !term && !lv.item;   // newest notice stays pinned on top
     const [res, nres] = await Promise.all([q, wantNotices ? db.from('posts').select(LIST_COLS).eq('kind', 'notice').order('created_at', { ascending: false }).limit(1) : null]);
     if ((my != null && my !== this.seq) || this.lv !== lv) return;
     if (res.error){ this.renderList('error'); return; }
@@ -3147,9 +3211,10 @@ const board = {
     if (!$('#bList') || $('#bList').dataset.lv !== key){
       el.innerHTML = `<div class="bwrap">
         ${banBar()}${user ? `<a class="back" href="#board">← 게시판</a><div class="uhead" id="uHead"></div>${ownSubtabs(lv.name, 'posts') || '<h3 class="usub">쓴 글</h3>'}`
-          : `<div class="bhead"><h2>청사진 게시판</h2><span class="spacer"></span><button class="btn primary" id="bWrite">청사진 올리기</button></div>`}
+          : `<div class="bhead"><h2>게시판</h2><span class="spacer"></span><button class="btn primary" id="bWrite">청사진 올리기</button></div>`}
         <div class="btool">
           ${user ? '<span class="spacer"></span>' : '<form class="bsearch" id="bSearch" role="search"><input type="search" id="bQ" placeholder="제목·내용·작성자 검색" aria-label="게시글 검색" maxlength="40"><button class="btn">검색</button></form>'}
+          ${user ? '' : `<select class="sel" id="bItem" aria-label="대표 아이템으로 찾기">${itemPickOptions(lv.item || '').replace('— 없음 —', '대표 아이템: 전체')}</select>`}
           <select class="sel" id="bSort" aria-label="정렬"><option value="new">최신순</option><option value="like">추천순</option><option value="cmt">댓글순</option></select>
         </div>
         <div class="blist" id="bList" data-lv="${esc(key)}" aria-live="polite"></div>
@@ -3158,11 +3223,12 @@ const board = {
       if (!user){ $('#bWrite').onclick = () => { this.pending = null; location.hash = 'write'; }; }
       if (!user) $('#bSearch').onsubmit = ev => { ev.preventDefault(); this.lv.q = $('#bQ').value.trim(); this.list(true, this.seq); };
       $('#bSort').onchange = ev => { this.lv.sort = ev.target.value; this.list(true, this.seq); };
+      const bi = $('#bItem'); if (bi) bi.onchange = ev => { const v = ev.target.value; location.hash = v ? 'board/item/' + v : 'board'; };
       $('#bMore').onclick = () => this.list(false, this.seq);
       if (user) this.renderUserHead();
     }
     if ($('#bQ')) $('#bQ').value = lv.q;
-    $('#bSort').value = lv.sort;
+    $('#bSort').value = lv.sort; if ($('#bItem')) $('#bItem').value = lv.item || '';
     const list = $('#bList');
     $('#bMore').hidden = !(state === 'ok' && this.more);
     if (state === 'loading' && !this.rows.length){ list.innerHTML = '<p class="note bempty">불러오는 중…</p>'; return; }
@@ -3185,7 +3251,7 @@ const board = {
     return `<div class="prow k-${p.kind}">
       <span class="pthumb">${thumb}</span>
       <span class="pmain">
-        <span class="ptitle"><span class="kbadge k-${p.kind}">${KIND_KO[p.kind]}</span><a class="plink" href="#post/${p.id}"><b>${esc(p.title)}</b></a></span>
+        <span class="ptitle"><span class="kbadge k-${p.kind}">${KIND_KO[p.kind]}</span><a class="plink" href="#post/${p.id}"><b>${esc(p.title)}</b></a>${p.bp && Array.isArray(p.bp.items) && p.bp.items.length ? `<span class="pitems">${p.bp.items.filter(k => ITEMS[k]).slice(0, 6).map(k => `<a href="#board/item/${k}" title="${esc(ITEMS[k].ko)} 청사진만 보기"><img alt="${esc(ITEMS[k].ko)}" src="${iconURL(k)}"></a>`).join('')}</span>` : ''}</span>
         ${ex ? `<span class="pex">${esc(ex)}</span>` : ''}
         <span class="pmeta">${auLink(p.author_name)} · <time datetime="${esc(p.created_at)}" title="${esc(fullDate(p.created_at))}">${ago(p.created_at)}</time>${size}</span>
       </span>
@@ -3212,17 +3278,18 @@ const board = {
   renderPost(){
     const p = this.post, me = acct.user ? acct.user.id : null, mine = me && p.author === me;
     const el = this.el();
-    let bpBlock = '';
-    if (p.bp && p.bp.ents){
-      const f = bpFacts(p.bp);
-      const extra = [f.belts ? `벨트 ${f.belts}칸` : '', f.pipes ? `파이프 ${f.pipes}칸` : ''].filter(Boolean).join(' · ');
-      bpBlock = `<figure class="bpfig">
-        <canvas id="bBig" role="img" aria-label="청사진 미리보기: ${esc(p.title)}"></canvas>
-        <figcaption><b>${p.bp.w}×${p.bp.h}</b> · 설비 ${f.facs}개${extra ? ' · ' + extra : ''}</figcaption>
+    // every blueprint of the post: picture with painted areas, main item, game code with a copy button, actions
+    const bps = postBps(p); this.postBpList = bps;
+    const bpBlock = bps.map((x, i) => {
+      const f = bpFacts(x.bp), extra = [f.belts ? `벨트 ${f.belts}칸` : '', f.pipes ? `파이프 ${f.pipes}칸` : ''].filter(Boolean).join(' · ');
+      return `<figure class="bpfig">
+        ${bps.length > 1 || x.item ? `<div class="bpth">${bps.length > 1 ? `<b>청사진 ${i + 1}</b>` : ''}${x.item ? ic(x.item) : ''}</div>` : ''}
+        <canvas data-bi="${i}" role="img" aria-label="청사진 미리보기: ${esc(p.title)} ${i + 1}"></canvas>
+        <figcaption><b>${x.bp.w}×${x.bp.h}</b> · 설비 ${f.facs}개${extra ? ' · ' + extra : ''}</figcaption>
         <div class="fchips">${f.list.map(([t, c]) => `<span class="mchip">${esc(TYPES[t].ko)} ×${c}</span>`).join('')}</div>
-        <div class="row"><button class="btn primary" id="bUse">공장에 배치</button><button class="btn" id="bSave">내 청사진에 저장</button><button class="btn" id="bCode">청사진 코드</button></div>
-      </figure>`;
-    }
+        ${x.code ? `<div class="gcode"><span class="glabel">게임 코드</span><code>${esc(x.code)}</code><button class="btn sm primary" data-copy="${i}">복사</button></div>` : ''}
+        <div class="row"><button class="btn primary" data-use="${i}">공장에 배치</button><button class="btn" data-save="${i}">내 청사진에 저장</button><button class="btn" data-code="${i}">사이트 코드</button></div>
+      </figure>`; }).join('');
     el.innerHTML = `<article class="bwrap post">
       ${banBar()}<a class="back" href="#board">← 목록</a>
       <header class="phead">
@@ -3246,11 +3313,16 @@ const board = {
           : '<p class="note">댓글을 쓰려면 <button class="linkbtn" id="cLogin">로그인</button>하세요.</p>'}
       </section>
     </article>`;
-    if (p.bp && p.bp.ents){
-      paintBp($('#bBig'), p.bp);
-      $('#bUse').onclick = () => { history.pushState(null, '', location.pathname + location.search); route(); startPaste(p.bp, p.title); flash('놓을 곳을 클릭하세요 · R 회전 · Esc 취소'); };
-      $('#bSave').onclick = async () => { const where = await saveBp(p.title, p.bp); flash(where === 'account' ? '내 계정 청사진에 저장했습니다' : '이 브라우저 청사진에 저장했습니다'); };
-      $('#bCode').onclick = () => openDialog('bpcode', { name: p.title, bp: p.bp });
+    if (bps.length){
+      this.paintPostBps();
+      const nm = i => bps.length > 1 ? `${p.title} ${i + 1}` : p.title;
+      el.querySelectorAll('.bpfig').forEach(fig => fig.onclick = async ev => {
+        const b = ev.target.closest('button'); if (!b) return;
+        if (b.dataset.use != null){ const x = bps[+b.dataset.use]; history.pushState(null, '', location.pathname + location.search); route(); startPaste(x.bp, nm(+b.dataset.use)); flash('놓을 곳을 클릭하세요 · R 회전 · Esc 취소'); }
+        else if (b.dataset.save != null){ const where = await saveBp(nm(+b.dataset.save), bps[+b.dataset.save].bp); flash(where === 'account' ? '내 계정 청사진에 저장했습니다' : '이 브라우저 청사진에 저장했습니다'); }
+        else if (b.dataset.code != null) openDialog('bpcode', { name: nm(+b.dataset.code), bp: bps[+b.dataset.code].bp });
+        else if (b.dataset.copy != null){ const ok = await copyText(bps[+b.dataset.copy].code); b.textContent = ok ? '복사됨' : '복사 실패'; setTimeout(() => { if (b.isConnected) b.textContent = '복사'; }, 1500); }
+      });
     }
     $('#bLike').onclick = () => this.toggleLike();
     const rb = $('#bReport'); if (rb) rb.onclick = () => openReport('post', p.id, p);
@@ -3277,6 +3349,7 @@ const board = {
     };
     this.bindCmtDel();
   },
+  paintPostBps(){ (this.postBpList || []).forEach((x, i) => { const cv = document.querySelector(`.bpfig canvas[data-bi="${i}"]`); if (cv) paintBp(cv, x.bp, x.marks); }); },
   cmtHTML(c){
     const me = acct.user ? acct.user.id : null, can = me && (c.author === me || acct.isAdmin());
     return `<li class="cmt"><div class="cmeta">${auLink(c.author_name)}${c.author === this.post.author ? '<span class="kbadge k-op">작성자</span>' : ''} <time datetime="${esc(c.created_at)}" title="${esc(fullDate(c.created_at))}">${ago(c.created_at)}</time>
@@ -3338,33 +3411,34 @@ const board = {
       if (p.author !== acct.user.id){ el.innerHTML = `<div class="bwrap"><a class="back" href="#post/${p.id}">← 글로 돌아가기</a><p class="note">내가 쓴 글만 고칠 수 있습니다.</p></div>`; return; }
     }
     const pend = !id ? this.pending : null; this.pending = null;
-    // where the attached blueprint can come from
+    // where each attached blueprint can come from (the same choices for every blueprint of the post)
+    const all = [...world.ents.keys()];
+    const nFac = ids => ids.filter(i => { const e = world.ents.get(i); return e && !CARRIER.has(K(e.type)) && e.type !== 'pac'; }).length;
     const src = [];
-    if (p && p.bp) src.push(['keep', '지금 붙어 있는 청사진 그대로', () => ({ name: p.title, bp: p.bp })]);
     if (pend) src.push(['pend', `고른 청사진 · ${pend.name}`, () => pend]);
-    const sel = selectionIds().filter(i => !world.pac || i !== world.pac.id);
-    if (sel.length) src.push(['sel', `공장에서 선택한 범위 (설비 ${sel.filter(i => !CARRIER.has(K(world.ents.get(i).type))).length}개)`, () => ({ name: '선택한 설비', bp: world.blueprint(selectionIds()) })]);
-    const all = [...world.ents.keys()].filter(i => !world.pac || i !== world.pac.id);
-    const nFac = ids => ids.filter(i => !CARRIER.has(K(world.ents.get(i).type))).length;
-    if (all.length) src.push(['all', `공장 전체 (설비 ${nFac(all)}개)`, () => ({ name: '내 공장', bp: world.blueprint([...world.ents.keys()]) })]);
+    if (ui.multi.size) src.push(['sel', `공장에서 고른 범위 (설비 ${nFac([...ui.multi])}개)`, () => ({ name: '고른 범위', bp: world.blueprint([...ui.multi]) })]);
+    if (all.length) src.push(['all', `공장 전체 (설비 ${nFac(all)}개)`, () => ({ name: '내 공장', bp: world.blueprint(all) })]);
     for (const b of acct.mine) src.push(['a' + b.id, `내 계정 · ${b.name}`, async () => b.data ? { name: b.name, bp: b.data } : { name: b.name, bp: (await acct.fetchData(b.id)).data }]);
     for (const b of store.bps) src.push(['l' + b.id, `이 브라우저 · ${b.name}`, () => ({ name: b.name, bp: b.bp })]);
     src.push(['code', '청사진 코드 붙여넣기…', null]);
     const kind0 = p ? p.kind : 'bp';   // new posts are blueprint posts (admins can also post a notice); an old text post keeps its kind when edited
+    // blueprints of the post: the first one is the post's bp itself, the rest go in bp.more; each has a main item, a game code and painted areas
+    const strip = bp => { const o = Object.assign({}, bp); for (const k of ['more', 'items', 'item', 'code', 'marks']) delete o[k]; return o; };
+    const entries = [];
+    if (p && p.bp && p.bp.ents){
+      entries.push({ src: 'keep', bp: strip(p.bp), item: p.bp.item || '', code: p.bp.code || '', marks: (p.bp.marks || []).slice() });
+      for (const m of Array.isArray(p.bp.more) ? p.bp.more : []) if (m && m.bp && m.bp.ents) entries.push({ src: 'keep', bp: m.bp, item: m.item || '', code: m.code || '', marks: (m.marks || []).slice() });
+    }
+    if (!entries.length) entries.push({ src: pend ? 'pend' : (src[0] ? src[0][0] : 'code'), bp: null, item: '', code: '', marks: [] });
+    this.entries = entries;
     el.innerHTML = `<form class="bwrap pwrite" id="wForm" novalidate>
       <a class="back" href="${p ? '#post/' + p.id : '#board'}">← ${p ? '글로 돌아가기' : '목록'}</a>
       <h2>${p ? '글 고치기' : '청사진 올리기'}</h2>
       <div class="field"${acct.isAdmin() && (!p || p.kind !== 'text') ? '' : ' hidden'}><span class="flabel" id="wKindL">종류</span>
         <div class="seg" id="wKind" role="group" aria-labelledby="wKindL"><button type="button" data-k="bp">청사진 글</button><button type="button" data-k="notice">공지</button></div></div>
       <label class="field"><span class="flabel">제목</span><input id="wTitle" maxlength="80" required placeholder="제목"></label>
-      <div class="field" id="wBpF"><label class="flabel" for="wSrc">청사진</label>
-        <div class="wbp">
-          <select class="sel" id="wSrc">${src.map(([v, l]) => `<option value="${esc(v)}">${esc(l)}</option>`).join('')}</select>
-          <textarea id="wCode" hidden rows="3" placeholder="청사진 코드" spellcheck="false" aria-label="청사진 코드"></textarea>
-          <canvas id="wPrev" role="img" aria-label="붙일 청사진 미리보기"></canvas>
-          <p class="note" id="wPrevNote"></p>
-        </div></div>
-      <label class="field"><span class="flabel">내용</span><textarea id="wBody" maxlength="5000" rows="10" placeholder="내용"></textarea></label>
+      <div class="field" id="wBpF"><span class="flabel">청사진</span><div><div id="wBps"></div><button type="button" class="btn" id="wAdd">+ 청사진 추가</button></div></div>
+      <label class="field"><span class="flabel">내용</span><textarea id="wBody" maxlength="5000" rows="8" placeholder="내용"></textarea></label>
       <div class="msg" id="wMsg" role="alert"></div>
       <div class="acts"><button class="btn primary" type="submit" id="wGo">${p ? '고친 내용 저장' : '올리기'}</button><a class="btn" href="${p ? '#post/' + p.id : '#board'}">취소</a></div>
     </form>`;
@@ -3373,34 +3447,88 @@ const board = {
     $('#wKind').onclick = ev => { const b = ev.target.closest('button'); if (b) setKind(b.dataset.k); };
     if (p){ $('#wTitle').value = p.title; $('#wBody').value = p.body || ''; }
     else if (pend) $('#wTitle').value = pend.name.slice(0, 80);
-    this.wbp = null;
-    const pick = async () => {
-      const v = $('#wSrc').value, s = src.find(x => x[0] === v), note = $('#wPrevNote');
-      $('#wCode').hidden = v !== 'code';
-      try {
-        if (v === 'code'){ const t = $('#wCode').value.trim(); if (!t){ this.wbp = null; note.textContent = '코드를 붙여넣으면 미리보기가 나옵니다.'; } else { const o = dec(t), bp = o.bp || o; if (!bp.ents) throw 0; this.wbp = { name: o.name || '청사진', bp }; } }
-        else this.wbp = await s[2]();
-      } catch(e){ this.wbp = null; note.textContent = '읽을 수 없는 청사진 코드입니다.'; }
-      const cv = $('#wPrev');
-      if (this.wbp && this.wbp.bp){ const f = bpFacts(this.wbp.bp); note.textContent = `${this.wbp.bp.w}×${this.wbp.bp.h} · 설비 ${f.facs}개${f.belts ? ' · 벨트 ' + f.belts + '칸' : ''}${f.pipes ? ' · 파이프 ' + f.pipes + '칸' : ''}`; cv.hidden = false; paintBp(cv, this.wbp.bp); }
-      else cv.hidden = true;
+    const MAXBP = 6;
+    const renderEntries = () => {
+      const box = $('#wBps');
+      box.innerHTML = entries.map((en, i) => `<div class="wbpe" data-i="${i}">
+        <div class="wbph"><b>청사진 ${i + 1}</b><span class="spacer"></span>${entries.length > 1 ? `<button type="button" class="linkbtn danger" data-rm="${i}">빼기</button>` : ''}</div>
+        <div class="wbpg">
+          <label>가져오기</label><select class="sel" data-f="src">${en.src === 'keep' ? '<option value="keep">지금 붙어 있는 청사진 그대로</option>' : ''}${src.map(([v, l]) => `<option value="${esc(v)}"${en.src === v ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>
+          <label${en.src === 'code' ? '' : ' hidden'}>사이트 코드</label><textarea data-f="paste" rows="2" placeholder="이 사이트의 청사진 코드" spellcheck="false"${en.src === 'code' ? '' : ' hidden'}>${esc(en.paste || '')}</textarea>
+          <label>대표 아이템</label><select class="sel" data-f="item">${itemPickOptions(en.item)}</select>
+          <label>게임 코드</label><input data-f="code" maxlength="400" placeholder="게임에서 복사한 청사진 코드" value="${esc(en.code)}">
+        </div>
+        <div class="wpaint"><span>칠하기</span>${MARK_COLORS.map((c, j) => `<button type="button" class="swatch" data-c="${j}" style="--sw:${c}" aria-pressed="${(en.color || 0) === j}" aria-label="색 ${j + 1}"></button>`).join('')}
+          <button type="button" class="linkbtn" data-undo="${i}"${en.marks.length ? '' : ' disabled'}>하나 지우기</button><button type="button" class="linkbtn" data-clr="${i}"${en.marks.length ? '' : ' disabled'}>모두 지우기</button></div>
+        <canvas class="wprev" data-cv="${i}" role="img" aria-label="청사진 ${i + 1} 미리보기 (끌어서 범위 칠하기)"></canvas>
+        <p class="note" data-note="${i}"></p>
+      </div>`).join('');
+      $('#wAdd').hidden = entries.length >= MAXBP;
+      entries.forEach((en, i) => paintEntry(i));
     };
-    $('#wSrc').onchange = pick; $('#wCode').oninput = pick;
-    setKind(kind); pick();
+    const paintEntry = i => {
+      const en = entries[i], cv = document.querySelector(`[data-cv="${i}"]`), note = document.querySelector(`[data-note="${i}"]`); if (!cv) return;
+      if (en.bp && en.bp.ents){ cv.hidden = false; paintBp(cv, en.bp, en.marks); const f = bpFacts(en.bp); note.textContent = `${en.bp.w}×${en.bp.h} · 설비 ${f.facs}개${f.belts ? ' · 벨트 ' + f.belts + '칸' : ''}${f.pipes ? ' · 파이프 ' + f.pipes + '칸' : ''}`; }
+      else { cv.hidden = true; note.textContent = en.err || (en.src === 'code' ? '코드를 붙여넣으면 미리보기가 나옵니다.' : ''); }
+    };
+    const load = async i => {
+      const en = entries[i]; en.err = '';
+      if (en.src === 'keep'){ paintEntry(i); return; }
+      try {
+        if (en.src === 'code'){ const t = (en.paste || '').trim(); if (!t){ en.bp = null; } else { const o = dec(t), bp = o.bp || o; if (!bp.ents) throw 0; en.bp = bp; } }
+        else { const s = src.find(x => x[0] === en.src); const r = s ? await s[2]() : null; en.bp = r && r.bp; }
+      } catch(e){ en.bp = null; en.err = '읽을 수 없는 청사진 코드입니다.'; }
+      en.marks = []; renderEntries();
+    };
+    this.wDraw = () => entries.forEach((en, i) => paintEntry(i));
+    const box = $('#wBps');
+    box.onchange = ev => {
+      const t = ev.target, i = +t.closest('.wbpe').dataset.i, en = entries[i];
+      if (t.dataset.f === 'src'){ en.src = t.value; load(i); }
+      else if (t.dataset.f === 'item') en.item = t.value;
+    };
+    box.oninput = ev => {
+      const t = ev.target, wrap = t.closest('.wbpe'); if (!wrap) return; const i = +wrap.dataset.i, en = entries[i];
+      if (t.dataset.f === 'code') en.code = t.value;
+      else if (t.dataset.f === 'paste'){ en.paste = t.value; clearTimeout(this.pasteT); this.pasteT = setTimeout(() => load(i), 300); }
+    };
+    box.onclick = ev => {
+      const b = ev.target.closest('button'); if (!b) return; const wrap = b.closest('.wbpe'), i = wrap ? +wrap.dataset.i : -1;
+      if (b.dataset.rm != null){ entries.splice(+b.dataset.rm, 1); renderEntries(); }
+      else if (b.dataset.c != null){ entries[i].color = +b.dataset.c; wrap.querySelectorAll('.swatch').forEach(s => s.setAttribute('aria-pressed', s === b)); }
+      else if (b.dataset.undo != null){ entries[i].marks.pop(); renderEntries(); }
+      else if (b.dataset.clr != null){ entries[i].marks = []; renderEntries(); }
+    };
+    // drag on a preview to paint an area (in blueprint cells)
+    box.onpointerdown = ev => {
+      const cv = ev.target.closest('canvas[data-cv]'); if (!cv) return;
+      const i = +cv.dataset.cv, en = entries[i]; if (!en.bp) return;
+      const a = bpCellAt(cv, en.bp, ev); if (!a) return;
+      ev.preventDefault(); cv.setPointerCapture(ev.pointerId);
+      const mk = { x: a.x, y: a.y, w: 1, h: 1, c: en.color || 0 }; en.marks.push(mk);
+      const mv = e => { const b = bpCellAt(cv, en.bp, e, true); if (!b) return; mk.x = Math.min(a.x, b.x); mk.y = Math.min(a.y, b.y); mk.w = Math.abs(a.x - b.x) + 1; mk.h = Math.abs(a.y - b.y) + 1; paintEntry(i); };
+      const up = () => { cv.removeEventListener('pointermove', mv); cv.removeEventListener('pointerup', up); renderEntries(); };
+      cv.addEventListener('pointermove', mv); cv.addEventListener('pointerup', up); paintEntry(i);
+    };
+    $('#wAdd').onclick = () => { if (entries.length >= MAXBP) return; entries.push({ src: 'code', bp: null, item: '', code: '', marks: [] }); renderEntries(); };
+    renderEntries(); entries.forEach((en, i) => { if (!en.bp && en.src !== 'keep') load(i); });
+    setKind(kind);
     $('#wForm').onsubmit = async ev => {
       ev.preventDefault();
       const msg = $('#wMsg'), title = $('#wTitle').value.trim(), body = $('#wBody').value.trim();
       if (!title){ msg.textContent = '제목을 쓰세요'; $('#wTitle').focus(); return; }
       const row = { kind, title: title.slice(0, 80), body: body.slice(0, 5000) };
       if (kind === 'bp'){
-        if (!this.wbp || !this.wbp.bp || !this.wbp.bp.ents || !this.wbp.bp.ents.length){ msg.textContent = '붙일 청사진을 고르세요'; return; }
-        if ($('#wSrc').value === 'keep') row.thumb = thumbURL(this.wbp.bp);
-        else {
-          const bp = this.wbp.bp;
-          if (JSON.stringify(bp).length > 380000){ msg.textContent = '청사진이 너무 큽니다. 범위를 나눠서 올려 주세요.'; return; }
-          Object.assign(row, { bp, bp_w: bp.w, bp_h: bp.h, bp_ents: bpFacts(bp).facs, thumb: thumbURL(bp) });
-        }
-      } else Object.assign(row, { bp: null, bp_w: null, bp_h: null, bp_ents: null, thumb: null });
+        const list = entries.filter(en => en.bp && en.bp.ents && en.bp.ents.length);
+        if (!list.length){ msg.textContent = '붙일 청사진을 고르세요'; return; }
+        const pack = en => ({ item: ITEMS[en.item] ? en.item : null, code: String(en.code || '').trim().slice(0, 400) || null, marks: en.marks.filter(m => m.w > 0 && m.h > 0).slice(0, 40).map(m => ({ x: m.x, y: m.y, w: m.w, h: m.h, c: m.c })) });
+        const first = list[0];
+        const bp = Object.assign({}, strip(first.bp), pack(first));
+        bp.more = list.slice(1).map(en => Object.assign({ bp: strip(en.bp) }, pack(en)));
+        bp.items = [...new Set(list.map(en => en.item).filter(k => ITEMS[k]))];
+        if (JSON.stringify(bp).length > 380000){ msg.textContent = '청사진이 너무 큽니다. 개수를 줄이거나 범위를 나눠서 올려 주세요.'; return; }
+        Object.assign(row, { bp, bp_w: first.bp.w, bp_h: first.bp.h, bp_ents: list.reduce((a, en) => a + bpFacts(en.bp).facs, 0), thumb: thumbURL(first.bp) });
+      } else if (kind === 'notice') Object.assign(row, { bp: null, bp_w: null, bp_h: null, bp_ents: null, thumb: null });
       $('#wGo').disabled = true; msg.textContent = p ? '저장하는 중…' : '올리는 중…';
       const db = this.db();
       const r = p ? await db.from('posts').update(row).eq('id', p.id).select('id').maybeSingle() : await db.from('posts').insert(row).select('id').single();
@@ -5389,13 +5517,13 @@ const craft = {
     this.target = id;
     $('#cCrumb').innerHTML = `<a href="#craft">조합식</a>${id ? ` <span>›</span> <b>${esc(ITEMS[id].ko)}</b>` : ''}`;
     $('#cPick').hidden = !!id; $('#cStage').hidden = !id;
-    const cb = $('#cBoard'); cb.hidden = !id || !acct.enabled(); if (id) cb.href = '#board/q/' + encodeURIComponent(ITEMS[id].ko);
+    const cb = $('#cBoard'); cb.hidden = !id || !acct.enabled(); if (id) cb.href = '#board/item/' + id;
     if (!id){ this.picker(); return; }
     this.draw(true);
   },
   shell(){
     this.el().innerHTML = `<div class="cbar"><nav class="ccrumb" id="cCrumb"></nav>
-      <a class="btn sm" id="cBoard" hidden title="이 아이템이 나오는 게시판 글 찾기">게시판에서 찾기</a>
+      <a class="btn sm" id="cBoard" hidden title="이 아이템을 대표 아이템으로 고른 청사진 글">게시판에서 찾기</a>
       <label class="crate" title="이만큼 만들려면 단계마다 설비가 몇 대 필요한지 보여 줍니다">분당 <input id="cRate" type="number" min="0" max="100000" step="1" inputmode="decimal" placeholder="목표"> 개</label>
       <div class="csearch"><input id="cq" type="search" placeholder="생산품·원재료 찾기" autocomplete="off" aria-label="아이템 찾기"><div class="cres" id="cRes" hidden></div></div></div>
       <div class="cpick" id="cPick"></div>
