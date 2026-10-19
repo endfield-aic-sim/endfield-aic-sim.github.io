@@ -692,7 +692,7 @@ body.resizing.rcol{cursor:col-resize} body.resizing.rrow{cursor:row-resize}
       <div class="search"><input id="q" type="search" placeholder="설비 찾기" aria-label="설비 검색"></div>
     </div>
     <div class="strip" id="plist" role="tabpanel" aria-label="설비 목록"></div>
-    <dl class="keys" aria-label="단축키"><div><dt>E</dt><dd>컨베이어 벨트</dd></div><div><dt>Q</dt><dd>파이프</dd></div><div><dt>R</dt><dd>회전</dd></div><div><dt>M</dt><dd>이동</dd></div><div><dt>Del</dt><dd>철거</dd></div><div><dt>Esc</dt><dd>취소</dd></div><div><dt>Space</dt><dd>재생 · 일시정지</dd></div><div><dt>1 – 4</dt><dd>배속</dd></div><div><dt>드래그</dt><dd>범위 선택</dd></div><div><dt>Shift + 드래그</dt><dd>선택에서 빼기</dd></div><div><dt>Ctrl + 드래그</dt><dd>선택에 더하기</dd></div><div><dt>Ctrl + C / V</dt><dd>복사 · 붙여넣기</dd></div><div><dt>Ctrl + Z / Y</dt><dd>되돌리기 · 다시</dd></div></dl>
+    <dl class="keys" aria-label="단축키"><div><dt>E</dt><dd>컨베이어 벨트</dd></div><div><dt>Q</dt><dd>파이프</dd></div><div><dt>R</dt><dd>회전</dd></div><div><dt>M</dt><dd>이동</dd></div><div><dt>F</dt><dd>철거</dd></div><div><dt>X</dt><dd>범위 모드</dd></div><div><dt>Esc</dt><dd>취소</dd></div><div><dt>Space</dt><dd>재생 · 일시정지</dd></div><div><dt>1 – 4</dt><dd>배속</dd></div><div><dt>Shift + 드래그</dt><dd>범위 지정</dd></div><div><dt>Ctrl + 드래그</dt><dd>범위에서 빼기</dd></div><div><dt>Ctrl + C / V</dt><dd>복사 · 붙여넣기</dd></div><div><dt>Ctrl + Z / Y</dt><dd>되돌리기 · 다시</dd></div></dl>
   </section>
 
   <aside class="side">
@@ -2828,7 +2828,7 @@ window.addEventListener('pointercancel', ptrUp, true);
 window.addEventListener('keyup', () => hist.soon(), true);
 
 // ---------- palette ----------
-const TOOLS = [['select','선택','선택 (클릭)'],['area','범위','범위 선택 (드래그)'],['pan','화면','화면 끌기'],['delete','철거','철거']];
+const TOOLS = [['select','선택','선택 (클릭)'],['area','범위','범위 선택 (X)'],['pan','화면','화면 끌기'],['delete','철거','철거 (F)']];
 function renderTools(){
   const el = $('#tools'); el.innerHTML = '';
   for (const [id, nm, tip] of TOOLS){
@@ -4613,7 +4613,10 @@ cv.addEventListener('pointerdown', ev => {
   const c = toCell(ev.offsetX, ev.offsetY); ui.hover = c;
   const panBtn = ev.button === 1 || ev.button === 2;
   if (panBtn || ui.tool === 'pan'){ ui.drag = { kind:'pan', sx:ev.offsetX, sy:ev.offsetY, cam:Object.assign({}, ui.cam), moved:false, btn:ev.button }; return; }
-  if (ui.tool === 'area' || (ui.tool === 'select' && ev.shiftKey)){ ui.drag = { kind:'area', a:c, b:c, mode: ev.shiftKey && ui.multi.size ? 'sub' : (ev.ctrlKey || ev.metaKey) ? 'add' : 'set' }; return; }
+  // area: drag = new range, Shift+drag = add to it, Ctrl+drag = take out of it. Shift+drag also works in select mode,
+  // and so does Ctrl+drag from empty ground (Ctrl+click on a facility still toggles just that one)
+  const sub = ev.ctrlKey || ev.metaKey;
+  if (ui.tool === 'area' || (ui.tool === 'select' && (ev.shiftKey || (sub && !world.both(c.cx, c.cy).length)))){ ui.drag = { kind:'area', a:c, b:c, mode: sub ? 'sub' : ev.shiftKey ? 'add' : 'set' }; return; }
   if (ui.tool === 'delete'){ ui.drag = { kind:'delete' }; delAt(c.cx, c.cy); return; }
   if (ui.tool === 'paste'){ if (ui.move) dropMove(); else placePaste(); ui.drag = { kind:'none' }; return; }
   if (ui.tool === 'movepac'){ const o = pacGhost(); const res = o ? world.movePac(o.x, o.y) : { ok:false }; if (res.ok){ markTouched(); setTool('select'); ui.sel = world.pac.id; renderInspector(true); flash('PAC를 옮겼습니다'); } else flash(res.why || '여기에는 놓을 수 없습니다'); ui.drag = { kind:'none' }; return; }
@@ -4818,7 +4821,7 @@ function renderSelbar(){
   }
   if (!ui.multi.size){ bar.hidden = true; bar.innerHTML = ''; return; }
   bar.hidden = false;
-  bar.innerHTML = `<b>${ui.multi.size}개 선택</b><button class="btn sm primary" id="sbMove">이동 (M)</button><button class="btn sm" id="sbCopy">복사</button><button class="btn sm danger" id="sbDel">삭제</button><button class="btn sm" id="sbOn">켜기</button><button class="btn sm" id="sbOff">끄기</button><span class="row" style="gap:4px"><input id="sbName" placeholder="청사진 이름" maxlength="40" aria-label="청사진 이름"><button class="btn sm primary" id="sbSave">청사진으로 저장</button></span><button class="btn sm" id="sbClear">선택 해제</button>`;
+  bar.innerHTML = `<b>${ui.multi.size}개 선택</b><button class="btn sm primary" id="sbMove">이동 (M)</button><button class="btn sm" id="sbCopy">복사</button><button class="btn sm danger" id="sbDel">삭제 (F)</button><button class="btn sm" id="sbOn">켜기</button><button class="btn sm" id="sbOff">끄기</button><span class="row" style="gap:4px"><input id="sbName" placeholder="청사진 이름" maxlength="40" aria-label="청사진 이름"><button class="btn sm primary" id="sbSave">청사진으로 저장</button></span><button class="btn sm" id="sbClear">선택 해제</button>`;
   $('#sbMove').onclick = moveSel; $('#sbCopy').onclick = copySel; $('#sbDel').onclick = deleteSel;
   $('#sbOn').onclick = () => toggleSel(false); $('#sbOff').onclick = () => toggleSel(true);
   $('#sbClear').onclick = () => { ui.multi.clear(); renderSelbar(); renderInspector(true); };
@@ -4839,7 +4842,8 @@ document.addEventListener('keydown', ev => {
   if (k==='r'){ rotateAction(); ev.preventDefault(); }
   else if (k==='m' && ui.tool !== 'paste' && (ui.sel || ui.multi.size)) moveSel();
   else if (k==='escape'){ setTool('select'); ui.sel = null; ui.multi.clear(); renderInspector(true); renderSelbar(); }
-  else if (k==='delete' || k==='backspace'){ if (ui.multi.size || ui.sel) deleteSel(); }
+  else if (k==='f'){ if (ui.multi.size || ui.sel) deleteSel(); else setTool(ui.tool === 'delete' ? 'select' : 'delete'); }
+  else if (k==='x') setTool(ui.tool === 'area' ? 'select' : 'area');
   else if (k===' '){ togglePlay(); ev.preventDefault(); }
   else if (k==='e' || k==='b') selectBuild('belt');
   else if (k==='q' || k==='p') selectBuild('pipe');
@@ -5094,7 +5098,7 @@ function renderInspector(force){
   } else {
     h += `<dl class="kv" id="ikv"></dl>`;
   }
-  if (e.type !== 'pac') h += `<div class="acts"><button class="btn sm" id="imove">이동 (M)</button><button class="btn sm" id="irot">회전 (R)</button><button class="btn sm" id="icopy">복사</button><button class="btn sm danger" id="idel">철거</button></div>`;
+  if (e.type !== 'pac') h += `<div class="acts"><button class="btn sm" id="imove">이동 (M)</button><button class="btn sm" id="irot">회전 (R)</button><button class="btn sm" id="icopy">복사</button><button class="btn sm danger" id="idel">철거 (F)</button></div>`;
   el.innerHTML = h;
   const on = el.querySelector('#ion'); if (on) on.onchange = () => { world.setOff(e.id, !on.checked); markTouched(); renderInspector(true); renderFacs(); };
   el.querySelectorAll('select[data-p]').forEach(s => s.onchange = () => { e.ports[+s.dataset.p] = s.value || null; markTouched(); });
