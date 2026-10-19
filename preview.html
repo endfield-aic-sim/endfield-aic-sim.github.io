@@ -4354,7 +4354,15 @@ function drawCarrierItems(e){
   if (!e.item) return;
   const inD = e.inDir == null ? e.f : e.inDir;
   if (k==='splitter'){ const [x,y] = carrierPos(e, inD, e.f, pr(e.prog, e.stall, e.item)*.5); drawItem(ctx, e.item, x, y, rad(e.item)); return; }
-  const [x,y] = carrierPos(e, inD, e.f, pr(e.prog, e.stall, e.item));
+  // where the line stops (an open end or a cut joint) the item stays on the belt instead of hanging over the edge
+  let p = pr(e.prog, e.stall, e.item);
+  if (k==='belt' || k==='control'){
+    const L = AIC.layerOf(e.type), room = (S/2 - rad(e.item) - 1.5) / S;
+    const outOn = world.at(e.x + DX[e.f], e.y + DY[e.f], L) && !headOn(e, e.f), back = opp(inD), inOn = world.at(e.x + DX[back], e.y + DY[back], L);
+    if (!outOn) p = Math.min(p, .5 + room);
+    if (!inOn) p = Math.max(p, .5 - room);
+  }
+  const [x,y] = carrierPos(e, inD, e.f, p);
   drawItem(ctx, e.item, x, y, rad(e.item));
 }
 // belt ports: small triangles; pipe ports: a pipe-coloured socket on the edge (gas sockets get a ring)
