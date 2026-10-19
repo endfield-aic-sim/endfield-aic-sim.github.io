@@ -4678,6 +4678,10 @@ cv.addEventListener('wheel', ev => {
 }, { passive:false });
 
 // belts & pipes: drag to lay. Crossing the same kind swaps in a bridge; belts and pipes simply overlap (different heights)
+// drawing a belt or pipe line. Where it meets cells that are already there, the start point decides:
+// starting on the open end of a line continues it (that end turns toward the new line); starting or ending on the
+// middle of a line leaves it as it is; crossing straight over a line makes a bridge, but only when the drag
+// actually goes on past it (stopping on it just joins)
 function lineTo(cx, cy){
   const d = ui.drag;
   if (!d.last){ putLine(cx, cy, ui.rot, d, null); d.last = [cx, cy]; return; }
@@ -4685,6 +4689,8 @@ function lineTo(cx, cy){
   while (x !== cx || y !== cy){
     const nx = x !== cx ? x + Math.sign(cx - x) : x, ny = x !== cx ? y : y + Math.sign(cy - y);
     const dir = nx > x ? 1 : nx < x ? 3 : ny > y ? 2 : 0;
+    // leaving a cell of an existing line we stopped on: going straight on means crossing it → bridge
+    if (d.pend && d.pend.x === x && d.pend.y === y){ if (dir === d.pend.dir) bridgeAt(d.pend, d); d.pend = null; }
     const prev = world.at(x, y, AIC.layerOf(d.type)); if (prev && prev.type===d.type && d.cells.has(prev.id)){ prev.f = dir; if (!prev.item) prev.inDir = dir; }
     ui.rot = dir;
     putLine(nx, ny, dir, d, dir);
@@ -4692,19 +4698,25 @@ function lineTo(cx, cy){
   }
   d.last = [x, y];
 }
+function bridgeAt(p, d){
+  const e = world.at(p.x, p.y, AIC.layerOf(d.type)); if (!e || e.id !== p.id) return;
+  const keep = e.item, ef = e.f; world.remove(e.id);
+  const br = world.place(d.type==='pipe' ? 'pbridge' : 'bridge', p.x, p.y, ef);
+  if (br){ d.cells.add(br.id); if (keep) br.slots[ef & 1] = { item: keep, d: ef, prog: 0 }; }
+}
 function putLine(x, y, f, d, moveDir){
   const type = d.type, e = world.at(x, y, AIC.layerOf(type));
   if (!e){ const n = world.place(type, x, y, f); if (n) d.cells.add(n.id); else if (moveDir == null) flash(world.canPlace(type, x, y, f).why || '놓을 수 없습니다'); return; }
-  if (d.cells.has(e.id)) return;
-  if (e.type === type && moveDir != null && (e.f & 1) !== (moveDir & 1)){
-    const keep = e.item, ef = e.f; world.remove(e.id);
-    const br = world.place(type==='pipe' ? 'pbridge' : 'bridge', x, y, ef);
-    if (br){ d.cells.add(br.id); if (keep) br.slots[ef & 1] = { item: keep, d: ef, prog: 0 }; }
+  if (d.cells.has(e.id) || e.type !== type) return;
+  if (moveDir == null){
+    // starting on an existing cell: its open end (nothing in front) is continued by the new line, anything else is left alone
+    const front = world.at(x + DX[e.f], y + DY[e.f], AIC.layerOf(type));
+    if (!front) d.cells.add(e.id);
     return;
   }
-  if (e.type === type){
-    e.f = f; if (!e.item) e.inDir = f; d.cells.add(e.id);
-  }
+  // running into an existing line from the side: decide when the drag moves on (straight on = bridge, else join)
+  if ((e.f & 1) !== (moveDir & 1)) d.pend = { id: e.id, x, y, dir: moveDir };
+  // along an existing line: its direction stays as it is
 }
 function placeGhost(){
   const g = ghostInfo(); if (!g) return;
@@ -5740,9 +5752,7 @@ function runCatchup(){
   if (!ui.playing){ catchup.left = 0; return; }   // pausing drops the rest
   const t0 = performance.now();
   while (catchup.left >= 0.05 && performance.now() - t0 < 30){ space.step(0.05); catchup.left -= 0.05; }
-  const w = $('#warn');
-  if (catchup.left < 0.05){ catchup.left = 0; flash(`자리를 비운 ${minSec(catchup.total)} 동안의 생산을 계산했습니다`); }
-  else { w.hidden = false; w.textContent = `자리를 비운 ${minSec(catchup.total)} 계산 중… ${Math.floor((1 - catchup.left / catchup.total) * 100)}% (일시정지하면 멈춤)`; flashT = performance.now() + 500; }
+  if (catchup.left < 0.05) catchup.left = 0;
 }
 function frame(now){
   const dt = Math.min(0.25, (now - last)/1000); last = now;
