@@ -4698,15 +4698,13 @@ function nearPort(e, which, type, cx, cy){
 }
 const isFac = e => AIC.layerOf(e.type) === 'both';
 function lineStart(type, cx, cy){
-  const L = AIC.layerOf(type); let e = world.at(cx, cy, L), sdir = null, from = null;
+  const L = AIC.layerOf(type); let e = world.at(cx, cy, L), sdir = null, from = null, px = null, py = null;
   if (e && isFac(e)){ from = e.id;
     const p = nearPort(e, 'out', type, cx, cy); if (!p){ flash(`이 설비에는 ${TYPES[type].ko}가 나가는 곳이 없습니다`); return null; }
-    sdir = p[2]; cx = p[0] + DX[sdir]; cy = p[1] + DY[sdir]; e = world.at(cx, cy, L);
+    sdir = p[2]; px = p[0]; py = p[1]; cx = p[0] + DX[sdir]; cy = p[1] + DY[sdir]; e = world.at(cx, cy, L);
   }
   if (!world.inb(cx, cy)) return null;
-  // the open end of a line already there (nothing in front of it) turns toward the new route
-  const bend = e && e.type === type && !world.at(cx + DX[e.f], cy + DY[e.f], L) ? e.id : null;
-  return { type, x: cx, y: cy, sdir, from, bend, axis: sdir != null ? (sdir & 1 ? 'h' : 'v') : null, flip: false, placed: 0 };
+  return { type, x: cx, y: cy, sdir, from, px, py, axis: sdir != null ? (sdir & 1 ? 'h' : 'v') : null, flip: false, placed: 0 };
 }
 function lineEnd(l, cx, cy){
   const L = AIC.layerOf(l.type), e = world.at(cx, cy, L);
@@ -4729,18 +4727,21 @@ function linePath(l, t){
   const n = cells.length, dirs = [];
   for (let i = 0; i < n - 1; i++){ const [ax0, ay0] = cells[i], [bx, by] = cells[i+1]; dirs.push(bx > ax0 ? 1 : bx < ax0 ? 3 : by > ay0 ? 2 : 0); }
   dirs.push(t.dir != null ? t.dir : n > 1 ? dirs[n-2] : l.sdir != null ? l.sdir : ui.rot);
-  // what happens on each cell: new piece, the start that bends, a line kept as it is, a bridge, the end, or blocked
+  // what happens on each cell: a new piece; 'over' = a line already there takes the new direction (the newer line wins);
+  // 'swap' = a bridge/converger/splitter there becomes a plain piece; going straight across a line = bridge;
+  // 'keep' = straight through a bridge; 'end' = the inlet clicked; 'bad' = a facility in the way
   const L = AIC.layerOf(l.type), bt = l.type === 'pipe' ? 'pbridge' : 'bridge', st = [];
   let why = '';
   for (let i = 0; i < n; i++){
     const [cx, cy] = cells[i], d = dirs[i], inD = i ? dirs[i-1] : null, e = world.at(cx, cy, L), last = i === n - 1;
     let k;
     if (!e){ const c = world.canPlace(l.type, cx, cy, d); k = c.ok ? 'new' : 'bad'; if (!c.ok && !why) why = c.why; }
-    else if (i === 0) k = l.bend === e.id && n > 1 ? 'bend' : 'keep';
-    else if (last && !isFac(e)) k = 'end';
-    else if (e.type === l.type && d === inD) k = (e.f & 1) !== (inD & 1) ? 'bridge' : 'keep';
+    else if (isFac(e)){ k = 'bad'; if (!why) why = '설비가 가로막고 있습니다'; }
+    else if (i === 0) k = n === 1 ? 'keep' : e.type === l.type ? 'over' : 'keep';
+    else if (last) k = e.type === l.type && (e.f & 1) === (inD & 1) && e.f !== inD ? 'over' : 'end';   // head-on into a line: the newer one wins there too
+    else if (e.type === l.type) k = d === inD && (e.f & 1) !== (inD & 1) ? 'bridge' : 'over';
     else if (e.type === bt && d === inD) k = 'keep';
-    else { k = 'bad'; if (!why) why = isFac(e) ? '설비가 가로막고 있습니다' : '이미 깔린 줄 위에서는 꺾을 수 없습니다'; }
+    else k = 'swap';
     st.push(k);
   }
   return { cells, dirs, st, ok: !st.includes('bad'), why };
@@ -4770,32 +4771,46 @@ function lineClick(cx, cy){
   p.cells.forEach(([x, y], i) => {
     const k = p.st[i], d = p.dirs[i];
     if (k === 'new'){ const n = world.place(type, x, y, d); if (n) lastId = n.id; }
-    else if (k === 'bend'){ const e = world.at(x, y, L); e.f = d; if (!e.item) e.inDir = d; }
+    else if (k === 'over'){ const e = world.at(x, y, L); e.f = d; if (!e.item) e.inDir = d; lastId = e.id; }
+    else if (k === 'swap'){ const e = world.at(x, y, L); world.remove(e.id); const n = world.place(type, x, y, d); if (n) lastId = n.id; }
     else if (k === 'bridge') bridgeAt(x, y, type);
   });
   afterLine();
   if (t.inlet) ui.line = null;
-  else ui.line = { type, x: t.x, y: t.y, sdir: null, bend: lastId, axis: null, flip: false, placed: l.placed + 1 };
+  else ui.line = { type, x: t.x, y: t.y, sdir: null, axis: null, flip: false, placed: l.placed + 1 };
 }
 function afterLine(){ markTouched(); renderInspector(true); renderFacs(); }
+// the route as one continuous band (like a laid belt), chevrons on top; the start mark sits on the facility's outlet
 function drawLineGhost(){
   const l = ui.line, type = lineType(); if (!type) return false;
   const z = ui.cam.z;
+  const mark = (x, y, d) => { ctx.strokeStyle = C.accent; ctx.lineWidth = 2/z; ctx.strokeRect(x*S+1, y*S+1, S-2, S-2); if (d != null){ ctx.lineWidth = 2.4; chevron(ctx, (x+.5)*S, (y+.5)*S, d, 5); } };
   if (!l){
-    // before the first click: where a route would start (inside a facility: its nearest outlet)
     if (!ui.hover) return false; const e = world.at(ui.hover.cx, ui.hover.cy, AIC.layerOf(type));
     if (!e || !isFac(e)) return false;
     const s0 = lineStart(type, ui.hover.cx, ui.hover.cy); if (!s0) return true;
-    ctx.globalAlpha = .5; ctx.fillStyle = C.ok; ctx.fillRect(s0.x*S+1, s0.y*S+1, S-2, S-2); ctx.globalAlpha = 1;
-    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; chevron(ctx, (s0.x+.5)*S, (s0.y+.5)*S, s0.sdir, 5); return true;
+    ctx.globalAlpha = .35; ctx.fillStyle = C.accent; ctx.fillRect(s0.px*S+1, s0.py*S+1, S-2, S-2); ctx.globalAlpha = 1;
+    mark(s0.px, s0.py, s0.sdir); return true;
   }
   const p = linePath(l, lineTarget()) || linePath(l, { x: l.x, y: l.y, dir: null });
+  const n = p.cells.length, wB = S * .78;
+  const col = k => k === 'bad' ? C.bad : k === 'bridge' ? C.warn : C.ok;
+  const shown = (k, i) => !(k === 'end' || (k === 'keep' && n > 1 && i > 0));
+  // one path per colour, filled once, so the overlapping pieces do not darken each other
+  const paths = new Map();
   p.cells.forEach(([x, y], i) => {
-    const k = p.st[i]; if (k === 'keep' || k === 'end') return;
-    ctx.globalAlpha = .5; ctx.fillStyle = k === 'bad' ? C.bad : k === 'bridge' ? C.warn : C.ok; ctx.fillRect(x*S+1, y*S+1, S-2, S-2); ctx.globalAlpha = 1;
-    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; chevron(ctx, (x+.5)*S, (y+.5)*S, p.dirs[i], 5);
+    const k = p.st[i]; if (!shown(k, i)) return;
+    const c = col(k); if (!paths.has(c)) paths.set(c, new Path2D()); const g = paths.get(c);
+    const cx = (x+.5)*S, cy = (y+.5)*S, h = wB/2;
+    g.rect(cx - h, cy - h, wB, wB);
+    // half towards the next cell and half towards the previous one, so neighbouring cells meet without a gap
+    const ends = [p.dirs[i]]; if (i > 0) ends.push(opp(p.dirs[i-1]));
+    for (const d of ends){ if (d === 1) g.rect(cx, cy - h, S/2, wB); else if (d === 3) g.rect(cx - S/2, cy - h, S/2, wB); else if (d === 2) g.rect(cx - h, cy, wB, S/2); else g.rect(cx - h, cy - S/2, wB, S/2); }
   });
-  ctx.strokeStyle = C.accent; ctx.lineWidth = 2/z; ctx.strokeRect(l.x*S, l.y*S, S, S);
+  ctx.globalAlpha = .55; for (const [c, g] of paths){ ctx.fillStyle = c; ctx.fill(g); }
+  ctx.globalAlpha = 1; ctx.strokeStyle = '#fff'; ctx.lineWidth = 2;
+  p.cells.forEach(([x, y], i) => { if (shown(p.st[i], i)) chevron(ctx, (x+.5)*S, (y+.5)*S, p.dirs[i], 4.5); });
+  if (l.px != null) mark(l.px, l.py, null); else mark(l.x, l.y, null);
   return true;
 }
 function placeGhost(){
