@@ -1568,13 +1568,32 @@ class World {
     if (nk === 'bridge') return true;
     return isPort(n, nx, ny, 'out', e.f);
   }
+  // which way a plain belt takes items in. Each belt is its own line: it takes from one direction only.
+  // takes (set when a route is laid: from the previous cell of that route, or from the line it was joined into);
+  // belts without it (older layouts) take from behind, else from one side (the left one first), never from two
+  beltTakes(e, d) {
+    if (d === opp(e.f)) return false;
+    if (e.takes != null) return d === e.takes;
+    if (d === e.f) return true;
+    if (this.backFed(e)) return false;
+    return d === this.legacySide(e);
+  }
+  legacySide(e) {
+    for (const s of [(e.f + 3) & 3, (e.f + 1) & 3]) {
+      const nx = e.x + DX[s], ny = e.y + DY[s], n = this.at(nx, ny, layerOf(e.type)); if (!n) continue;
+      const nk = TYPES[n.type].kind, d = opp(s);
+      if (nk === 'belt' || nk === 'converger' || nk === 'control' ? n.f === d : nk === 'splitter' ? n.f !== s : nk === 'bridge' ? true : isPort(n, nx, ny, 'out', d)) return d;
+    }
+    return null;
+  }
   // could the cell in direction d accept this kind of item at all (ignoring momentary fullness)?
   connected(fromX, fromY, d, item) {
     const nx = fromX + DX[d], ny = fromY + DY[d];
     const e = this.atFor(nx, ny, item); if (!e) return false;
     const t = TYPES[e.type], k = t.kind, fl = isFluid(item);
     if (t.carrier && (t.carrier === 'fluid') !== fl) return false;
-    if (k === 'belt' || k === 'converger') return e.f !== opp(d);
+    if (k === 'belt') return this.beltTakes(e, d);
+    if (k === 'converger') return e.f !== opp(d);
     if (k === 'splitter' || k === 'control') return e.f === d;
     if (k === 'bridge') return true;
     if (k === 'machine' && catalystPort(e, nx, ny, d, item)) return true;
@@ -1595,12 +1614,9 @@ class World {
     switch (t.kind) {
       case 'belt': case 'splitter': case 'converger': case 'control':
         if (e.item) return false;
-        if ((t.kind === 'belt' || t.kind === 'converger') && d === opp(e.f)) return false;
-        // a plain belt only turns a corner: from the side it takes items only while nothing feeds it from behind
-        // (joining the side of a running belt needs a converger, otherwise the side belt just stops)
-        // a belt that a newer line was joined into from the side takes only that side (the line behind it is cut)
-        if (t.kind === 'belt' && e.takes != null) { if (d !== e.takes) return false; }
-        else if (t.kind === 'belt' && d !== e.f && this.backFed(e)) return false;
+        if (t.kind === 'converger' && d === opp(e.f)) return false;
+        // a plain belt takes from one direction only (see beltTakes): two lines never merge without a converger
+        if (t.kind === 'belt' && !this.beltTakes(e, d)) return false;
         if ((t.kind === 'splitter' || t.kind === 'control') && d !== e.f) return false;
         if (t.kind !== 'converger' && this.time - e.lastIn < gapOf(item) - 1e-9) return false;
         if (t.kind === 'converger' && d === e.lastSide) {
@@ -4139,9 +4155,8 @@ function feeds(e){ // sides of a carrier cell that something pushes into
     else if (nk==='bridge'){ ins.push(s); }
     else if (AIC.isPort(n, nx, ny, 'out', toMe)) ins.push(s);
   }
-  if (K(e.type) === 'belt' && e.takes != null) return ins.filter(s => s === opp(e.takes));
-  // a plain belt fed from behind does not take side inputs (see World.accept): draw it that way
-  if (K(e.type) === 'belt' && ins.includes(opp(e.f))) return [opp(e.f)];
+  // a plain belt takes from one direction only (World.beltTakes): draw just that one
+  if (K(e.type) === 'belt'){ if (e.takes != null) return [opp(e.takes)]; return ins.filter(s => world.beltTakes(e, opp(s))).slice(0, 1); }
   return ins;
 }
 function outs(e){
@@ -4149,7 +4164,13 @@ function outs(e){
   return [e.f];
 }
 // two lines pointing at each other do not connect (the engine refuses it too): the joint is drawn cut
-function headOn(e, d){ const n = world.at(e.x + DX[d], e.y + DY[d], AIC.layerOf(e.type)); if (!n) return false; const nk = K(n.type); return ((nk === 'belt' || nk === 'converger') && n.f === opp(d)) || (nk === 'belt' && n.takes != null && n.takes !== d); }
+// is something at that side of a belt pushing into it (moving in direction dd)?
+function feederAt(e, dd){
+  const s = opp(dd), nx = e.x + DX[s], ny = e.y + DY[s], n = world.at(nx, ny, AIC.layerOf(e.type)); if (!n) return false;
+  const nk = K(n.type);
+  return nk === 'belt' || nk === 'converger' || nk === 'control' ? n.f === dd : nk === 'splitter' ? n.f !== s : nk === 'bridge' ? true : AIC.isPort(n, nx, ny, 'out', dd);
+}
+function headOn(e, d){ const n = world.at(e.x + DX[d], e.y + DY[d], AIC.layerOf(e.type)); if (!n) return false; const nk = K(n.type); return (nk === 'converger' && n.f === opp(d)) || (nk === 'belt' && !world.beltTakes(n, d)); }
 function edgePt(e, s){ return [(e.x+.5+DX[s]*.5)*S, (e.y+.5+DY[s]*.5)*S]; }
 function carrierPos(e, inDir, outDir, p){ // entry edge → center → exit edge
   const cx = (e.x+.5)*S, cy = (e.y+.5)*S, ent = opp(inDir);
@@ -4820,7 +4841,7 @@ function lineClick(cx, cy){
   if (t.x === l.x && t.y === l.y && t.dir == null){
     if (l.from && !l.placed && world.at(cx, cy, AIC.layerOf(type)) && world.at(cx, cy, AIC.layerOf(type)).id === l.from) return;   // second click inside the same facility: keep waiting
     // clicking the start again: a single piece if nothing is there yet, otherwise the route just ends
-    if (!l.placed && !world.at(l.x, l.y, AIC.layerOf(type))){ if (world.place(type, l.x, l.y, l.sdir != null ? l.sdir : ui.rot)) afterLine(); else flash(world.canPlace(type, l.x, l.y, ui.rot).why || '놓을 수 없습니다'); }
+    if (!l.placed && !world.at(l.x, l.y, AIC.layerOf(type))){ const n1 = world.place(type, l.x, l.y, l.sdir != null ? l.sdir : ui.rot); if (n1){ n1.takes = n1.f; afterLine(); } else flash(world.canPlace(type, l.x, l.y, ui.rot).why || '놓을 수 없습니다'); }
     ui.line = null; return;
   }
   const p = linePath(l, t); if (!p) return;
@@ -4828,14 +4849,21 @@ function lineClick(cx, cy){
   const L = AIC.layerOf(type); let lastId = null;
   p.cells.forEach(([x, y], i) => {
     const k = p.st[i], d = p.dirs[i];
-    if (k === 'new'){ const n = world.place(type, x, y, d); if (n) lastId = n.id; }
-    else if (k === 'over'){ const e = world.at(x, y, L); e.f = d; delete e.takes; if (!e.item) e.inDir = d; lastId = e.id; }
+    // each piece takes from the route's previous cell; the first from the facility outlet, or from what fed it before
+    const from = i > 0 ? p.dirs[i-1] : l.sdir != null ? l.sdir : d;
+    if (k === 'new'){ const n = world.place(type, x, y, d); if (n){ n.takes = from; lastId = n.id; } }
+    else if (k === 'over'){
+      const e = world.at(x, y, L);
+      let tk = from;
+      if (i === 0 && l.sdir == null){ tk = e.takes != null ? e.takes : [e.f, (e.f+3)&3, (e.f+1)&3].find(dd => world.beltTakes(e, dd) && feederAt(e, dd)); if (tk == null || tk === opp(d)) tk = d; }
+      e.f = d; e.takes = tk; if (!e.item) e.inDir = d; lastId = e.id;
+    }
     else if (k === 'end' && i > 0){
       // clicked inside a line, arriving from its side: the newer line is joined in and the old line behind that cell is cut
       const e = world.at(x, y, L), inD = p.dirs[i-1];
-      if (e && e.type === type && (e.f & 1) !== (inD & 1)) e.takes = inD;
+      if (e && e.type === type && e.f !== opp(inD)) e.takes = inD;
     }
-    else if (k === 'swap'){ const e = world.at(x, y, L); world.remove(e.id); const n = world.place(type, x, y, d); if (n) lastId = n.id; }
+    else if (k === 'swap'){ const e = world.at(x, y, L); world.remove(e.id); const n = world.place(type, x, y, d); if (n){ n.takes = from; lastId = n.id; } }
     else if (k === 'bridge') bridgeAt(x, y, type);
   });
   afterLine();
