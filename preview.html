@@ -1570,7 +1570,7 @@ class World {
   }
   // which way a plain belt takes items in. Each belt is its own line: it takes from one direction only.
   // takes (set when a route is laid: from the previous cell of that route, or from the line it was joined into);
-  // belts without it (older layouts) take from behind, else from one side (the left one first), never from two
+  // belts without it (older layouts) take from behind, else from one side (one of them), never from two
   beltTakes(e, d) {
     if (d === opp(e.f)) return false;
     if (e.takes != null) return d === e.takes;
@@ -4326,7 +4326,16 @@ function drawCarrierDetail(e, g, phase){
   } else if (k==='belt'){
     ctx.strokeStyle = C['cv-belt-mark']; ctx.lineWidth = 1.5;
     const inD = opp(g.ins[0]);
+    // keep the arrows on the belt: clipped to this cell's band, which runs on into a neighbour only where the line continues
+    const h = S*.33 + 1.5, L = AIC.layerOf(e.type);
+    ctx.save(); ctx.beginPath(); ctx.rect(cx - h, cy - h, 2*h, 2*h);
+    for (const sd of bedSides(e, g)){
+      const on = !g.cut.has(sd) && world.at(e.x + DX[sd], e.y + DY[sd], L), len = g.cut.has(sd) ? S*.5 - 3.5 : on ? S*.5 + 5 : S*.5;
+      if (sd === 1) ctx.rect(cx, cy - h, len, 2*h); else if (sd === 3) ctx.rect(cx - len, cy - h, len, 2*h); else if (sd === 2) ctx.rect(cx - h, cy, 2*h, len); else ctx.rect(cx - h, cy - len, 2*h, len);
+    }
+    ctx.clip();
     for (const off of [0, .5]){ const p = (phase + off) % 1; const [x, y] = carrierPos(e, inD, e.f, p); chevron(ctx, x, y, p < .5 ? inD : e.f, 3.6); }
+    ctx.restore();
   }
   if (k!=='belt'){
     ctx.fillStyle = fluid ? C['cv-pipe'] : C['cv-belt']; ctx.strokeStyle = fluid ? C['cv-pipe-core'] : C['cv-rail'];
