@@ -4090,7 +4090,7 @@ function logiGlyph(g, kind, x, y, s, f){
 }
 function setTool(id){
   if (ui.move && id !== 'paste') cancelMove();
-  ui.tool = id;
+  ui.tool = id; ui.line = null;
   if (id !== 'paste') ui.paste = null;
   document.querySelectorAll('[data-tool]').forEach(b => b.setAttribute('aria-pressed', b.dataset.tool===id));
   if (id !== 'select' && id !== 'area'){ ui.sel = null; ui.multi.clear(); }
@@ -4581,7 +4581,8 @@ function drawGhost(){
     ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; for (const s of ui.paste.ents){ const [w,h] = AIC.dims(s.t, s.f); chevron(ctx, (o.x+s.x+w/2)*S, (o.y+s.y+h/2)*S, s.f, 3); }
     return;
   }
-  const g = ghostInfo(); if (!g || (ui.drag && ui.drag.kind==='line')) return;
+  if (drawLineGhost()) return;
+  const g = ghostInfo(); if (!g) return;
   const rep = world.replaceable(g.type, g.x, g.y); if (rep) g.f = rep.f; // shown in the belt's direction
   const chk = rep ? { ok: true } : world.canPlace(g.type, g.x, g.y, g.f);
   ctx.globalAlpha = .5; ctx.fillStyle = chk.ok ? C.ok : C.bad; ctx.fillRect(g.x*S, g.y*S, g.w*S, g.h*S); ctx.globalAlpha = 1;
@@ -4606,6 +4607,7 @@ cv.addEventListener('pointerdown', ev => {
     // second finger: zoom and pan with two fingers; whatever the first finger just started (placing, a belt line, removing) is undone
     const [a,b] = [...pointers.values()]; pinch = { d: Math.hypot(a.x-b.x, a.y-b.y), z: ui.cam.z, mid: toWorld((a.x+b.x)/2, (a.y+b.y)/2) };
     if (ui.drag && ['line', 'build', 'delete', 'area', 'grab'].includes(ui.drag.kind) && performance.now() - (ui.drag.t0 || 0) < 400) hist.revert();
+    ui.line = null;
     if (ui.move) cancelMove();
     ui.drag = null; return;
   }
@@ -4620,7 +4622,7 @@ cv.addEventListener('pointerdown', ev => {
   if (ui.tool === 'delete'){ ui.drag = { kind:'delete' }; delAt(c.cx, c.cy); return; }
   if (ui.tool === 'paste'){ if (ui.move) dropMove(); else placePaste(); ui.drag = { kind:'none' }; return; }
   if (ui.tool === 'movepac'){ const o = pacGhost(); const res = o ? world.movePac(o.x, o.y) : { ok:false }; if (res.ok){ markTouched(); setTool('select'); ui.sel = world.pac.id; renderInspector(true); flash('PAC를 옮겼습니다'); } else flash(res.why || '여기에는 놓을 수 없습니다'); ui.drag = { kind:'none' }; return; }
-  if (ui.tool === 'build:belt' || ui.tool === 'build:pipe'){ ui.drag = { kind:'line', type: ui.tool.slice(6), last:null, cells:new Set() }; lineTo(c.cx, c.cy); return; }
+  if (lineType()){ const had = !!ui.line; lineClick(c.cx, c.cy); ui.drag = { kind:'line', fresh: !had && !!ui.line, cell: c }; return; }
   if (ui.tool.startsWith('build:')){ placeGhost(); ui.drag = { kind:'build' }; return; }
   const here = world.both(c.cx, c.cy);
   let e = here[0] || null;
@@ -4645,7 +4647,6 @@ cv.addEventListener('pointermove', ev => {
   const c = toCell(ev.offsetX, ev.offsetY); ui.hover = c; updateHover();
   const d = ui.drag; if (!d) return;
   if (d.kind==='pan'){ const dx = ev.offsetX - d.sx, dy = ev.offsetY - d.sy; if (Math.abs(dx)+Math.abs(dy) > 3) d.moved = true; ui.cam.x = d.cam.x - dx/ui.cam.z; ui.cam.y = d.cam.y - dy/ui.cam.z; }
-  else if (d.kind==='line') lineTo(c.cx, c.cy);
   else if (d.kind==='delete') delAt(c.cx, c.cy);
   else if (d.kind==='area') d.b = c;
   else if (d.kind==='grab' && Math.abs(ev.offsetX - d.sx) + Math.abs(ev.offsetY - d.sy) > 6){
@@ -4658,7 +4659,8 @@ function endPointer(ev){
   if (pinch){ if (pointers.size < 2) pinch = null; ui.drag = null; return; }
   const d = ui.drag;
   if (d && d.kind==='pan' && !d.moved){
-    if (d.btn === 2 && ui.tool !== 'select') setTool('select');
+    if (d.btn === 2 && ui.line) ui.line = null;
+    else if (d.btn === 2 && ui.tool !== 'select') setTool('select');
     else if (d.desel){ ui.sel = null; ui.multi.clear(); renderInspector(true); renderSelbar(); }
   }
   if (d && d.kind==='area'){
@@ -4667,7 +4669,8 @@ function endPointer(ev){
     ui.sel = null; ui.drag = null; renderInspector(true); renderSelbar(); return;
   }
   if (d && d.kind==='moving'){ if (!dropMove()){ const why = $('#warn').textContent; cancelMove(); setTool('select'); flash(why + ' · 제자리로 돌려놓았습니다'); } ui.drag = null; return; }
-  if (d && (d.kind==='line'||d.kind==='build'||d.kind==='delete')){ markTouched(); renderInspector(true); renderFacs(); }
+  if (d && d.kind==='line' && d.fresh && ui.line && ui.hover && (ui.hover.cx !== d.cell.cx || ui.hover.cy !== d.cell.cy)) lineClick(ui.hover.cx, ui.hover.cy);
+  if (d && (d.kind==='build'||d.kind==='delete')){ markTouched(); renderInspector(true); renderFacs(); }
   ui.drag = null;
 }
 cv.addEventListener('pointerup', endPointer);
@@ -4681,45 +4684,119 @@ cv.addEventListener('wheel', ev => {
 }, { passive:false });
 
 // belts & pipes: drag to lay. Crossing the same kind swaps in a bridge; belts and pipes simply overlap (different heights)
-// drawing a belt or pipe line. Where it meets cells that are already there, the start point decides:
-// starting on the open end of a line continues it (that end turns toward the new line); starting or ending on the
-// middle of a line leaves it as it is; crossing straight over a line makes a bridge, but only when the drag
-// actually goes on past it (stopping on it just joins)
-function lineTo(cx, cy){
-  const d = ui.drag;
-  if (!d.last){ putLine(cx, cy, ui.rot, d, null); d.last = [cx, cy]; return; }
-  let [x, y] = d.last;
-  while (x !== cx || y !== cy){
-    const nx = x !== cx ? x + Math.sign(cx - x) : x, ny = x !== cx ? y : y + Math.sign(cy - y);
-    const dir = nx > x ? 1 : nx < x ? 3 : ny > y ? 2 : 0;
-    // leaving a cell of an existing line we stopped on: going straight on means crossing it → bridge
-    if (d.pend && d.pend.x === x && d.pend.y === y){ if (dir === d.pend.dir) bridgeAt(d.pend, d); d.pend = null; }
-    const prev = world.at(x, y, AIC.layerOf(d.type)); if (prev && prev.type===d.type && d.cells.has(prev.id)){ prev.f = dir; if (!prev.item) prev.inDir = dir; }
-    ui.rot = dir;
-    putLine(nx, ny, dir, d, dir);
-    x = nx; y = ny;
-  }
-  d.last = [x, y];
+// laying belts and pipes the way the game does: click a start, move the mouse (the route follows without holding the
+// button, nothing is placed yet), click again to place it. Clicking an inlet (a facility's input, or a belt/pipe that
+// is already there) places the route and ends it; clicking open ground places it and keeps going from that point.
+// Right click or Esc drops the route that is still following the mouse. R swaps which way the bend goes.
+// Clicking inside a facility counts as its nearest outlet (when starting) or inlet (when ending).
+const lineType = () => (ui.tool === 'build:belt' || ui.tool === 'build:pipe') ? ui.tool.slice(6) : null;
+function portFits(type, kind){ const fl = TYPES[type].carrier === 'fluid'; return fl ? !!kind && kind !== 's' && kind !== 'c' : !kind || kind === 's' || kind === 'c'; }
+function nearPort(e, which, type, cx, cy){
+  let best = null, bd = 1e9;
+  for (const [x, y, d, kind] of AIC.portCells(e, which)){ if (!portFits(type, kind)) continue; const dd = Math.abs(x - cx) + Math.abs(y - cy); if (dd < bd){ bd = dd; best = [x, y, d]; } }
+  return best;
 }
-function bridgeAt(p, d){
-  const e = world.at(p.x, p.y, AIC.layerOf(d.type)); if (!e || e.id !== p.id) return;
+const isFac = e => AIC.layerOf(e.type) === 'both';
+function lineStart(type, cx, cy){
+  const L = AIC.layerOf(type); let e = world.at(cx, cy, L), sdir = null, from = null;
+  if (e && isFac(e)){ from = e.id;
+    const p = nearPort(e, 'out', type, cx, cy); if (!p){ flash(`이 설비에는 ${TYPES[type].ko}가 나가는 곳이 없습니다`); return null; }
+    sdir = p[2]; cx = p[0] + DX[sdir]; cy = p[1] + DY[sdir]; e = world.at(cx, cy, L);
+  }
+  if (!world.inb(cx, cy)) return null;
+  // the open end of a line already there (nothing in front of it) turns toward the new route
+  const bend = e && e.type === type && !world.at(cx + DX[e.f], cy + DY[e.f], L) ? e.id : null;
+  return { type, x: cx, y: cy, sdir, from, bend, axis: sdir != null ? (sdir & 1 ? 'h' : 'v') : null, flip: false, placed: 0 };
+}
+function lineEnd(l, cx, cy){
+  const L = AIC.layerOf(l.type), e = world.at(cx, cy, L);
+  if (e && e.id === l.from) return { x: l.x, y: l.y, dir: null, inlet: false };   // still inside the facility it starts from
+  if (e && isFac(e)){
+    const p = nearPort(e, 'in', l.type, cx, cy); if (!p) return null;
+    return { x: p[0] - DX[p[2]], y: p[1] - DY[p[2]], dir: p[2], inlet: true };
+  }
+  return { x: cx, y: cy, dir: null, inlet: !!e };
+}
+function linePath(l, t){
+  if (!t) return null;
+  const dx = t.x - l.x, dy = t.y - l.y;
+  if (!l.axis && (dx || dy)) l.axis = Math.abs(dx) >= Math.abs(dy) ? 'h' : 'v';
+  if (!dx && !dy && l.sdir == null) l.axis = null;
+  let ax = l.axis || 'h'; if (l.flip) ax = ax === 'h' ? 'v' : 'h';
+  const cells = [[l.x, l.y]]; let x = l.x, y = l.y;
+  const run = (axis) => { while (axis === 'h' ? x !== t.x : y !== t.y){ if (axis === 'h') x += Math.sign(t.x - x); else y += Math.sign(t.y - y); cells.push([x, y]); } };
+  run(ax); run(ax === 'h' ? 'v' : 'h');
+  const n = cells.length, dirs = [];
+  for (let i = 0; i < n - 1; i++){ const [ax0, ay0] = cells[i], [bx, by] = cells[i+1]; dirs.push(bx > ax0 ? 1 : bx < ax0 ? 3 : by > ay0 ? 2 : 0); }
+  dirs.push(t.dir != null ? t.dir : n > 1 ? dirs[n-2] : l.sdir != null ? l.sdir : ui.rot);
+  // what happens on each cell: new piece, the start that bends, a line kept as it is, a bridge, the end, or blocked
+  const L = AIC.layerOf(l.type), bt = l.type === 'pipe' ? 'pbridge' : 'bridge', st = [];
+  let why = '';
+  for (let i = 0; i < n; i++){
+    const [cx, cy] = cells[i], d = dirs[i], inD = i ? dirs[i-1] : null, e = world.at(cx, cy, L), last = i === n - 1;
+    let k;
+    if (!e){ const c = world.canPlace(l.type, cx, cy, d); k = c.ok ? 'new' : 'bad'; if (!c.ok && !why) why = c.why; }
+    else if (i === 0) k = l.bend === e.id && n > 1 ? 'bend' : 'keep';
+    else if (last && !isFac(e)) k = 'end';
+    else if (e.type === l.type && d === inD) k = (e.f & 1) !== (inD & 1) ? 'bridge' : 'keep';
+    else if (e.type === bt && d === inD) k = 'keep';
+    else { k = 'bad'; if (!why) why = isFac(e) ? '설비가 가로막고 있습니다' : '이미 깔린 줄 위에서는 꺾을 수 없습니다'; }
+    st.push(k);
+  }
+  return { cells, dirs, st, ok: !st.includes('bad'), why };
+}
+function lineTarget(){ const l = ui.line; return l && ui.hover ? lineEnd(l, ui.hover.cx, ui.hover.cy) : null; }
+function bridgeAt(x, y, type){
+  const e = world.at(x, y, AIC.layerOf(type)); if (!e) return;
   const keep = e.item, ef = e.f; world.remove(e.id);
-  const br = world.place(d.type==='pipe' ? 'pbridge' : 'bridge', p.x, p.y, ef);
-  if (br){ d.cells.add(br.id); if (keep) br.slots[ef & 1] = { item: keep, d: ef, prog: 0 }; }
+  const br = world.place(type==='pipe' ? 'pbridge' : 'bridge', x, y, ef);
+  if (br && keep) br.slots[ef & 1] = { item: keep, d: ef, prog: 0 };
 }
-function putLine(x, y, f, d, moveDir){
-  const type = d.type, e = world.at(x, y, AIC.layerOf(type));
-  if (!e){ const n = world.place(type, x, y, f); if (n) d.cells.add(n.id); else if (moveDir == null) flash(world.canPlace(type, x, y, f).why || '놓을 수 없습니다'); return; }
-  if (d.cells.has(e.id) || e.type !== type) return;
-  if (moveDir == null){
-    // starting on an existing cell: its open end (nothing in front) is continued by the new line, anything else is left alone
-    const front = world.at(x + DX[e.f], y + DY[e.f], AIC.layerOf(type));
-    if (!front) d.cells.add(e.id);
-    return;
+// a click while laying: start a route, or place the one that is following the mouse
+function lineClick(cx, cy){
+  const type = lineType(); if (!type) return;
+  if (!ui.line){ ui.line = lineStart(type, cx, cy); return; }
+  const l = ui.line, t = lineEnd(l, cx, cy);
+  if (!t){ flash(`이 설비에는 ${TYPES[type].ko}가 들어가는 곳이 없습니다`); return; }
+  if (t.x === l.x && t.y === l.y && t.dir == null){
+    if (l.from && !l.placed && world.at(cx, cy, AIC.layerOf(type)) && world.at(cx, cy, AIC.layerOf(type)).id === l.from) return;   // second click inside the same facility: keep waiting
+    // clicking the start again: a single piece if nothing is there yet, otherwise the route just ends
+    if (!l.placed && !world.at(l.x, l.y, AIC.layerOf(type))){ if (world.place(type, l.x, l.y, l.sdir != null ? l.sdir : ui.rot)) afterLine(); else flash(world.canPlace(type, l.x, l.y, ui.rot).why || '놓을 수 없습니다'); }
+    ui.line = null; return;
   }
-  // running into an existing line from the side: decide when the drag moves on (straight on = bridge, else join)
-  if ((e.f & 1) !== (moveDir & 1)) d.pend = { id: e.id, x, y, dir: moveDir };
-  // along an existing line: its direction stays as it is
+  const p = linePath(l, t); if (!p) return;
+  if (!p.ok){ flash(p.why || '놓을 수 없습니다'); return; }
+  const L = AIC.layerOf(type); let lastId = null;
+  p.cells.forEach(([x, y], i) => {
+    const k = p.st[i], d = p.dirs[i];
+    if (k === 'new'){ const n = world.place(type, x, y, d); if (n) lastId = n.id; }
+    else if (k === 'bend'){ const e = world.at(x, y, L); e.f = d; if (!e.item) e.inDir = d; }
+    else if (k === 'bridge') bridgeAt(x, y, type);
+  });
+  afterLine();
+  if (t.inlet) ui.line = null;
+  else ui.line = { type, x: t.x, y: t.y, sdir: null, bend: lastId, axis: null, flip: false, placed: l.placed + 1 };
+}
+function afterLine(){ markTouched(); renderInspector(true); renderFacs(); }
+function drawLineGhost(){
+  const l = ui.line, type = lineType(); if (!type) return false;
+  const z = ui.cam.z;
+  if (!l){
+    // before the first click: where a route would start (inside a facility: its nearest outlet)
+    if (!ui.hover) return false; const e = world.at(ui.hover.cx, ui.hover.cy, AIC.layerOf(type));
+    if (!e || !isFac(e)) return false;
+    const s0 = lineStart(type, ui.hover.cx, ui.hover.cy); if (!s0) return true;
+    ctx.globalAlpha = .5; ctx.fillStyle = C.ok; ctx.fillRect(s0.x*S+1, s0.y*S+1, S-2, S-2); ctx.globalAlpha = 1;
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; chevron(ctx, (s0.x+.5)*S, (s0.y+.5)*S, s0.sdir, 5); return true;
+  }
+  const p = linePath(l, lineTarget()) || linePath(l, { x: l.x, y: l.y, dir: null });
+  p.cells.forEach(([x, y], i) => {
+    const k = p.st[i]; if (k === 'keep' || k === 'end') return;
+    ctx.globalAlpha = .5; ctx.fillStyle = k === 'bad' ? C.bad : k === 'bridge' ? C.warn : C.ok; ctx.fillRect(x*S+1, y*S+1, S-2, S-2); ctx.globalAlpha = 1;
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; chevron(ctx, (x+.5)*S, (y+.5)*S, p.dirs[i], 5);
+  });
+  ctx.strokeStyle = C.accent; ctx.lineWidth = 2/z; ctx.strokeRect(l.x*S, l.y*S, S, S);
+  return true;
 }
 function placeGhost(){
   const g = ghostInfo(); if (!g) return;
@@ -4841,6 +4918,7 @@ document.addEventListener('keydown', ev => {
   if (mod && k==='v'){ if (ui.clip) startPaste(ui.clip); ev.preventDefault(); return; }
   if (k==='r'){ rotateAction(); ev.preventDefault(); }
   else if (k==='m' && ui.tool !== 'paste' && (ui.sel || ui.multi.size)) moveSel();
+  else if (k==='escape' && ui.line) ui.line = null;
   else if (k==='escape'){ setTool('select'); ui.sel = null; ui.multi.clear(); renderInspector(true); renderSelbar(); }
   else if (k==='f'){ if (ui.multi.size || ui.sel) deleteSel(); else setTool(ui.tool === 'delete' ? 'select' : 'delete'); }
   else if (k==='x') setTool(ui.tool === 'area' ? 'select' : 'area');
@@ -4850,9 +4928,10 @@ document.addEventListener('keydown', ev => {
   else if (['1','2','3','4'].includes(k)) setSpeed([1,2,4,8][+k-1]);
 });
 // pick a build tool from the keyboard and show its category in the facility bar
-function selectBuild(type){ if (ui.cat !== TYPES[type].group || ui.q){ ui.cat = TYPES[type].group; ui.q = ''; $('#q').value = ''; renderPalette(); } setTool('build:' + type); flash(`${TYPES[type].ko} 선택 · 드래그해서 깔기`); }
+function selectBuild(type){ if (ui.cat !== TYPES[type].group || ui.q){ ui.cat = TYPES[type].group; ui.q = ''; $('#q').value = ''; renderPalette(); } setTool('build:' + type); flash(`${TYPES[type].ko} 선택 · 클릭으로 시작, 다시 클릭해서 깔기`); }
 function rotateAction(){
   if (ui.tool==='paste' && ui.paste){ ui.paste = AIC.bpRotate(ui.paste); if (ui.move) ui.move.grab = null; renderSelbar(); return; }
+  if (ui.line){ ui.line.flip = !ui.line.flip; return; }
   if (ui.tool.startsWith('build:')){ ui.rot = (ui.rot + 1) & 3; return; }
   if (ui.sel){ if (world.rotate(ui.sel) === false) flash('회전할 공간이 없습니다'); markTouched(); renderInspector(true); }
 }
