@@ -4075,7 +4075,7 @@ function drawMini(g, type){
     g.strokeStyle = pipe?C['cv-pipe']:C['cv-belt']; g.lineCap='butt'; g.lineWidth = pipe?7:10; g.beginPath(); g.moveTo(2,12); g.lineTo(22,12); g.stroke();
     if (!pipe){ g.strokeStyle=C['cv-belt-mark']; g.lineWidth=1.5; chevron(g,12,12,1,3.5); } else { g.strokeStyle=C['cv-pipe-core']; g.lineWidth=2; g.beginPath(); g.moveTo(3,12); g.lineTo(21,12); g.stroke(); }
   }
-  else if (CARRIER.has(k)){ g.fillStyle = t.carrier==='fluid'?C['cv-pipe']:C['cv-belt']; g.beginPath(); g.roundRect(4,4,16,16,3); g.fill(); g.strokeStyle = '#fff'; g.lineWidth = 1.5; logiGlyph(g,k,12,12,6,2); }
+  else if (CARRIER.has(k)){ g.fillStyle = t.carrier==='fluid'?C['cv-pipe']:C['cv-belt']; g.beginPath(); g.roundRect(4,4,16,16,3); g.fill(); g.strokeStyle = (k==='splitter'||k==='converger') ? facAcc(id) : '#fff'; g.lineWidth = 1.5; logiGlyph(g,k,12,12,6,2); }
   else if (k==='pylon' || k==='relay'){ g.fillStyle = C.power; poly(g,12,12,k==='relay'?9:7,4,0); g.fill(); g.strokeStyle=C['cv-mach']; g.beginPath(); g.moveTo(12.5,7); g.lineTo(10,12.5); g.lineTo(14,11.5); g.lineTo(11.5,17); g.stroke(); }
   else if (k==='bus'){ g.fillStyle = C.accent; g.fillRect(8,2,8,20); g.fillStyle = '#15191A'; for (let y=4;y<22;y+=5) g.fillRect(8,y,8,2); }
   else if (k==='loader' || k==='unloader'){
@@ -4102,9 +4102,24 @@ function rItem(r){ return Object.keys(r.out)[0] || Object.keys(r.in)[0]; } // di
 function firstOut(type){ const r = RECIPES_BY_M[type]; return r ? rItem(r[0]) : null; }
 function chevron(g, x, y, d, s){ g.save(); g.translate(x,y); g.rotate(d*Math.PI/2); g.beginPath(); g.moveTo(-s,s*.55); g.lineTo(0,-s*.45); g.lineTo(s,s*.55); g.stroke(); g.restore(); }
 function logiGlyph(g, kind, x, y, s, f){
-  g.save(); g.translate(x,y); g.rotate(f*Math.PI/2); g.beginPath();
-  if (kind==='splitter'){ g.moveTo(0,-s); g.lineTo(0,s); g.moveTo(-s,s*.1); g.lineTo(s,s*.1); }
-  else if (kind==='converger'){ g.moveTo(-s,-s*.2); g.lineTo(s,-s*.2); g.moveTo(0,-s); g.lineTo(0,s); }
+  g.save(); g.translate(x,y); g.rotate(f*Math.PI/2);
+  // local +y is the output side, -y the back, ±x the sides
+  const head = (ang, len, wd) => { g.save(); g.rotate(ang); g.beginPath(); g.moveTo(0, len); g.lineTo(-wd, len - wd*1.15); g.lineTo(wd, len - wd*1.15); g.closePath(); g.fill(); g.restore(); };
+  g.fillStyle = g.strokeStyle;
+  if (kind==='splitter'){
+    // one way in, three ways out: a stem from the back that forks into three arrowheads (front and both sides)
+    g.beginPath(); g.moveTo(0,-s); g.lineTo(0,0); g.moveTo(0,0); g.lineTo(0,s*.5); g.moveTo(0,0); g.lineTo(s*.5,0); g.moveTo(0,0); g.lineTo(-s*.5,0); g.stroke();
+    for (const a of [0, Math.PI/2, -Math.PI/2]) head(a, s*1.05, s*.42);
+    g.beginPath(); g.arc(0, 0, s*.22, 0, 7); g.fill(); g.restore(); return;
+  }
+  if (kind==='converger'){
+    // three ways in, one way out: lines from the back and both sides meet in the middle, one big arrowhead out the front
+    g.beginPath(); g.moveTo(0,-s); g.lineTo(0,s*.3); g.moveTo(-s,0); g.lineTo(0,0); g.moveTo(s,0); g.lineTo(0,0); g.stroke();
+    head(0, s*1.1, s*.62);
+    g.restore(); return;
+  }
+  g.beginPath();
+  if (false){}
   else if (kind==='control'){ g.moveTo(0,-s); g.lineTo(0,s); g.moveTo(-s*.6,-s*.1); g.lineTo(s*.6,-s*.1); g.moveTo(-s*.4,s*.25); g.lineTo(s*.4,s*.25); }
   else { g.moveTo(-s,0); g.lineTo(s,0); g.moveTo(0,-s); g.lineTo(0,-s*.35); g.moveTo(0,s*.35); g.lineTo(0,s); }
   g.stroke();
@@ -4445,7 +4460,7 @@ const FAC_ACC = { refine:'#F08A4B', plant:'#5DC64C', seed:'#8CCF45', grind:'#4FC
   fgtrans:'#C9D83A', sgtrans:'#86C936', gasdisp:'#A9C4D6', gear:'#E8B23A', pylon:'#22A6EE', xpylon:'#22A6EE', relay:'#E8CF3E', xrelay:'#5CD05A', thermal:'#8FD3FF',
   stash:'#C9CED0', loader:'#F2C230', unloader:'#F08A3A', tank:'#4FB8EC', gastank:'#D8CF5A', bussection:'#7CC546', busport:'#6BC33A',
   cinlet:'#E8A640', coutlet:'#E8A640', cminlet:'#E8A640', cmoutlet:'#E8A640',
-  bridge:'#E9B44C', converger:'#E9B44C', splitter:'#E9B44C', control:'#E9C440', pbridge:'#C9D23E', pconverger:'#E58A3A', psplitter:'#E9B44C', pcontrol:'#C9D23E' };
+  bridge:'#E9B44C', converger:'#F0883A', splitter:'#3DB4EA', control:'#E9C440', pbridge:'#C9D23E', pconverger:'#F0883A', psplitter:'#3DB4EA', pcontrol:'#C9D23E' };
 const BUS_GREEN = '#7CC546';
 const facAcc = type => FAC_ACC[type] || '#E8C930';
 // corner brackets in the accent colour
